@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de puerta - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}">
+        <span class="logo">🚪</span>
+        <div><strong>Connectify</strong><small>Control de puerta</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/tickets/validate}">Validación simple</a>
+        <a class="btn secondary" th:href="@{/dashboard/gate-agent}">Panel auxiliar</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Auxiliar / colaborador</p>
+        <h1>Control de ingreso por evento</h1>
+        <p class="muted">Selecciona el evento asignado y valida cada entrada escaneando el QR o escribiendo el código manualmente.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <div class="checkout-form">
+            <h2>1. Seleccionar evento</h2>
+            <form th:action="@{/tickets/gate}" method="get" class="auth-form">
+                <label>Evento activo</label>
+                <select class="search-input" name="eventId" required>
+                    <option value="">Selecciona un evento</option>
+                    <option th:each="event : ${events}" th:value="${event.id}" th:selected="${eventId == event.id}" th:text="${'#' + event.id + ' - ' + event.title + ' / ' + event.city}">Evento</option>
+                </select>
+                <button class="btn primary full" type="submit">Abrir control</button>
+            </form>
+
+            <div th:if="${selectedEvent != null}" class="payment-box">
+                <h2>2. Escanear QR o ingresar código</h2>
+                <p class="muted">Evento en control: <strong th:text="${selectedEvent.title}">Evento</strong></p>
+                <form th:action="@{/tickets/gate}" method="post" class="auth-form">
+                    <input type="hidden" name="eventId" th:value="${selectedEvent.id}">
+                    <label>Código del ticket</label>
+                    <input name="code" type="text" th:value="${code}" placeholder="CNF-1-ABC12345" autofocus required>
+                    <button class="btn primary full" type="submit">Validar acceso</button>
+                </form>
+            </div>
+        </div>
+
+        <aside class="summary-card">
+            <h2>Resultado</h2>
+
+            <div th:if="${result == null}" class="fake-payment">
+                <span>📲</span>
+                <strong>Esperando escaneo</strong>
+                <small>El auxiliar valida un ticket a la vez durante el ingreso.</small>
+            </div>
+
+            <div th:if="${result != null}">
+                <div th:if="${result.status == 'VALID'}" class="alert success">✅ Acceso autorizado</div>
+                <div th:if="${result.status == 'USED'}" class="alert error">⚠️ Ticket ya usado</div>
+                <div th:if="${result.status == 'WRONG_EVENT'}" class="alert error">🚫 Ticket pertenece a otro evento</div>
+                <div th:if="${result.status == 'NOT_FOUND'}" class="alert error">❌ Ticket no encontrado</div>
+
+                <div class="summary-row"><span>Mensaje</span><strong th:text="${result.message}">Mensaje</strong></div>
+                <div class="summary-row"><span>Código</span><strong th:text="${result.code}">Código</strong></div>
+
+                <div th:if="${result.ticket != null}">
+                    <div class="summary-row"><span>Evento</span><strong th:text="${result.ticket.event.title}">Evento</strong></div>
+                    <div class="summary-row"><span>Asistente</span><strong th:text="${result.ticket.attendeeName}">Asistente</strong></div>
+                    <div class="summary-row"><span>Usado</span><strong th:text="${result.ticket.used ? 'Sí' : 'No'}">No</strong></div>
+                </div>
+            </div>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
