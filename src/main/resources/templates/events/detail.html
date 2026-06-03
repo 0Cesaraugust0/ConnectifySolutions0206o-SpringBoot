@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${event.title} + ' - Connectify Solutions'">Detalle de evento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}">
+        <span class="logo">🎫</span>
+        <div><strong>Connectify</strong><small>Detalle</small></div>
+    </a>
+    <a class="btn secondary" th:href="@{/events}">Volver a eventos</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="event-detail-card">
+        <p class="badge" th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p>
+        <h1 th:text="${event.title}">Título del evento</h1>
+        <p class="muted" th:text="${event.description}">Descripción del evento</p>
+
+        <div class="event-meta-grid">
+            <div><strong>Fecha</strong><span th:text="${#temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm')}">Fecha</span></div>
+            <div><strong>Ciudad</strong><span th:text="${event.city}">Ciudad</span></div>
+            <div><strong>Ubicación</strong><span th:text="${event.location}">Ubicación</span></div>
+            <div><strong>Precio</strong><span th:text="${'S/ ' + event.price}">S/ 0.00</span></div>
+            <div><strong>Capacidad</strong><span th:text="${event.capacity}">0</span></div>
+            <div><strong>Disponibles</strong><span th:text="${event.availableTickets}">0</span></div>
+        </div>
+
+        <div class="actions">
+            <a class="btn primary" href="#">Agregar al carrito</a>
+            <a class="btn secondary" th:href="@{/events}">Seguir explorando</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>
