@@ -50,6 +50,10 @@ public class Event {
 
     private boolean featured;
 
+    private String gateAccessCode;
+
+    private String gatePassword;
+
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.PUBLISHED;
 
@@ -163,6 +167,22 @@ public class Event {
 
     public void setFeatured(boolean featured) {
         this.featured = featured;
+    }
+
+    public String getGateAccessCode() {
+        return gateAccessCode;
+    }
+
+    public void setGateAccessCode(String gateAccessCode) {
+        this.gateAccessCode = gateAccessCode;
+    }
+
+    public String getGatePassword() {
+        return gatePassword;
+    }
+
+    public void setGatePassword(String gatePassword) {
+        this.gatePassword = gatePassword;
     }
 
     public EventStatus getStatus() {
