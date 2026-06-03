@@ -7,35 +7,88 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<header class="navbar dashboard-nav">
+<header class="navbar marketplace-nav">
     <a class="brand brand-link" th:href="@{/}">
         <span class="logo">🎫</span>
-        <div><strong>Connectify</strong><small>Eventos</small></div>
+        <div><strong>Connectify</strong><small>Marketplace</small></div>
     </a>
-    <a class="btn secondary" th:href="@{/login}">Iniciar sesión</a>
+    <nav class="top-actions">
+        <a class="nav-link" th:href="@{/events}">Eventos</a>
+        <a class="nav-link" href="#featured">Destacados</a>
+        <a class="nav-link" href="#categories">Categorías</a>
+        <a class="btn primary compact" th:href="@{/login}">Iniciar sesión</a>
+    </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero">
-        <p class="badge">Marketplace</p>
-        <h1>Explorar eventos</h1>
-        <p class="muted">Eventos disponibles cargados desde MySQL/MariaDB mediante Spring Data JPA.</p>
+<main class="marketplace-page">
+    <section class="marketplace-hero">
+        <div class="hero-copy">
+            <p class="badge glow">Marketplace de eventos</p>
+            <h1>Encuentra experiencias memorables en Perú</h1>
+            <p class="muted hero-text">Conciertos, conferencias, gastronomía, deporte y cultura en una plataforma preparada para tickets QR, checkout e IZIPay.</p>
+
+            <div class="search-panel">
+                <div class="search-box">🔎 Buscar eventos, artistas o ciudades</div>
+                <div class="search-box">📍 Lima, Callao y más</div>
+                <div class="search-box">📅 Próximas fechas</div>
+                <button class="btn primary">Buscar</button>
+            </div>
+        </div>
+
+        <div class="hero-stats">
+            <div><strong th:text="${events.size()}">0</strong><span>eventos activos</span></div>
+            <div><strong>5</strong><span>categorías base</span></div>
+            <div><strong>QR</strong><span>tickets preparados</span></div>
+        </div>
     </section>
 
-    <section class="dashboard-grid" th:if="${!events.isEmpty()}">
-        <a class="module-card" th:each="event : ${events}" th:href="@{/events/{id}(id=${event.id})}">
-            <span th:text="${event.category != null ? event.category.icon : '🎫'}">🎫</span>
-            <h3 th:text="${event.title}">Nombre del evento</h3>
-            <p th:text="${event.description}">Descripción del evento</p>
-            <p class="muted small">
-                <span th:text="${event.city}">Lima</span> ·
-                <span th:text="${#temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm')}">Fecha</span>
-            </p>
-            <strong th:text="${'S/ ' + event.price}">S/ 0.00</strong>
+    <section id="categories" class="category-strip">
+        <span>🎵 Música</span>
+        <span>💻 Tecnología</span>
+        <span>🍽️ Gastronomía</span>
+        <span>⚽ Deporte</span>
+        <span>🎭 Cultura</span>
+    </section>
+
+    <section id="featured" class="section-heading">
+        <div>
+            <p class="badge">Explorar</p>
+            <h2>Eventos disponibles</h2>
+            <p class="muted">Datos leídos desde MySQL/MariaDB mediante Spring Data JPA.</p>
+        </div>
+    </section>
+
+    <section class="event-grid" th:if="${!events.isEmpty()}">
+        <a class="event-card" th:each="event : ${events}" th:href="@{/events/{id}(id=${event.id})}">
+            <div class="event-cover">
+                <span class="event-icon" th:text="${event.category != null ? event.category.icon : '🎫'}">🎫</span>
+                <span class="event-status" th:text="${event.featured ? 'Destacado' : 'Disponible'}">Disponible</span>
+            </div>
+
+            <div class="event-body">
+                <div class="event-category" th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</div>
+                <h3 th:text="${event.title}">Nombre del evento</h3>
+                <p class="event-description" th:text="${event.description}">Descripción del evento</p>
+
+                <div class="event-info">
+                    <span>📍 <b th:text="${event.city != null ? event.city : 'Lima'}">Lima</b></span>
+                    <span>📅 <b th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</b></span>
+                </div>
+
+                <div class="availability">
+                    <div class="availability-bar"><span th:style="${'width:' + (event.capacity != null && event.capacity > 0 ? (event.availableTickets * 100 / event.capacity) : 30) + '%'}"></span></div>
+                    <small th:text="${event.availableTickets != null ? event.availableTickets + ' entradas disponibles' : 'Disponibilidad por confirmar'}">Entradas disponibles</small>
+                </div>
+
+                <div class="event-footer">
+                    <strong th:text="${event.price != null ? 'S/ ' + event.price : 'Gratis / por definir'}">S/ 0.00</strong>
+                    <span class="card-action">Ver detalle →</span>
+                </div>
+            </div>
         </a>
     </section>
 
-    <section class="auth-card" th:if="${events.isEmpty()}">
+    <section class="empty-state" th:if="${events.isEmpty()}">
         <h2>Aún no hay eventos registrados</h2>
         <p class="muted">El siguiente paso es sembrar datos demo o crear eventos desde el panel organizador.</p>
     </section>
