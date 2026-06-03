@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandeja de comunicaciones - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard}">
+        <span class="logo">💬</span>
+        <div><strong>Connectify</strong><small>Comunicaciones</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/communications/new}">Nuevo mensaje</a>
+        <a class="btn secondary" th:href="@{/communications/sent}">Enviados</a>
+        <a class="btn primary compact" th:href="@{/dashboard}">Dashboard</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Bandeja operativa</p>
+        <h1>Mensajes para <span th:text="${role}">ADMIN</span></h1>
+        <p class="muted">Comunicación interna entre administrador, organizador, diseñador, auxiliar y cliente.</p>
+    </section>
+
+    <section class="toolbar">
+        <div class="category-strip">
+            <a class="category-chip" th:href="@{/communications(role='ADMIN')}">🛡️ Admin</a>
+            <a class="category-chip" th:href="@{/communications(role='ORGANIZER')}">🎯 Organizador</a>
+            <a class="category-chip" th:href="@{/communications(role='DESIGNER')}">🎨 Diseñador</a>
+            <a class="category-chip" th:href="@{/communications(role='GATE_AGENT')}">🚪 Auxiliar</a>
+            <a class="category-chip" th:href="@{/communications(role='CLIENT')}">🛒 Cliente</a>
+        </div>
+        <span class="status-pill status-open"><strong th:text="${unread}">0</strong> sin leer</span>
+    </section>
+
+    <section class="cart-items" th:if="${!messages.isEmpty()}">
+        <a class="message-card" th:each="message : ${messages}" th:href="@{/communications/{id}(id=${message.id})}">
+            <div class="message-meta">
+                <span class="role-pill" th:text="${message.senderRole + ' → ' + message.targetRole}">ADMIN → ORGANIZER</span>
+                <span class="priority-pill" th:classappend="${message.priority == T(com.connectify.entity.MessagePriority).URGENT ? ' priority-urgent' : message.priority == T(com.connectify.entity.MessagePriority).HIGH ? ' priority-high' : message.priority == T(com.connectify.entity.MessagePriority).LOW ? ' priority-low' : ' priority-normal'}" th:text="${message.priority}">NORMAL</span>
+                <span class="status-pill" th:classappend="${message.status == T(com.connectify.entity.MessageStatus).RESOLVED ? ' status-resolved' : message.status == T(com.connectify.entity.MessageStatus).IN_PROGRESS ? ' status-progress' : message.status == T(com.connectify.entity.MessageStatus).ARCHIVED ? ' status-archived' : ' status-open'}" th:text="${message.status}">OPEN</span>
+            </div>
+            <h3 th:text="${message.subject}">Asunto</h3>
+            <p class="message-body" th:text="${message.body}">Contenido</p>
+            <p class="muted small">Remitente: <strong th:text="${message.senderName}">Nombre</strong> · Tipo: <strong th:text="${message.type}">Tipo</strong></p>
+        </a>
+    </section>
+
+    <section class="empty-state" th:if="${messages.isEmpty()}">
+        <h2>No hay mensajes para este rol</h2>
+        <p class="muted">Crea una solicitud o cambia de bandeja por rol.</p>
+        <a class="btn primary" th:href="@{/communications/new}">Crear mensaje</a>
+    </section>
+</main>
+</body>
+</html>
