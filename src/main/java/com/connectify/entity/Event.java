@@ -43,6 +43,7 @@ public class Event {
 
     private Integer capacity;
 
+    @Column(name = "tickets_sold")
     private Integer sold;
 
     private String imageUrl;
