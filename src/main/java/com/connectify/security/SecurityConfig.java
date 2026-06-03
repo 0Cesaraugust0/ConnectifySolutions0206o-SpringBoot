@@ -20,12 +20,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/events", "/events/**", "/cart", "/cart/**", "/tickets/validate", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login", "/events", "/events/**", "/cart", "/cart/**", "/tickets/validate", "/tickets/gate", "/tickets/gate/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "DEVELOPER")
                         .requestMatchers("/dashboard/developer/**").hasRole("DEVELOPER")
                         .requestMatchers("/dashboard/admin/**").hasAnyRole("ADMIN", "DEVELOPER")
                         .requestMatchers("/dashboard/organizer/**").hasAnyRole("ORGANIZER", "DEVELOPER")
                         .requestMatchers("/dashboard/client/**").hasAnyRole("CLIENT", "DEVELOPER")
                         .requestMatchers("/dashboard/designer/**").hasAnyRole("DESIGNER", "DEVELOPER")
+                        .requestMatchers("/dashboard/gate-agent/**").hasAnyRole("GATE_AGENT", "ORGANIZER", "ADMIN", "DEVELOPER")
                         .requestMatchers("/dashboard/**").authenticated()
                         .anyRequest().authenticated()
                 )
