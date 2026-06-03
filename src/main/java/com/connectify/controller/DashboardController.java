@@ -15,12 +15,14 @@ public class DashboardController {
         boolean organizer = hasRole(authentication, "ROLE_ORGANIZER");
         boolean client = hasRole(authentication, "ROLE_CLIENT");
         boolean designer = hasRole(authentication, "ROLE_DESIGNER");
+        boolean gateAgent = hasRole(authentication, "ROLE_GATE_AGENT");
 
         if (developer) return "redirect:/dashboard/developer";
         if (admin) return "redirect:/dashboard/admin";
         if (organizer) return "redirect:/dashboard/organizer";
         if (client) return "redirect:/dashboard/client";
         if (designer) return "redirect:/dashboard/designer";
+        if (gateAgent) return "redirect:/dashboard/gate-agent";
 
         return "redirect:/";
     }
@@ -58,6 +60,13 @@ public class DashboardController {
         model.addAttribute("title", "Panel Diseñador Web");
         model.addAttribute("email", authentication.getName());
         return "dashboard/designer";
+    }
+
+    @GetMapping("/dashboard/gate-agent")
+    public String gateAgent(Model model, Authentication authentication) {
+        model.addAttribute("title", "Panel Auxiliar de Puerta");
+        model.addAttribute("email", authentication.getName());
+        return "dashboard/gate-agent";
     }
 
     private boolean hasRole(Authentication authentication, String role) {
