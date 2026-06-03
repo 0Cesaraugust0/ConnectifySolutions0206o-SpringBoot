@@ -12,27 +12,38 @@
         <span class="logo">🎫</span>
         <div><strong>Connectify</strong><small>Detalle</small></div>
     </a>
-    <a class="btn secondary" th:href="@{/events}">Volver a eventos</a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/events}">Volver a eventos</a>
+        <a class="btn primary compact" th:href="@{/cart}">Ver carrito</a>
+    </nav>
 </header>
 
 <main class="dashboard-page">
-    <section class="event-detail-card">
+    <section class="event-detail-card detail-pro">
         <p class="badge" th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p>
         <h1 th:text="${event.title}">Título del evento</h1>
         <p class="muted" th:text="${event.description}">Descripción del evento</p>
 
         <div class="event-meta-grid">
-            <div><strong>Fecha</strong><span th:text="${#temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm')}">Fecha</span></div>
+            <div><strong>Fecha</strong><span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</span></div>
             <div><strong>Ciudad</strong><span th:text="${event.city}">Ciudad</span></div>
             <div><strong>Ubicación</strong><span th:text="${event.location}">Ubicación</span></div>
-            <div><strong>Precio</strong><span th:text="${'S/ ' + event.price}">S/ 0.00</span></div>
+            <div><strong>Precio</strong><span th:text="${event.price != null ? 'S/ ' + event.price : 'Gratis / por definir'}">S/ 0.00</span></div>
             <div><strong>Capacidad</strong><span th:text="${event.capacity}">0</span></div>
             <div><strong>Disponibles</strong><span th:text="${event.availableTickets}">0</span></div>
         </div>
 
+        <form class="purchase-panel" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
+            <div>
+                <label for="quantity">Cantidad de entradas</label>
+                <input id="quantity" name="quantity" type="number" min="1" max="10" value="1">
+            </div>
+            <button class="btn primary" type="submit">Agregar al carrito</button>
+        </form>
+
         <div class="actions">
-            <a class="btn primary" href="#">Agregar al carrito</a>
             <a class="btn secondary" th:href="@{/events}">Seguir explorando</a>
+            <a class="btn secondary" th:href="@{/cart/checkout}">Ir al checkout</a>
         </div>
     </section>
 </main>
