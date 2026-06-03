@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi carrito - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}">
+        <span class="logo">🛒</span>
+        <div><strong>Connectify</strong><small>Carrito</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/events}">Seguir comprando</a>
+        <a class="btn primary compact" th:href="@{/cart/checkout}">Checkout</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Carrito de compra</p>
+        <h1>Mis entradas</h1>
+        <p class="muted">Revisa tus entradas antes de continuar al checkout.</p>
+    </section>
+
+    <section class="cart-layout" th:if="${!items.isEmpty()}">
+        <div class="cart-items">
+            <article class="cart-item" th:each="item : ${items}">
+                <div class="cart-icon">🎫</div>
+                <div class="cart-info">
+                    <h3 th:text="${item.eventTitle}">Evento</h3>
+                    <p class="muted small" th:text="${item.eventDate}">Fecha</p>
+                    <p class="muted small" th:text="${item.eventLocation}">Ubicación</p>
+                    <p><strong th:text="${item.quantity + ' entrada(s)'}">1 entrada</strong> · <span th:text="${'S/ ' + item.unitPrice}">S/ 0.00</span></p>
+                </div>
+                <div class="cart-actions">
+                    <strong th:text="${'S/ ' + item.subtotal}">S/ 0.00</strong>
+                    <form th:action="@{/cart/remove/{id}(id=${item.eventId})}" method="post">
+                        <button class="btn secondary compact" type="submit">Quitar</button>
+                    </form>
+                </div>
+            </article>
+        </div>
+
+        <aside class="summary-card">
+            <h2>Resumen</h2>
+            <div class="summary-row"><span>Entradas</span><strong th:text="${cartCount}">0</strong></div>
+            <div class="summary-row"><span>Subtotal</span><strong th:text="${'S/ ' + subtotal}">S/ 0.00</strong></div>
+            <div class="summary-row"><span>Cargo servicio 5%</span><strong th:text="${'S/ ' + serviceFee}">S/ 0.00</strong></div>
+            <div class="summary-row total"><span>Total</span><strong th:text="${'S/ ' + total}">S/ 0.00</strong></div>
+            <a class="btn primary full" th:href="@{/cart/checkout}">Continuar al checkout</a>
+            <form th:action="@{/cart/clear}" method="post">
+                <button class="btn secondary full" type="submit">Vaciar carrito</button>
+            </form>
+        </aside>
+    </section>
+
+    <section class="empty-state" th:if="${items.isEmpty()}">
+        <h2>Tu carrito está vacío</h2>
+        <p class="muted">Explora eventos y agrega entradas para continuar.</p>
+        <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
+    </section>
+</main>
+</body>
+</html>
