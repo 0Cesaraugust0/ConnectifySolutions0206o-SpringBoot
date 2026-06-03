@@ -23,31 +23,31 @@
     <section class="dashboard-hero">
         <p class="badge">Checkout seguro</p>
         <h1>Finalizar compra</h1>
-        <p class="muted">Completa tus datos. La integración real con IZIPay quedará en el backend mediante variables de entorno.</p>
+        <p class="muted">Completa tus datos. En esta fase se crea la compra, se actualiza el stock y se generan tickets con código único.</p>
     </section>
 
     <section class="checkout-layout" th:if="${!items.isEmpty()}">
-        <form class="checkout-form" action="#" method="post">
+        <form class="checkout-form" th:action="@{/cart/checkout/confirm}" method="post">
             <h2>Datos del comprador</h2>
             <div class="form-grid">
-                <label>Nombres<input type="text" placeholder="Juan" required></label>
-                <label>Apellidos<input type="text" placeholder="Pérez" required></label>
-                <label>DNI<input type="text" placeholder="12345678" required></label>
-                <label>Teléfono<input type="tel" placeholder="987654321" required></label>
-                <label class="wide">Correo electrónico<input type="email" placeholder="cliente@email.com" required></label>
+                <label>Nombres<input name="firstName" type="text" placeholder="Juan" required></label>
+                <label>Apellidos<input name="lastName" type="text" placeholder="Pérez" required></label>
+                <label>DNI<input name="dni" type="text" placeholder="12345678" required></label>
+                <label>Teléfono<input name="phone" type="tel" placeholder="987654321" required></label>
+                <label class="wide">Correo electrónico<input name="email" type="email" placeholder="cliente@email.com" required></label>
             </div>
 
             <div class="payment-box">
                 <h2>Pago</h2>
-                <p class="muted">Aquí se integrará el formulario seguro de IZIPay/Krypton usando un formToken generado por Spring Boot.</p>
+                <p class="muted">Modo prototipo: se confirma la compra y se generan tickets. IZIPay se conectará luego mediante backend seguro.</p>
                 <div class="fake-payment">
                     <span>🔐</span>
-                    <strong>IZIPay pendiente de integración backend</strong>
-                    <small>Variables: IZIPAY_ENDPOINT, IZIPAY_USERNAME, IZIPAY_PASSWORD, IZIPAY_PUBLIC_KEY, IZIPAY_PRIVATE_KEY</small>
+                    <strong>Pago prototipo aprobado</strong>
+                    <small>Próxima fase: reemplazar este bloque por IZIPay/Krypton con formToken generado en Spring Boot.</small>
                 </div>
             </div>
 
-            <button class="btn primary full" type="button">Confirmar compra - próxima fase</button>
+            <button class="btn primary full" type="submit">Confirmar compra y generar tickets</button>
         </form>
 
         <aside class="summary-card">
