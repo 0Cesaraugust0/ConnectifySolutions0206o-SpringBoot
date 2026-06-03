@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${projectName}">Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="navbar">
+    <div class="brand">
+        <span class="logo">🎫</span>
+        <div>
+            <strong>Connectify</strong>
+            <small>Solutions</small>
+        </div>
+    </div>
+</header>
+
+<main class="hero">
+    <section class="hero-card">
+        <p class="badge">Repositorio alterno Spring Boot</p>
+        <h1 th:text="${projectName}">Connectify Solutions</h1>
+        <p th:text="${subtitle}">
+            Migración progresiva a Spring Boot + Thymeleaf + JPA + MySQL/MariaDB
+        </p>
+
+        <div class="actions">
+            <a href="#" class="btn primary">Explorar eventos</a>
+            <a href="#" class="btn secondary">Ver plan de migración</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>
