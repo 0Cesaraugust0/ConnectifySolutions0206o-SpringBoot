@@ -19,21 +19,18 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-              .requestMatchers(
-    "/", "/login",
-    "/events",
-    "/cart", "/cart/checkout",
-    "/tickets/validate", "/tickets/validate/open", "/tickets/validate/consult", "/tickets/gate",
-    "/communications", "/communications/new", "/communications/sent",
-    "/css/**", "/js/**", "/images/**"
-).permitAll()
-.requestMatchers("/events/*").permitAll()
-.requestMatchers("/cart/add/*", "/cart/remove/*", "/cart/clear", "/cart/confirmation/*").permitAll()
-.requestMatchers("/communications/*", "/communications/*/status").permitAll()
-                        
-                                       
-                                       
-                                       
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/", "/login",
+                                "/events",
+                                "/cart", "/cart/checkout",
+                                "/tickets/validate", "/tickets/validate/open", "/tickets/validate/consult", "/tickets/gate",
+                                "/communications", "/communications/new", "/communications/sent",
+                                "/css/**", "/js/**", "/images/**"
+                        ).permitAll()
+                        .requestMatchers("/events/*").permitAll()
+                        .requestMatchers("/cart/add/*", "/cart/remove/*", "/cart/clear", "/cart/confirmation/*").permitAll()
+                        .requestMatchers("/communications/*", "/communications/*/status").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "DEVELOPER")
                         .requestMatchers("/dashboard/developer/**").hasRole("DEVELOPER")
                         .requestMatchers("/dashboard/admin/**").hasAnyRole("ADMIN", "DEVELOPER")
