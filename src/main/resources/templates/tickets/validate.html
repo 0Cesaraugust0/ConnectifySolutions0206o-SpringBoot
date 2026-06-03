@@ -48,21 +48,16 @@
                 <p class="muted">Evento activo: <strong th:text="${selectedEvent.title}">Evento</strong></p>
                 <p class="muted small">Código evento: <strong th:text="${selectedEvent.gateAccessCode}">EVT-1</strong></p>
 
-                <form th:action="@{/tickets/validate/consult}" method="post" class="auth-form">
+                <form method="post" class="auth-form">
                     <input type="hidden" name="eventId" th:value="${selectedEvent.id}">
                     <input type="hidden" name="eventCode" th:value="${eventCode}">
                     <input type="hidden" name="gatePassword" th:value="${gatePassword}">
+
                     <label>Código QR / ticket</label>
                     <input class="search-input" data-gate-scan-input name="code" type="text" th:value="${code}" placeholder="CNF-1-ABC12345" required>
-                    <button class="btn secondary full" type="submit">Solo consultar</button>
-                </form>
 
-                <form th:action="@{/tickets/validate}" method="post" class="auth-form">
-                    <input type="hidden" name="eventId" th:value="${selectedEvent.id}">
-                    <input type="hidden" name="eventCode" th:value="${eventCode}">
-                    <input type="hidden" name="gatePassword" th:value="${gatePassword}">
-                    <input type="hidden" name="code" th:value="${code}">
-                    <button class="btn primary full" type="submit" th:disabled="${code == null || code.isBlank()}">Validar y marcar como usado</button>
+                    <button class="btn secondary full" type="submit" th:formaction="@{/tickets/validate/consult}">Solo consultar</button>
+                    <button class="btn primary full" type="submit" th:formaction="@{/tickets/validate}" data-confirm="¿Validar y marcar este ticket como usado?">Validar y marcar como usado</button>
                 </form>
             </div>
         </div>
