@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<header class="navbar">
+<header class="navbar dashboard-nav">
     <div class="brand">
         <span class="logo">🎫</span>
         <div>
@@ -15,19 +15,24 @@
             <small>Solutions</small>
         </div>
     </div>
+    <nav class="top-actions">
+        <a th:href="@{/events}" class="btn secondary">Explorar eventos</a>
+        <a th:href="@{/login}" class="btn primary">Iniciar sesión</a>
+    </nav>
 </header>
 
 <main class="hero">
     <section class="hero-card">
-        <p class="badge">Repositorio alterno Spring Boot</p>
+        <p class="badge">Spring Boot + Thymeleaf + JPA</p>
         <h1 th:text="${projectName}">Connectify Solutions</h1>
         <p th:text="${subtitle}">
             Migración progresiva a Spring Boot + Thymeleaf + JPA + MySQL/MariaDB
         </p>
 
         <div class="actions">
-            <a href="#" class="btn primary">Explorar eventos</a>
-            <a href="#" class="btn secondary">Ver plan de migración</a>
+            <a th:href="@{/events}" class="btn primary">Explorar eventos</a>
+            <a th:href="@{/login}" class="btn secondary">Iniciar sesión</a>
+            <a th:href="@{/dashboard}" class="btn secondary">Ir a mi dashboard</a>
         </div>
     </section>
 </main>
