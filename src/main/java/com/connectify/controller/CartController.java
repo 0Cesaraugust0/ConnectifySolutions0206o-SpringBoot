@@ -1,8 +1,10 @@
 package com.connectify.controller;
 
 import com.connectify.entity.Event;
+import com.connectify.entity.Purchase;
 import com.connectify.service.CartService;
 import com.connectify.service.EventService;
+import com.connectify.service.PurchaseService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,10 +20,12 @@ public class CartController {
 
     private final CartService cartService;
     private final EventService eventService;
+    private final PurchaseService purchaseService;
 
-    public CartController(CartService cartService, EventService eventService) {
+    public CartController(CartService cartService, EventService eventService, PurchaseService purchaseService) {
         this.cartService = cartService;
         this.eventService = eventService;
+        this.purchaseService = purchaseService;
     }
 
     @GetMapping
@@ -56,6 +60,23 @@ public class CartController {
     public String checkout(HttpSession session, Model model) {
         addCartAttributes(session, model);
         return "cart/checkout";
+    }
+
+    @PostMapping("/checkout/confirm")
+    public String confirmCheckout(@RequestParam String firstName,
+                                  @RequestParam String lastName,
+                                  @RequestParam String dni,
+                                  @RequestParam String phone,
+                                  @RequestParam String email,
+                                  HttpSession session) {
+        Purchase purchase = purchaseService.completePurchase(session, firstName, lastName, dni, phone, email);
+        return "redirect:/cart/confirmation/" + purchase.getId();
+    }
+
+    @GetMapping("/confirmation/{purchaseId}")
+    public String confirmation(@PathVariable Long purchaseId, Model model) {
+        model.addAttribute("purchase", purchaseService.findById(purchaseId));
+        return "cart/confirmation";
     }
 
     private void addCartAttributes(HttpSession session, Model model) {
