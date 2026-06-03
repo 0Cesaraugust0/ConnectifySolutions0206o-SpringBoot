@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}">
+        <span class="logo">💳</span>
+        <div><strong>Connectify</strong><small>Checkout</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/cart}">Volver al carrito</a>
+        <a class="btn secondary" th:href="@{/events}">Eventos</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Checkout seguro</p>
+        <h1>Finalizar compra</h1>
+        <p class="muted">Completa tus datos. La integración real con IZIPay quedará en el backend mediante variables de entorno.</p>
+    </section>
+
+    <section class="checkout-layout" th:if="${!items.isEmpty()}">
+        <form class="checkout-form" action="#" method="post">
+            <h2>Datos del comprador</h2>
+            <div class="form-grid">
+                <label>Nombres<input type="text" placeholder="Juan" required></label>
+                <label>Apellidos<input type="text" placeholder="Pérez" required></label>
+                <label>DNI<input type="text" placeholder="12345678" required></label>
+                <label>Teléfono<input type="tel" placeholder="987654321" required></label>
+                <label class="wide">Correo electrónico<input type="email" placeholder="cliente@email.com" required></label>
+            </div>
+
+            <div class="payment-box">
+                <h2>Pago</h2>
+                <p class="muted">Aquí se integrará el formulario seguro de IZIPay/Krypton usando un formToken generado por Spring Boot.</p>
+                <div class="fake-payment">
+                    <span>🔐</span>
+                    <strong>IZIPay pendiente de integración backend</strong>
+                    <small>Variables: IZIPAY_ENDPOINT, IZIPAY_USERNAME, IZIPAY_PASSWORD, IZIPAY_PUBLIC_KEY, IZIPAY_PRIVATE_KEY</small>
+                </div>
+            </div>
+
+            <button class="btn primary full" type="button">Confirmar compra - próxima fase</button>
+        </form>
+
+        <aside class="summary-card">
+            <h2>Resumen de compra</h2>
+            <div class="mini-item" th:each="item : ${items}">
+                <span th:text="${item.eventTitle}">Evento</span>
+                <strong th:text="${item.quantity + ' x S/ ' + item.unitPrice}">1 x S/ 0.00</strong>
+            </div>
+            <div class="summary-row"><span>Entradas</span><strong th:text="${cartCount}">0</strong></div>
+            <div class="summary-row"><span>Subtotal</span><strong th:text="${'S/ ' + subtotal}">S/ 0.00</strong></div>
+            <div class="summary-row"><span>Cargo servicio 5%</span><strong th:text="${'S/ ' + serviceFee}">S/ 0.00</strong></div>
+            <div class="summary-row total"><span>Total</span><strong th:text="${'S/ ' + total}">S/ 0.00</strong></div>
+        </aside>
+    </section>
+
+    <section class="empty-state" th:if="${items.isEmpty()}">
+        <h2>No hay entradas para pagar</h2>
+        <p class="muted">Agrega entradas al carrito antes de continuar al checkout.</p>
+        <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
+    </section>
+</main>
+</body>
+</html>
