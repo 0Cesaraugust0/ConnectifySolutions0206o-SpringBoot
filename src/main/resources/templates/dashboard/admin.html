@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <div class="brand"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div></div>
+    <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Gestión global</p>
+        <h1 th:text="${title}">Panel Administrador</h1>
+        <p class="muted">Sesión activa: <strong th:text="${email}">admin</strong></p>
+    </section>
+
+    <section class="dashboard-grid">
+        <div class="module-card"><span>✅</span><h3>Aprobar eventos</h3><p>Revisar eventos enviados por organizadores.</p></div>
+        <div class="module-card"><span>❌</span><h3>Rechazar eventos</h3><p>Control de calidad y cumplimiento.</p></div>
+        <div class="module-card"><span>🏷️</span><h3>Gestionar categorías</h3><p>Música, deporte, conferencias, arte y más.</p></div>
+        <div class="module-card"><span>🏢</span><h3>Ver organizadores</h3><p>Empresas registradas y estado de cuenta.</p></div>
+        <div class="module-card"><span>👥</span><h3>Ver clientes</h3><p>Usuarios compradores y actividad.</p></div>
+        <div class="module-card"><span>📊</span><h3>Estadísticas</h3><p>Ventas, tickets, eventos publicados y aprobados.</p></div>
+    </section>
+</main>
+</body>
+</html>
