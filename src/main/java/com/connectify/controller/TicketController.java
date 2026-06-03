@@ -1,5 +1,6 @@
 package com.connectify.controller;
 
+import com.connectify.entity.Event;
 import com.connectify.entity.Ticket;
 import com.connectify.service.EventService;
 import com.connectify.service.TicketService;
@@ -47,25 +48,64 @@ public class TicketController {
     }
 
     @GetMapping("/gate")
-    public String gate(@RequestParam(required = false) Long eventId, Model model) {
+    public String gate(Model model) {
         model.addAttribute("events", eventService.findAll());
-        model.addAttribute("eventId", eventId);
-        if (eventId != null) {
-            eventService.findById(eventId).ifPresent(event -> model.addAttribute("selectedEvent", event));
+        return "tickets/gate";
+    }
+
+    @PostMapping("/gate/open")
+    public String openGate(@RequestParam String eventCode,
+                           @RequestParam String gatePassword,
+                           Model model) {
+        model.addAttribute("events", eventService.findAll());
+        model.addAttribute("eventCode", eventCode);
+        model.addAttribute("gatePassword", gatePassword);
+
+        Optional<Event> eventOptional = eventService.findAll().stream()
+                .filter(event -> eventCode.equalsIgnoreCase(event.getGateAccessCode()))
+                .findFirst();
+
+        if (eventOptional.isEmpty()) {
+            model.addAttribute("gateError", "Código de evento no encontrado.");
+            return "tickets/gate";
         }
+
+        Event event = eventOptional.get();
+        if (event.getGatePassword() == null || !event.getGatePassword().equals(gatePassword)) {
+            model.addAttribute("gateError", "Contraseña del día incorrecta.");
+            return "tickets/gate";
+        }
+
+        model.addAttribute("selectedEvent", event);
         return "tickets/gate";
     }
 
     @PostMapping("/gate")
     public String validateAtGate(@RequestParam Long eventId,
+                                 @RequestParam String eventCode,
+                                 @RequestParam String gatePassword,
                                  @RequestParam String code,
                                  Model model) {
-        GateValidationResult result = ticketService.validateTicketForEvent(code, eventId);
         model.addAttribute("events", eventService.findAll());
-        model.addAttribute("eventId", eventId);
+        model.addAttribute("eventCode", eventCode);
+        model.addAttribute("gatePassword", gatePassword);
         model.addAttribute("code", code);
+
+        Optional<Event> eventOptional = eventService.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            model.addAttribute("gateError", "Evento no encontrado.");
+            return "tickets/gate";
+        }
+
+        Event event = eventOptional.get();
+        if (!eventCode.equalsIgnoreCase(event.getGateAccessCode()) || event.getGatePassword() == null || !event.getGatePassword().equals(gatePassword)) {
+            model.addAttribute("gateError", "Acceso de puerta no autorizado.");
+            return "tickets/gate";
+        }
+
+        GateValidationResult result = ticketService.validateTicketForEvent(code, eventId);
+        model.addAttribute("selectedEvent", event);
         model.addAttribute("result", result);
-        eventService.findById(eventId).ifPresent(event -> model.addAttribute("selectedEvent", event));
         return "tickets/gate";
     }
 }
