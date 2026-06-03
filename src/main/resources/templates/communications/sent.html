@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviados - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/communications}">
+        <span class="logo">📤</span>
+        <div><strong>Connectify</strong><small>Solicitudes enviadas</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/communications}">Bandeja</a>
+        <a class="btn primary compact" th:href="@{/communications/new}">Nueva solicitud</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Trazabilidad</p>
+        <h1>Solicitudes enviadas</h1>
+        <p class="muted">Seguimiento de coordinaciones creadas por el usuario autenticado.</p>
+    </section>
+
+    <section class="cart-items" th:if="${!messages.isEmpty()}">
+        <a class="message-card" th:each="message : ${messages}" th:href="@{/communications/{id}(id=${message.id})}">
+            <div class="message-meta">
+                <span class="role-pill" th:text="${message.senderRole + ' → ' + message.targetRole}">ROL</span>
+                <span class="priority-pill" th:text="${message.priority}">NORMAL</span>
+                <span class="status-pill" th:text="${message.status}">OPEN</span>
+            </div>
+            <h3 th:text="${message.subject}">Asunto</h3>
+            <p class="message-body" th:text="${message.body}">Mensaje</p>
+            <p class="muted small">Tipo: <strong th:text="${message.type}">Tipo</strong></p>
+        </a>
+    </section>
+
+    <section class="empty-state" th:if="${messages.isEmpty()}">
+        <h2>No hay solicitudes enviadas</h2>
+        <p class="muted">Crea una solicitud para coordinar con otro agente.</p>
+        <a class="btn primary" th:href="@{/communications/new}">Crear solicitud</a>
+    </section>
+</main>
+</body>
+</html>
