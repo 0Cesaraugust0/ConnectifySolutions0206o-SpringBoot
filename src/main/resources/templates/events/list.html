@@ -27,27 +27,33 @@
             <h1>Encuentra experiencias memorables en Perú</h1>
             <p class="muted hero-text">Conciertos, conferencias, gastronomía, deporte y cultura en una plataforma preparada para tickets QR, checkout e IZIPay.</p>
 
-            <div class="search-panel">
-                <div class="search-box">🔎 Buscar eventos, artistas o ciudades</div>
-                <div class="search-box">📍 Lima, Callao y más</div>
-                <div class="search-box">📅 Próximas fechas</div>
-                <button class="btn primary">Buscar</button>
-            </div>
+            <form class="search-panel" th:action="@{/events}" method="get">
+                <input class="search-input" type="text" name="q" th:value="${q}" placeholder="🔎 Buscar evento: rock, tech, feria...">
+                <input class="search-input" type="text" name="city" th:value="${city}" placeholder="📍 Ciudad: Lima, Callao...">
+                <select class="search-input" name="category">
+                    <option value="">Todas las categorías</option>
+                    <option value="Música" th:selected="${category == 'Música'}">🎵 Música</option>
+                    <option value="Tecnología" th:selected="${category == 'Tecnología'}">💻 Tecnología</option>
+                    <option value="Gastronomía" th:selected="${category == 'Gastronomía'}">🍽️ Gastronomía</option>
+                    <option value="Deporte" th:selected="${category == 'Deporte'}">⚽ Deporte</option>
+                </select>
+                <button class="btn primary" type="submit">Buscar</button>
+            </form>
         </div>
 
         <div class="hero-stats">
-            <div><strong th:text="${events.size()}">0</strong><span>eventos activos</span></div>
-            <div><strong>5</strong><span>categorías base</span></div>
+            <div><strong th:text="${events.size()}">0</strong><span>resultados</span></div>
+            <div><strong>4</strong><span>categorías base</span></div>
             <div><strong>QR</strong><span>tickets preparados</span></div>
         </div>
     </section>
 
     <section id="categories" class="category-strip">
-        <span>🎵 Música</span>
-        <span>💻 Tecnología</span>
-        <span>🍽️ Gastronomía</span>
-        <span>⚽ Deporte</span>
-        <span>🎭 Cultura</span>
+        <a th:href="@{/events}" class="category-chip">🌐 Todos</a>
+        <a th:href="@{/events(category='Música')}" class="category-chip">🎵 Música</a>
+        <a th:href="@{/events(category='Tecnología')}" class="category-chip">💻 Tecnología</a>
+        <a th:href="@{/events(category='Gastronomía')}" class="category-chip">🍽️ Gastronomía</a>
+        <a th:href="@{/events(category='Deporte')}" class="category-chip">⚽ Deporte</a>
     </section>
 
     <section id="featured" class="section-heading">
@@ -56,6 +62,7 @@
             <h2>Eventos disponibles</h2>
             <p class="muted">Datos leídos desde MySQL/MariaDB mediante Spring Data JPA.</p>
         </div>
+        <a th:if="${q != null || city != null || category != null}" th:href="@{/events}" class="btn secondary">Limpiar filtros</a>
     </section>
 
     <section class="event-grid" th:if="${!events.isEmpty()}">
@@ -89,8 +96,9 @@
     </section>
 
     <section class="empty-state" th:if="${events.isEmpty()}">
-        <h2>Aún no hay eventos registrados</h2>
-        <p class="muted">El siguiente paso es sembrar datos demo o crear eventos desde el panel organizador.</p>
+        <h2>No encontramos eventos con esos filtros</h2>
+        <p class="muted">Prueba con otra búsqueda, ciudad o categoría.</p>
+        <a th:href="@{/events}" class="btn primary">Ver todos los eventos</a>
     </section>
 </main>
 </body>
