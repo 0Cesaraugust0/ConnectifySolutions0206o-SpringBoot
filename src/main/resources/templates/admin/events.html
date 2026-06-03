@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos Admin - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/admin}">
+        <span class="logo">🛡️</span>
+        <div><strong>Connectify</strong><small>Administrador</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/tickets/gate}">Control de puerta</a>
+        <a class="btn secondary" th:href="@{/events}">Marketplace</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Administración</p>
+        <h1>Eventos y acceso de puerta</h1>
+        <p class="muted">Configura el código del evento y la contraseña diaria que usará el auxiliar en puerta.</p>
+    </section>
+
+    <section class="cart-items">
+        <article class="cart-item" th:each="event : ${events}">
+            <div class="cart-icon" th:text="${event.category != null ? event.category.icon : '🎫'}">🎫</div>
+            <div class="cart-info">
+                <h3 th:text="${event.title}">Evento</h3>
+                <p class="muted small">Ciudad: <strong th:text="${event.city}">Lima</strong></p>
+                <p class="muted small">Código puerta: <strong th:text="${event.gateAccessCode != null ? event.gateAccessCode : 'No asignado'}">EVT-1</strong></p>
+                <p class="muted small">Clave diaria: <strong th:text="${event.gatePassword != null ? event.gatePassword : 'No asignada'}">PUERTA2026</strong></p>
+            </div>
+            <div class="cart-actions">
+                <a class="btn primary compact" th:href="@{/admin/events/{id}/gate-access(id=${event.id})}">Configurar puerta</a>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>
