@@ -6,6 +6,7 @@ import com.connectify.repository.EventRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,19 +20,21 @@ public class EventService {
     }
 
     public List<Event> findPublished(String query, String city, String category) {
+        LocalDateTime now = LocalDateTime.now();
+
         if (StringUtils.hasText(query)) {
-            return eventRepository.findByTitleContainingIgnoreCaseAndStatusOrderByEventDateAsc(query.trim(), EventStatus.PUBLISHED);
+            return eventRepository.findByTitleContainingIgnoreCaseAndStatusAndEventDateAfterOrderByEventDateAsc(query.trim(), EventStatus.PUBLISHED, now);
         }
 
         if (StringUtils.hasText(city)) {
-            return eventRepository.findByCityContainingIgnoreCaseAndStatusOrderByEventDateAsc(city.trim(), EventStatus.PUBLISHED);
+            return eventRepository.findByCityContainingIgnoreCaseAndStatusAndEventDateAfterOrderByEventDateAsc(city.trim(), EventStatus.PUBLISHED, now);
         }
 
         if (StringUtils.hasText(category)) {
-            return eventRepository.findByCategoryNameAndStatusOrderByEventDateAsc(category.trim(), EventStatus.PUBLISHED);
+            return eventRepository.findByCategoryNameAndStatusAndEventDateAfterOrderByEventDateAsc(category.trim(), EventStatus.PUBLISHED, now);
         }
 
-        return eventRepository.findByStatusOrderByEventDateAsc(EventStatus.PUBLISHED);
+        return eventRepository.findByStatusAndEventDateAfterOrderByEventDateAsc(EventStatus.PUBLISHED, now);
     }
 
     public List<Event> findAll() {
