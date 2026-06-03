@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva comunicación - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/communications}">
+        <span class="logo">✉️</span>
+        <div><strong>Connectify</strong><small>Nueva solicitud</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/communications}">Bandeja</a>
+        <a class="btn secondary" th:href="@{/dashboard}">Dashboard</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Comunicación interna</p>
+        <h1>Crear solicitud operativa</h1>
+        <p class="muted">Registra una coordinación entre agentes: administrador, organizador, diseñador, auxiliar o cliente.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <form class="form-card" th:action="@{/communications}" method="post">
+            <h2>Datos del mensaje</h2>
+
+            <div class="field-grid">
+                <label>Remitente
+                    <input class="search-input" name="senderName" type="text" placeholder="Nombre del remitente" required>
+                </label>
+                <label>Email remitente
+                    <input class="search-input" name="senderEmail" type="email" placeholder="correo@connectify.com" required>
+                </label>
+                <label>Rol remitente
+                    <select class="search-input" name="senderRole" required>
+                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}">ADMIN</option>
+                    </select>
+                </label>
+                <label>Rol destinatario
+                    <select class="search-input" name="targetRole" required>
+                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}">ORGANIZER</option>
+                    </select>
+                </label>
+                <label>Tipo de solicitud
+                    <select class="search-input" name="type" required>
+                        <option th:each="type : ${types}" th:value="${type}" th:text="${type}">GENERAL_COORDINATION</option>
+                    </select>
+                </label>
+                <label>Prioridad
+                    <select class="search-input" name="priority" required>
+                        <option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}">NORMAL</option>
+                    </select>
+                </label>
+                <label class="wide">Evento relacionado opcional
+                    <select class="search-input" name="relatedEventId">
+                        <option value="">Sin evento relacionado</option>
+                        <option th:each="event : ${events}" th:value="${event.id}" th:text="${event.title}">Evento</option>
+                    </select>
+                </label>
+                <label class="wide">Asunto
+                    <input class="search-input" name="subject" type="text" placeholder="Ej. Ajustar portada del evento" required>
+                </label>
+                <label class="wide">Mensaje
+                    <textarea class="search-input" name="body" rows="7" placeholder="Describe la solicitud, observaciones, responsables o entregables." required></textarea>
+                </label>
+            </div>
+
+            <button class="btn primary full" type="submit">Enviar solicitud</button>
+        </form>
+
+        <aside class="summary-card">
+            <h2>Casos frecuentes</h2>
+            <div class="mini-item"><span>Admin → Organizador</span><strong>Aprobación</strong></div>
+            <div class="mini-item"><span>Organizador → Diseñador</span><strong>Portada</strong></div>
+            <div class="mini-item"><span>Admin → Auxiliar</span><strong>Puerta</strong></div>
+            <div class="mini-item"><span>Cliente → Admin</span><strong>Soporte</strong></div>
+            <p class="muted small">Este módulo funciona como mesa de coordinación interna, no como chat en tiempo real.</p>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
