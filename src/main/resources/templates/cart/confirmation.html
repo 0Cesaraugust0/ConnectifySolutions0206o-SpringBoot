@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra confirmada - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}">
+        <span class="logo">✅</span>
+        <div><strong>Connectify</strong><small>Compra confirmada</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/events}">Explorar más eventos</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Compra completada</p>
+        <h1>Tickets generados correctamente</h1>
+        <p class="muted">Tu compra fue registrada y tus entradas ya tienen códigos únicos para futura validación QR.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <div class="cart-items">
+            <article class="ticket-card" th:each="ticket : ${purchase.tickets}">
+                <div class="ticket-qr">QR</div>
+                <div class="cart-info">
+                    <p class="badge" th:text="${ticket.event.category != null ? ticket.event.category.name : 'Evento'}">Evento</p>
+                    <h3 th:text="${ticket.event.title}">Nombre del evento</h3>
+                    <p class="muted small">Asistente: <strong th:text="${ticket.attendeeName}">Nombre</strong></p>
+                    <p class="muted small">Correo: <strong th:text="${ticket.attendeeEmail}">email</strong></p>
+                    <p class="muted small">Código: <strong th:text="${ticket.code}">CNF-0000</strong></p>
+                </div>
+            </article>
+        </div>
+
+        <aside class="summary-card">
+            <h2>Resumen</h2>
+            <div class="summary-row"><span>Compra #</span><strong th:text="${purchase.id}">0</strong></div>
+            <div class="summary-row"><span>Estado</span><strong th:text="${purchase.status}">COMPLETED</strong></div>
+            <div class="summary-row"><span>Comprador</span><strong th:text="${purchase.buyerFirstName + ' ' + purchase.buyerLastName}">Nombre</strong></div>
+            <div class="summary-row"><span>Tickets</span><strong th:text="${purchase.tickets.size()}">0</strong></div>
+            <div class="summary-row"><span>Subtotal</span><strong th:text="${'S/ ' + purchase.subtotal}">S/ 0.00</strong></div>
+            <div class="summary-row"><span>Cargo servicio</span><strong th:text="${'S/ ' + purchase.serviceFee}">S/ 0.00</strong></div>
+            <div class="summary-row total"><span>Total</span><strong th:text="${'S/ ' + purchase.total}">S/ 0.00</strong></div>
+            <a class="btn primary full" th:href="@{/events}">Volver al marketplace</a>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
