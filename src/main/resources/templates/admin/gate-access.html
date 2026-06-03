@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar puerta - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/admin/events}">
+        <span class="logo">🚪</span>
+        <div><strong>Connectify</strong><small>Configurar puerta</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/admin/events}">Volver</a>
+        <a class="btn secondary" th:href="@{/tickets/gate}">Probar puerta</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Acceso auxiliar</p>
+        <h1 th:text="${event.title}">Evento</h1>
+        <p class="muted">Define el código del evento y la contraseña del día para los auxiliares de puerta.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <form class="checkout-form" th:action="@{/admin/events/{id}/gate-access(id=${event.id})}" method="post">
+            <h2>Datos de acceso</h2>
+            <div class="form-grid">
+                <label class="wide">Código del evento
+                    <input name="gateAccessCode" type="text" th:value="${event.gateAccessCode}" placeholder="EVT-1" required>
+                </label>
+                <label class="wide">Contraseña del día
+                    <input name="gatePassword" type="text" th:value="${event.gatePassword}" placeholder="PUERTA2026" required>
+                </label>
+            </div>
+            <button class="btn primary full" type="submit">Guardar acceso de puerta</button>
+        </form>
+
+        <aside class="summary-card">
+            <h2>Uso en puerta</h2>
+            <div class="summary-row"><span>Evento #</span><strong th:text="${event.id}">1</strong></div>
+            <div class="summary-row"><span>Código</span><strong th:text="${event.gateAccessCode}">EVT-1</strong></div>
+            <div class="summary-row"><span>Clave</span><strong th:text="${event.gatePassword}">PUERTA2026</strong></div>
+            <p class="muted small">El auxiliar usa estos datos en /tickets/gate y luego valida cada QR o código manual.</p>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
