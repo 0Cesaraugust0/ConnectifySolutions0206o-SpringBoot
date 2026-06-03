@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validar ticket - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}">
+        <span class="logo">✅</span>
+        <div><strong>Connectify</strong><small>Validación de tickets</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/events}">Marketplace</a>
+        <a class="btn secondary" th:href="@{/cart}">Carrito</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Control de acceso</p>
+        <h1>Validar ticket</h1>
+        <p class="muted">Busca el código de ticket y márcalo como usado al momento del ingreso.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <form class="checkout-form" th:action="@{/tickets/validate}" method="post">
+            <h2>Código del ticket</h2>
+            <div class="form-grid">
+                <label class="wide">Código
+                    <input name="code" type="text" th:value="${code}" placeholder="CNF-1-ABC12345" required>
+                </label>
+            </div>
+            <button class="btn primary full" type="submit">Validar y marcar como usado</button>
+            <a class="btn secondary full" th:href="@{/tickets/validate(code=${code})}">Solo consultar</a>
+        </form>
+
+        <aside class="summary-card" th:if="${searched}">
+            <h2>Resultado</h2>
+
+            <div th:if="${ticket == null}" class="alert error">
+                Ticket no encontrado para el código ingresado.
+            </div>
+
+            <div th:if="${ticket != null}">
+                <div th:if="${ticket.used}" class="alert success">
+                    Ticket encontrado. Estado actual: USADO.
+                </div>
+                <div th:if="${!ticket.used}" class="alert success">
+                    Ticket encontrado. Estado actual: DISPONIBLE.
+                </div>
+
+                <div class="summary-row"><span>Código</span><strong th:text="${ticket.code}">CNF</strong></div>
+                <div class="summary-row"><span>Evento</span><strong th:text="${ticket.event.title}">Evento</strong></div>
+                <div class="summary-row"><span>Asistente</span><strong th:text="${ticket.attendeeName}">Asistente</strong></div>
+                <div class="summary-row"><span>Email</span><strong th:text="${ticket.attendeeEmail}">email</strong></div>
+                <div class="summary-row"><span>Usado</span><strong th:text="${ticket.used ? 'Sí' : 'No'}">No</strong></div>
+            </div>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
