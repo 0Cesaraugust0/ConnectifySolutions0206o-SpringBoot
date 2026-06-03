@@ -19,16 +19,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                        "/", "/login",
-                        "/events", "/events/**",
-                        "/cart", "/cart/**",
-                        "/tickets/validate", "/tickets/validate/**",
-                        "/tickets/gate", "/tickets/gate/**",
-                        "/communications", "/communications/**",
-                        "/css/**", "/js/**", "/images/**"
-                         ).permitAll()
+              .requestMatchers(
+    "/", "/login",
+    "/events",
+    "/cart", "/cart/checkout",
+    "/tickets/validate", "/tickets/validate/open", "/tickets/validate/consult", "/tickets/gate",
+    "/communications", "/communications/new", "/communications/sent",
+    "/css/**", "/js/**", "/images/**"
+).permitAll()
+.requestMatchers("/events/*").permitAll()
+.requestMatchers("/cart/add/*", "/cart/remove/*", "/cart/clear", "/cart/confirmation/*").permitAll()
+.requestMatchers("/communications/*", "/communications/*/status").permitAll()
                         
                                        
                                        
