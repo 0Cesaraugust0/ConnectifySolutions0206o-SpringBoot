@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="navbar">
+    <a class="brand brand-link" th:href="@{/}">
+        <span class="logo">🎫</span>
+        <div>
+            <strong>Connectify</strong>
+            <small>Solutions</small>
+        </div>
+    </a>
+</header>
+
+<main class="auth-page">
+    <section class="auth-card">
+        <p class="badge">Acceso seguro</p>
+        <h1>Iniciar sesión</h1>
+        <p class="muted">Ingresa con una cuenta autorizada para acceder a tu panel.</p>
+
+        <div th:if="${param.error}" class="alert error">
+            Credenciales incorrectas o usuario no autorizado.
+        </div>
+
+        <div th:if="${param.logout}" class="alert success">
+            Sesión cerrada correctamente.
+        </div>
+
+        <form th:action="@{/login}" method="post" class="auth-form">
+            <label for="email">Correo electrónico</label>
+            <input id="email" name="email" type="email" placeholder="usuario@connectify.com" required>
+
+            <label for="password">Contraseña</label>
+            <input id="password" name="password" type="password" placeholder="••••••••" required>
+
+            <button type="submit" class="btn primary full">Ingresar</button>
+        </form>
+
+        <div class="demo-box">
+            <h3>Credenciales demo</h3>
+            <p>Usa las cuentas definidas para Developer, Administrador, Organizador, Cliente o Diseñador.</p>
+            <p class="muted small">Las claves se gestionan de forma segura; no se guardan como texto plano en el repositorio público.</p>
+        </div>
+
+        <a th:href="@{/}" class="link-back">Volver al inicio</a>
+    </section>
+</main>
+</body>
+</html>
