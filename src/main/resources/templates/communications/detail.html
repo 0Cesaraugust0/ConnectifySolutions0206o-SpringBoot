@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de comunicación - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/communications}">
+        <span class="logo">📌</span>
+        <div><strong>Connectify</strong><small>Detalle de solicitud</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/communications(role=${message.targetRole})}">Volver a bandeja</a>
+        <a class="btn secondary" th:href="@{/communications/new}">Nuevo mensaje</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge" th:text="${message.type}">GENERAL_COORDINATION</p>
+        <h1 th:text="${message.subject}">Asunto</h1>
+        <p class="muted">Solicitud interna entre agentes del sistema.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <article class="message-card">
+            <div class="message-meta">
+                <span class="role-pill" th:text="${message.senderRole + ' → ' + message.targetRole}">ADMIN → ORGANIZER</span>
+                <span class="priority-pill" th:classappend="${message.priority == T(com.connectify.entity.MessagePriority).URGENT ? ' priority-urgent' : message.priority == T(com.connectify.entity.MessagePriority).HIGH ? ' priority-high' : message.priority == T(com.connectify.entity.MessagePriority).LOW ? ' priority-low' : ' priority-normal'}" th:text="${message.priority}">NORMAL</span>
+                <span class="status-pill" th:classappend="${message.status == T(com.connectify.entity.MessageStatus).RESOLVED ? ' status-resolved' : message.status == T(com.connectify.entity.MessageStatus).IN_PROGRESS ? ' status-progress' : message.status == T(com.connectify.entity.MessageStatus).ARCHIVED ? ' status-archived' : ' status-open'}" th:text="${message.status}">OPEN</span>
+            </div>
+
+            <h2>Mensaje</h2>
+            <p class="message-body" th:text="${message.body}">Cuerpo</p>
+
+            <div class="event-meta-grid">
+                <div><strong>Remitente</strong><span th:text="${message.senderName}">Nombre</span></div>
+                <div><strong>Email</strong><span th:text="${message.senderEmail}">email</span></div>
+                <div><strong>Creado</strong><span th:text="${#temporals.format(message.createdAt, 'dd/MM/yyyy HH:mm')}">fecha</span></div>
+                <div><strong>Leído</strong><span th:text="${message.readByTarget ? 'Sí' : 'No'}">Sí</span></div>
+            </div>
+
+            <div th:if="${message.relatedEvent != null}" class="payment-box">
+                <h3>Evento relacionado</h3>
+                <p class="muted"><strong th:text="${message.relatedEvent.title}">Evento</strong></p>
+                <a class="btn secondary compact" th:href="@{/events/{id}(id=${message.relatedEvent.id})}">Ver evento</a>
+            </div>
+        </article>
+
+        <aside class="summary-card">
+            <h2>Gestión</h2>
+            <form th:action="@{/communications/{id}/status(id=${message.id})}" method="post" class="auth-form">
+                <label>Cambiar estado</label>
+                <select class="search-input" name="status">
+                    <option th:each="status : ${statuses}" th:value="${status}" th:selected="${status == message.status}" th:text="${status}">OPEN</option>
+                </select>
+                <button class="btn primary full" type="submit">Actualizar estado</button>
+            </form>
+            <a class="btn secondary full" th:href="@{/communications(role=${message.targetRole})}">Volver a bandeja</a>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
