@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/events")
@@ -19,8 +20,14 @@ public class EventController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("events", eventService.findAll());
+    public String list(@RequestParam(required = false) String q,
+                       @RequestParam(required = false) String city,
+                       @RequestParam(required = false) String category,
+                       Model model) {
+        model.addAttribute("events", eventService.findPublished(q, city, category));
+        model.addAttribute("q", q);
+        model.addAttribute("city", city);
+        model.addAttribute("category", category);
         return "events/list";
     }
 
