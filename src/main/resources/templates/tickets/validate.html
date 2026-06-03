@@ -6,6 +6,8 @@
     <title>Validar ticket - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -15,7 +17,7 @@
     </a>
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/events}">Marketplace</a>
-        <a class="btn secondary" th:href="@{/cart}">Carrito</a>
+        <a class="btn secondary" th:href="@{/admin/events}">Admin puerta</a>
     </nav>
 </header>
 
@@ -23,36 +25,77 @@
     <section class="dashboard-hero">
         <p class="badge">Control de acceso</p>
         <h1>Validar ticket</h1>
-        <p class="muted">Busca el código de ticket y márcalo como usado al momento del ingreso.</p>
+        <p class="muted">Primero desbloquea la operación con el código del evento y la contraseña del día asignada por el administrador.</p>
     </section>
 
     <section class="checkout-layout">
-        <form class="checkout-form" th:action="@{/tickets/validate}" method="post">
-            <h2>Código del ticket</h2>
-            <div class="form-grid">
-                <label class="wide">Código
-                    <input name="code" type="text" th:value="${code}" placeholder="CNF-1-ABC12345" required>
-                </label>
-            </div>
-            <button class="btn primary full" type="submit">Validar y marcar como usado</button>
-            <a class="btn secondary full" th:href="@{/tickets/validate(code=${code})}">Solo consultar</a>
-        </form>
+        <div class="checkout-form">
+            <h2>1. Desbloquear operación</h2>
+            <form th:action="@{/tickets/validate/open}" method="post" class="auth-form">
+                <label>Código del evento</label>
+                <input class="search-input" name="eventCode" type="text" th:value="${eventCode}" placeholder="EVT-1" required>
 
-        <aside class="summary-card" th:if="${searched}">
+                <label>Contraseña del día</label>
+                <input class="search-input" name="gatePassword" type="password" th:value="${gatePassword}" placeholder="Clave asignada por administrador" required>
+
+                <button class="btn primary full" type="submit">Desbloquear validación</button>
+            </form>
+
+            <div th:if="${gateError != null}" class="alert error" th:text="${gateError}">Error</div>
+
+            <div th:if="${gateUnlocked}" class="payment-box">
+                <h2>2. Validar entrada</h2>
+                <p class="muted">Evento activo: <strong th:text="${selectedEvent.title}">Evento</strong></p>
+                <p class="muted small">Código evento: <strong th:text="${selectedEvent.gateAccessCode}">EVT-1</strong></p>
+
+                <form th:action="@{/tickets/validate/consult}" method="post" class="auth-form">
+                    <input type="hidden" name="eventId" th:value="${selectedEvent.id}">
+                    <input type="hidden" name="eventCode" th:value="${eventCode}">
+                    <input type="hidden" name="gatePassword" th:value="${gatePassword}">
+                    <label>Código QR / ticket</label>
+                    <input class="search-input" data-gate-scan-input name="code" type="text" th:value="${code}" placeholder="CNF-1-ABC12345" required>
+                    <button class="btn secondary full" type="submit">Solo consultar</button>
+                </form>
+
+                <form th:action="@{/tickets/validate}" method="post" class="auth-form">
+                    <input type="hidden" name="eventId" th:value="${selectedEvent.id}">
+                    <input type="hidden" name="eventCode" th:value="${eventCode}">
+                    <input type="hidden" name="gatePassword" th:value="${gatePassword}">
+                    <input type="hidden" name="code" th:value="${code}">
+                    <button class="btn primary full" type="submit" th:disabled="${code == null || code.isBlank()}">Validar y marcar como usado</button>
+                </form>
+            </div>
+        </div>
+
+        <aside class="summary-card">
             <h2>Resultado</h2>
 
-            <div th:if="${ticket == null}" class="alert error">
-                Ticket no encontrado para el código ingresado.
+            <div th:if="${!searched && result == null}" class="fake-payment">
+                <span>🔐</span>
+                <strong th:text="${gateUnlocked ? 'Operación desbloqueada' : 'Operación bloqueada'}">Operación bloqueada</strong>
+                <small th:text="${gateUnlocked ? 'Ingresa o escanea un código de ticket para consultar o validar.' : 'Ingresa código del evento y contraseña del día.'}">Estado</small>
+            </div>
+
+            <div th:if="${result != null}">
+                <div th:if="${result.status == 'VALID'}" class="alert success">✅ Acceso autorizado. Ticket marcado como usado.</div>
+                <div th:if="${result.status == 'USED'}" class="alert error">⚠️ Ticket ya fue usado anteriormente.</div>
+                <div th:if="${result.status == 'WRONG_EVENT'}" class="alert error">🚫 Ticket pertenece a otro evento.</div>
+                <div th:if="${result.status == 'NOT_FOUND'}" class="alert error">❌ Ticket no encontrado.</div>
+
+                <div class="summary-row"><span>Mensaje</span><strong th:text="${result.message}">Mensaje</strong></div>
+                <div class="summary-row"><span>Código</span><strong th:text="${result.code}">Código</strong></div>
+            </div>
+
+            <div th:if="${searched && result == null}">
+                <div th:if="${ticket == null}" class="alert error">Ticket no encontrado para el código ingresado.</div>
+                <div th:if="${ticketError != null}" class="alert error" th:text="${ticketError}">Error</div>
+                <div th:if="${ticket != null && ticketError == null}">
+                    <div th:if="${ticket.used}" class="alert error">Ticket encontrado. Estado actual: USADO.</div>
+                    <div th:if="${!ticket.used}" class="alert success">Ticket encontrado. Estado actual: DISPONIBLE.</div>
+                </div>
             </div>
 
             <div th:if="${ticket != null}">
-                <div th:if="${ticket.used}" class="alert success">
-                    Ticket encontrado. Estado actual: USADO.
-                </div>
-                <div th:if="${!ticket.used}" class="alert success">
-                    Ticket encontrado. Estado actual: DISPONIBLE.
-                </div>
-
                 <div class="summary-row"><span>Código</span><strong th:text="${ticket.code}">CNF</strong></div>
                 <div class="summary-row"><span>Evento</span><strong th:text="${ticket.event.title}">Evento</strong></div>
                 <div class="summary-row"><span>Asistente</span><strong th:text="${ticket.attendeeName}">Asistente</strong></div>
