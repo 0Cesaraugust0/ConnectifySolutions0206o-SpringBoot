@@ -4,6 +4,7 @@ import com.connectify.entity.Event;
 import com.connectify.entity.EventStatus;
 import com.connectify.repository.EventRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -43,5 +44,14 @@ public class EventService {
 
     public Optional<Event> findById(Long id) {
         return eventRepository.findById(id);
+    }
+
+    @Transactional
+    public Event updateGateAccess(Long id, String gateAccessCode, String gatePassword) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        event.setGateAccessCode(gateAccessCode);
+        event.setGatePassword(gatePassword);
+        return eventRepository.save(event);
     }
 }
