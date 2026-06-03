@@ -5,5 +5,6 @@ public enum Role {
     ADMIN,
     ORGANIZER,
     CLIENT,
-    DESIGNER
+    DESIGNER,
+    GATE_AGENT
 }
