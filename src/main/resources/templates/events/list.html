@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/}">
+        <span class="logo">🎫</span>
+        <div><strong>Connectify</strong><small>Eventos</small></div>
+    </a>
+    <a class="btn secondary" th:href="@{/login}">Iniciar sesión</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Marketplace</p>
+        <h1>Explorar eventos</h1>
+        <p class="muted">Eventos disponibles cargados desde MySQL/MariaDB mediante Spring Data JPA.</p>
+    </section>
+
+    <section class="dashboard-grid" th:if="${!events.isEmpty()}">
+        <a class="module-card" th:each="event : ${events}" th:href="@{/events/{id}(id=${event.id})}">
+            <span th:text="${event.category != null ? event.category.icon : '🎫'}">🎫</span>
+            <h3 th:text="${event.title}">Nombre del evento</h3>
+            <p th:text="${event.description}">Descripción del evento</p>
+            <p class="muted small">
+                <span th:text="${event.city}">Lima</span> ·
+                <span th:text="${#temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm')}">Fecha</span>
+            </p>
+            <strong th:text="${'S/ ' + event.price}">S/ 0.00</strong>
+        </a>
+    </section>
+
+    <section class="auth-card" th:if="${events.isEmpty()}">
+        <h2>Aún no hay eventos registrados</h2>
+        <p class="muted">El siguiente paso es sembrar datos demo o crear eventos desde el panel organizador.</p>
+    </section>
+</main>
+</body>
+</html>
