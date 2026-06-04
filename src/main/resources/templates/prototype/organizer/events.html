@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis eventos - Organizador</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/prototype/organizer}">
+        <span class="logo">🎯</span>
+        <div><strong>Connectify</strong><small>Organizador</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/prototype}">Roles</a>
+        <a class="btn secondary" th:href="@{/communications(role='ORGANIZER')}">Bandeja</a>
+        <a class="btn primary compact" th:href="@{/prototype/organizer/events/new}">Crear evento</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Panel organizador</p>
+        <h1>Mis eventos creados</h1>
+        <p class="muted">Vista prototipo para listar eventos registrados por el organizador. La asignación por usuario se conectará cuando el login quede estable.</p>
+    </section>
+
+    <section class="toolbar">
+        <a class="btn primary" th:href="@{/prototype/organizer/events/new}">Crear nuevo evento</a>
+        <a class="btn secondary" th:href="@{/events}">Ver marketplace</a>
+    </section>
+
+    <section class="table-card">
+        <table class="table-modern">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Evento</th>
+                <th>Categoría</th>
+                <th>Ciudad</th>
+                <th>Precio</th>
+                <th>Capacidad</th>
+                <th>Vendidos</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${events}">
+                <td th:text="${event.id}">1</td>
+                <td><strong th:text="${event.title}">Evento</strong></td>
+                <td th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</td>
+                <td th:text="${event.city}">Lima</td>
+                <td th:text="${'S/ ' + event.price}">S/ 0.00</td>
+                <td th:text="${event.capacity}">0</td>
+                <td th:text="${event.sold}">0</td>
+                <td><span class="status-pill status-open" th:text="${event.status}">PUBLISHED</span></td>
+                <td><a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Ver</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>
