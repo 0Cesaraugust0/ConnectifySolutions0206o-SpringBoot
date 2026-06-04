@@ -11,7 +11,7 @@
 <header class="navbar dashboard-nav">
     <div class="brand"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div></div>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/prototype/admin/events}">Revisión de eventos</a>
+        <a class="btn secondary" th:href="@{/dashboard/admin/events}">Revisión de eventos</a>
         <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Bandeja</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
@@ -25,17 +25,14 @@
     </section>
 
     <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/prototype/admin/events}">
+        <a class="module-card" th:href="@{/dashboard/admin/events}">
             <span>🧾</span><h3>Revisar eventos</h3><p>Ver eventos enviados por organizadores, revisar detalle, entradas y trazabilidad.</p>
         </a>
-        <a class="module-card" th:href="@{/prototype/admin/events}">
-            <span>👁️</span><h3>Observar / Publicar</h3><p>Marcar eventos como observados, aprobados o publicados en marketplace.</p>
+        <a class="module-card" th:href="@{/dashboard/admin/events}">
+            <span>👁️</span><h3>Observar / Publicar</h3><p>Marcar eventos como observados, conformes o publicados en marketplace.</p>
         </a>
         <a class="module-card" th:href="@{/communications(role='ADMIN')}">
             <span>💬</span><h3>Bandeja administrativa</h3><p>Coordinar con organizadores, diseñadores, clientes y auxiliares de puerta.</p>
-        </a>
-        <a class="module-card" th:href="@{/communications/new}">
-            <span>✉️</span><h3>Enviar solicitud</h3><p>Solicitar correcciones, diseño, soporte o acciones operativas.</p>
         </a>
         <a class="module-card" th:href="@{/tickets/validate}">
             <span>🚪</span><h3>Control de puerta</h3><p>Probar validación de tickets por código de evento y contraseña del día.</p>
