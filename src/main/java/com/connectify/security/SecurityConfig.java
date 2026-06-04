@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/login",
+                                "/", "/login", "/setup",
                                 "/events",
                                 "/cart", "/cart/checkout",
                                 "/tickets/validate", "/tickets/validate/open", "/tickets/validate/consult", "/tickets/gate",
