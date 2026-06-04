@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entradas del evento - Organizador</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/organizer/events}">
+        <span class="logo">🎫</span>
+        <div><strong>Connectify</strong><small>Entradas</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a>
+        <a class="btn primary compact" th:href="@{/events/{id}(id=${event.id})}">Ver marketplace</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="organizer-hero">
+        <p class="badge">Tipos de entrada</p>
+        <h1 th:text="${event.title}">Evento</h1>
+        <p class="hero-text">Define entradas con precio y cantidad independiente. Cada tipo libera cupos específicos para la venta.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <form class="form-card" th:action="@{/dashboard/organizer/events/{id}/ticket-types(id=${event.id})}" method="post">
+            <h2>Agregar tipo de entrada</h2>
+            <div class="field-grid">
+                <label>Nombre
+                    <input class="search-input" name="name" type="text" placeholder="General, VIP, Early Bird" required>
+                </label>
+                <label>Precio S/
+                    <input class="search-input" name="price" type="number" step="0.01" min="0" placeholder="49.00" required>
+                </label>
+                <label>Cantidad a vender
+                    <input class="search-input" name="quantityAvailable" type="number" min="1" placeholder="100" required>
+                </label>
+                <label class="wide">Descripción
+                    <textarea class="search-input" name="description" rows="4" placeholder="Beneficios, zona, condiciones o restricciones." required></textarea>
+                </label>
+            </div>
+            <button class="btn primary full" type="submit">Agregar entrada</button>
+        </form>
+
+        <aside class="summary-card">
+            <h2>Evento</h2>
+            <div class="summary-row"><span>Estado</span><strong th:text="${event.status}">PENDING_REVIEW</strong></div>
+            <div class="summary-row"><span>Capacidad base</span><strong th:text="${event.capacity}">0</strong></div>
+            <div class="summary-row"><span>Vendidos base</span><strong th:text="${event.sold}">0</strong></div>
+            <p class="muted small">El marketplace debe vender por tipo de entrada, no solo por precio base.</p>
+        </aside>
+    </section>
+
+    <section class="table-card">
+        <table class="table-modern">
+            <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Vendidas</th>
+                <th>Disponibles</th>
+                <th>Estado</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="type : ${ticketTypes}">
+                <td><strong th:text="${type.name}">General</strong><br><span class="muted small" th:text="${type.description}">Descripción</span></td>
+                <td th:text="${'S/ ' + type.price}">S/ 0.00</td>
+                <td th:text="${type.quantityAvailable}">0</td>
+                <td th:text="${type.quantitySold}">0</td>
+                <td th:text="${type.remaining}">0</td>
+                <td><span class="status-pill status-open" th:text="${type.active ? 'Activo' : 'Inactivo'}">Activo</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="table-card" style="margin-top:24px">
+        <table class="table-modern">
+            <thead>
+            <tr>
+                <th>Trazabilidad</th>
+                <th>Tipo</th>
+                <th>Fecha</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.description}">Registro</td>
+                <td><span class="status-pill" th:text="${record.type}">CREATED</span></td>
+                <td th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>
