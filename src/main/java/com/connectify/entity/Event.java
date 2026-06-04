@@ -54,6 +54,10 @@ public class Event {
 
     private String gatePassword;
 
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.PUBLISHED;
 
@@ -75,6 +79,8 @@ public class Event {
         this.imageUrl = imageUrl;
         this.featured = featured;
         this.status = status;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -87,6 +93,7 @@ public class Event {
 
     public void setTitle(String title) {
         this.title = title;
+        touch();
     }
 
     public String getDescription() {
@@ -95,6 +102,7 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
+        touch();
     }
 
     public Category getCategory() {
@@ -103,6 +111,7 @@ public class Event {
 
     public void setCategory(Category category) {
         this.category = category;
+        touch();
     }
 
     public LocalDateTime getEventDate() {
@@ -111,6 +120,7 @@ public class Event {
 
     public void setEventDate(LocalDateTime eventDate) {
         this.eventDate = eventDate;
+        touch();
     }
 
     public String getLocation() {
@@ -119,6 +129,7 @@ public class Event {
 
     public void setLocation(String location) {
         this.location = location;
+        touch();
     }
 
     public String getCity() {
@@ -127,6 +138,7 @@ public class Event {
 
     public void setCity(String city) {
         this.city = city;
+        touch();
     }
 
     public BigDecimal getPrice() {
@@ -135,6 +147,7 @@ public class Event {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+        touch();
     }
 
     public Integer getCapacity() {
@@ -143,6 +156,7 @@ public class Event {
 
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
+        touch();
     }
 
     public Integer getSold() {
@@ -151,6 +165,7 @@ public class Event {
 
     public void setSold(Integer sold) {
         this.sold = sold;
+        touch();
     }
 
     public String getImageUrl() {
@@ -159,6 +174,7 @@ public class Event {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+        touch();
     }
 
     public boolean isFeatured() {
@@ -167,6 +183,7 @@ public class Event {
 
     public void setFeatured(boolean featured) {
         this.featured = featured;
+        touch();
     }
 
     public String getGateAccessCode() {
@@ -175,6 +192,7 @@ public class Event {
 
     public void setGateAccessCode(String gateAccessCode) {
         this.gateAccessCode = gateAccessCode;
+        touch();
     }
 
     public String getGatePassword() {
@@ -183,6 +201,23 @@ public class Event {
 
     public void setGatePassword(String gatePassword) {
         this.gatePassword = gatePassword;
+        touch();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public EventStatus getStatus() {
@@ -191,6 +226,7 @@ public class Event {
 
     public void setStatus(EventStatus status) {
         this.status = status;
+        touch();
     }
 
     public Integer getAvailableTickets() {
@@ -198,5 +234,9 @@ public class Event {
             return 0;
         }
         return Math.max(capacity - sold, 0);
+    }
+
+    private void touch() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
