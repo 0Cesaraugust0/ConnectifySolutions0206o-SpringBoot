@@ -96,7 +96,7 @@ public class OrganizerPrototypeController {
         event.setStatus(EventStatus.CANCELLED);
         eventRepository.save(event);
         createRecord(event, EventAdminRecordType.CANCELLED_BY_ORGANIZER,
-                "Evento cancelado por organizador. Se conserva copia administrativa para revisión legal y trazabilidad.");
+                "Evento cancelado por organizador dentro de las primeras 24 horas desde su creación. Se conserva copia administrativa para revisión legal y trazabilidad.");
 
         return "redirect:/prototype/organizer/events?cancelled=true";
     }
@@ -149,6 +149,8 @@ public class OrganizerPrototypeController {
         event.setImageUrl(imageUrl == null ? "" : imageUrl);
         event.setFeatured(false);
         event.setStatus(EventStatus.PUBLISHED);
+        event.setCreatedAt(LocalDateTime.now());
+        event.setUpdatedAt(LocalDateTime.now());
         Event saved = eventRepository.save(event);
 
         createRecord(saved, EventAdminRecordType.CREATED,
@@ -162,10 +164,10 @@ public class OrganizerPrototypeController {
     }
 
     private boolean canOrganizerCancel(Event event) {
-        if (event.getEventDate() == null) {
-            return true;
+        if (event.getCreatedAt() == null) {
+            return false;
         }
-        return Duration.between(LocalDateTime.now(), event.getEventDate()).toHours() >= 24;
+        return Duration.between(event.getCreatedAt(), LocalDateTime.now()).toHours() < 24;
     }
 
     private void createRecord(Event event, EventAdminRecordType type, String description) {
