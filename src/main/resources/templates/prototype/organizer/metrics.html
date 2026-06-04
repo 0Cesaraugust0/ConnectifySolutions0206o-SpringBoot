@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas del organizador - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/prototype/organizer}">
+        <span class="logo">📊</span>
+        <div><strong>Connectify</strong><small>Métricas organizador</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/prototype/organizer/events}">Mis eventos</a>
+        <a class="btn secondary" th:href="@{/prototype/organizer/events/new}">Crear evento</a>
+        <a class="btn primary compact" th:href="@{/events}">Marketplace</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Indicadores operativos</p>
+        <h1>Métricas del organizador</h1>
+        <p class="muted">Resumen de eventos, aforo, tickets vendidos, disponibilidad e ingresos estimados.</p>
+    </section>
+
+    <section class="dashboard-grid">
+        <div class="module-card"><span>📅</span><h3 th:text="${totalEvents}">0</h3><p>Eventos registrados</p></div>
+        <div class="module-card"><span>👥</span><h3 th:text="${totalCapacity}">0</h3><p>Capacidad total</p></div>
+        <div class="module-card"><span>🎫</span><h3 th:text="${totalSold}">0</h3><p>Tickets vendidos</p></div>
+        <div class="module-card"><span>✅</span><h3 th:text="${availableTickets}">0</h3><p>Tickets disponibles</p></div>
+        <div class="module-card"><span>📈</span><h3 th:text="${occupancyRate + '%'}">0%</h3><p>Ocupación estimada</p></div>
+        <div class="module-card"><span>💰</span><h3 th:text="${'S/ ' + revenue}">S/ 0.00</h3><p>Ingresos estimados</p></div>
+    </section>
+
+    <section class="table-card">
+        <table class="table-modern">
+            <thead>
+            <tr>
+                <th>Evento</th>
+                <th>Ciudad</th>
+                <th>Precio base</th>
+                <th>Capacidad</th>
+                <th>Vendidos</th>
+                <th>Disponibles</th>
+                <th>Estado</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${events}">
+                <td><strong th:text="${event.title}">Evento</strong></td>
+                <td th:text="${event.city}">Lima</td>
+                <td th:text="${'S/ ' + event.price}">S/ 0.00</td>
+                <td th:text="${event.capacity}">0</td>
+                <td th:text="${event.sold}">0</td>
+                <td th:text="${event.availableTickets}">0</td>
+                <td><span class="status-pill status-open" th:text="${event.status}">PUBLISHED</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>
