@@ -26,6 +26,11 @@ public class TicketController {
         this.eventService = eventService;
     }
 
+    @GetMapping
+    public String ticketsHome() {
+        return "redirect:/tickets/validate";
+    }
+
     @GetMapping("/validate")
     public String validateForm(Model model) {
         addDefaultModelAttributes(model);
