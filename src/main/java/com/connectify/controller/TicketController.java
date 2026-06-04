@@ -28,6 +28,7 @@ public class TicketController {
 
     @GetMapping("/validate")
     public String validateForm(Model model) {
+        addDefaultModelAttributes(model);
         return "tickets/validate";
     }
 
@@ -35,6 +36,7 @@ public class TicketController {
     public String openValidation(@RequestParam String eventCode,
                                  @RequestParam String gatePassword,
                                  Model model) {
+        addDefaultModelAttributes(model);
         model.addAttribute("eventCode", eventCode);
         model.addAttribute("gatePassword", gatePassword);
 
@@ -61,6 +63,7 @@ public class TicketController {
                                 @RequestParam String gatePassword,
                                 @RequestParam String code,
                                 Model model) {
+        addDefaultModelAttributes(model);
         model.addAttribute("eventCode", eventCode);
         model.addAttribute("gatePassword", gatePassword);
         model.addAttribute("code", code);
@@ -89,6 +92,7 @@ public class TicketController {
                                  @RequestParam String gatePassword,
                                  @RequestParam String code,
                                  Model model) {
+        addDefaultModelAttributes(model);
         model.addAttribute("eventCode", eventCode);
         model.addAttribute("gatePassword", gatePassword);
         model.addAttribute("code", code);
@@ -136,5 +140,17 @@ public class TicketController {
 
     private boolean isGatePasswordValid(Event event, String gatePassword) {
         return event.getGatePassword() != null && event.getGatePassword().equals(gatePassword);
+    }
+
+    private void addDefaultModelAttributes(Model model) {
+        model.addAttribute("searched", false);
+        model.addAttribute("gateUnlocked", false);
+        model.addAttribute("result", null);
+        model.addAttribute("ticket", null);
+        model.addAttribute("ticketError", null);
+        model.addAttribute("gateError", null);
+        model.addAttribute("eventCode", "");
+        model.addAttribute("gatePassword", "");
+        model.addAttribute("code", "");
     }
 }
