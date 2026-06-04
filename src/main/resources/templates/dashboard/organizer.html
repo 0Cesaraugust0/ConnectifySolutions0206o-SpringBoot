@@ -12,8 +12,8 @@
 <header class="navbar dashboard-nav">
     <div class="brand"><span class="logo">🎯</span><div><strong>Connectify</strong><small>Organizador</small></div></div>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/prototype/organizer/events}">Mis eventos</a>
-        <a class="btn secondary" th:href="@{/communications(role='ORGANIZER')}">Bandeja</a>
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
@@ -22,27 +22,21 @@
     <section class="organizer-hero">
         <p class="badge">Gestión comercial</p>
         <h1 th:text="${title}">Panel Organizador</h1>
-        <p class="hero-text">Sesión activa: <strong th:text="${email}">organizador</strong>. Administra eventos, entradas, métricas y coordinación operativa.</p>
+        <p class="hero-text">Sesión activa: <strong th:text="${email}">organizador</strong>. Administra eventos, tipos de entrada, métricas y publicación.</p>
     </section>
 
     <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/prototype/organizer/events}">
+        <a class="module-card" th:href="@{/dashboard/organizer/events}">
             <span>📅</span><h3>Mis eventos</h3><p>Ver eventos creados, estado, capacidad, ventas y acciones de gestión.</p>
         </a>
-        <a class="module-card" th:href="@{/prototype/organizer/events/new}">
-            <span>➕</span><h3>Crear evento</h3><p>Registrar nuevo evento con fecha, lugar, categoría, precio base y capacidad.</p>
+        <a class="module-card" th:href="@{/dashboard/organizer/events/new}">
+            <span>➕</span><h3>Crear evento</h3><p>Registrar un evento y enviarlo a revisión administrativa.</p>
         </a>
-        <a class="module-card" th:href="@{/prototype/organizer/events/metrics}">
+        <a class="module-card" th:href="@{/dashboard/organizer/events/metrics}">
             <span>📊</span><h3>Métricas</h3><p>Consultar ventas, aforo, disponibilidad e ingresos estimados.</p>
         </a>
-        <a class="module-card" th:href="@{/communications(role='ORGANIZER')}">
-            <span>💬</span><h3>Bandeja del organizador</h3><p>Recibir observaciones del admin, solicitudes de diseño y coordinación.</p>
-        </a>
-        <a class="module-card" th:href="@{/communications/new}">
-            <span>✉️</span><h3>Solicitar apoyo</h3><p>Enviar solicitud al administrador, diseñador o auxiliar de puerta.</p>
-        </a>
         <a class="module-card" th:href="@{/events}">
-            <span>🛍️</span><h3>Ver marketplace</h3><p>Validar cómo se visualizan los eventos para compradores.</p>
+            <span>🛍️</span><h3>Ver marketplace</h3><p>Validar cómo se visualizan los eventos publicados para compradores.</p>
         </a>
     </section>
 </main>
