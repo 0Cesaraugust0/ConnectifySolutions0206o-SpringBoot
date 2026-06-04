@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${event.title} + ' - Connectify Solutions'">Detalle de evento</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -28,12 +29,42 @@
             <div><strong>Fecha</strong><span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</span></div>
             <div><strong>Ciudad</strong><span th:text="${event.city}">Ciudad</span></div>
             <div><strong>Ubicación</strong><span th:text="${event.location}">Ubicación</span></div>
-            <div><strong>Precio</strong><span th:text="${event.price != null ? 'S/ ' + event.price : 'Gratis / por definir'}">S/ 0.00</span></div>
+            <div><strong>Precio base</strong><span th:text="${event.price != null ? 'S/ ' + event.price : 'Gratis / por definir'}">S/ 0.00</span></div>
             <div><strong>Capacidad</strong><span th:text="${event.capacity}">0</span></div>
             <div><strong>Disponibles</strong><span th:text="${event.availableTickets}">0</span></div>
         </div>
 
-        <form class="purchase-panel" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
+        <section class="table-card" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}">
+            <h2>Tipos de entrada disponibles</h2>
+            <table class="table-modern">
+                <thead>
+                <tr>
+                    <th>Entrada</th>
+                    <th>Precio</th>
+                    <th>Disponibles</th>
+                    <th>Cantidad</th>
+                    <th>Compra</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="type : ${ticketTypes}">
+                    <td><strong th:text="${type.name}">General</strong><br><span class="muted small" th:text="${type.description}">Descripción</span></td>
+                    <td th:text="${'S/ ' + type.price}">S/ 0.00</td>
+                    <td th:text="${type.remaining}">0</td>
+                    <td>
+                        <form class="organizer-action-row" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
+                            <input type="hidden" name="ticketTypeId" th:value="${type.id}">
+                            <input name="quantity" type="number" min="1" max="10" value="1" style="max-width:90px">
+                            <button class="btn primary compact" type="submit">Agregar</button>
+                        </form>
+                    </td>
+                    <td><span class="status-pill status-open">Disponible</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <form class="purchase-panel" th:if="${ticketTypes == null || ticketTypes.isEmpty()}" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
             <div>
                 <label for="quantity">Cantidad de entradas</label>
                 <input id="quantity" name="quantity" type="number" min="1" max="10" value="1">
