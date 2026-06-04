@@ -28,6 +28,7 @@ public class SecurityConfig {
                                 "/communications", "/communications/new", "/communications/sent",
                                 "/css/**", "/js/**", "/images/**"
                         ).permitAll()
+                        .requestMatchers("/prototype/*", "/prototype/organizer/events", "/prototype/organizer/events/new", "/prototype/organizer/metrics").permitAll()
                         .requestMatchers("/events/*").permitAll()
                         .requestMatchers("/cart/add/*", "/cart/remove/*", "/cart/clear", "/cart/confirmation/*").permitAll()
                         .requestMatchers("/communications/*", "/communications/*/status").permitAll()
