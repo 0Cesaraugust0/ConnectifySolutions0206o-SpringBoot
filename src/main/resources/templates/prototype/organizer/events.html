@@ -6,6 +6,7 @@
     <title>Mis eventos - Organizador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -16,21 +17,26 @@
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/prototype}">Roles</a>
         <a class="btn secondary" th:href="@{/communications(role='ORGANIZER')}">Bandeja</a>
+        <a class="btn secondary" th:href="@{/prototype/organizer/events/metrics}">Métricas</a>
         <a class="btn primary compact" th:href="@{/prototype/organizer/events/new}">Crear evento</a>
     </nav>
 </header>
 
 <main class="dashboard-page">
-    <section class="dashboard-hero">
+    <section class="organizer-hero">
         <p class="badge">Panel organizador</p>
         <h1>Mis eventos creados</h1>
-        <p class="muted">Vista prototipo para listar eventos registrados por el organizador. La asignación por usuario se conectará cuando el login quede estable.</p>
+        <p class="hero-text">Gestiona eventos, tipos de entrada, liberación de cupos, métricas y solicitudes operativas.</p>
     </section>
 
     <section class="toolbar">
         <a class="btn primary" th:href="@{/prototype/organizer/events/new}">Crear nuevo evento</a>
+        <a class="btn secondary" th:href="@{/prototype/organizer/events/metrics}">Ver métricas</a>
         <a class="btn secondary" th:href="@{/events}">Ver marketplace</a>
     </section>
+
+    <div th:if="${param.cancelled}" class="alert success">Evento cancelado correctamente. Se conservó copia administrativa.</div>
+    <div th:if="${param.cancelDenied}" class="alert error">No se puede cancelar: el evento está dentro de las 24 horas previas.</div>
 
     <section class="table-card">
         <table class="table-modern">
@@ -40,28 +46,42 @@
                 <th>Evento</th>
                 <th>Categoría</th>
                 <th>Ciudad</th>
-                <th>Precio</th>
+                <th>Precio base</th>
                 <th>Capacidad</th>
                 <th>Vendidos</th>
                 <th>Estado</th>
-                <th>Acción</th>
+                <th>Gestión</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="event : ${events}">
                 <td th:text="${event.id}">1</td>
-                <td><strong th:text="${event.title}">Evento</strong></td>
+                <td class="event-title-cell">
+                    <strong th:text="${event.title}">Evento</strong>
+                    <span class="event-subtext" th:text="${event.location + ' · ' + event.city}">Lugar</span>
+                </td>
                 <td th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</td>
                 <td th:text="${event.city}">Lima</td>
                 <td th:text="${'S/ ' + event.price}">S/ 0.00</td>
                 <td th:text="${event.capacity}">0</td>
                 <td th:text="${event.sold}">0</td>
                 <td><span class="status-pill status-open" th:text="${event.status}">PUBLISHED</span></td>
-                <td><a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Ver</a></td>
+                <td>
+                    <div class="organizer-action-row">
+                        <a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Ver</a>
+                        <a class="btn secondary compact" th:href="@{/prototype/organizer/events/{id}/ticket-types(id=${event.id})}">Entradas</a>
+                        <a class="btn secondary compact" th:href="@{/communications/new}">Solicitar</a>
+                        <form th:action="@{/prototype/organizer/events/{id}/cancel(id=${event.id})}" method="post">
+                            <button class="btn secondary compact" type="submit">Cancelar</button>
+                        </form>
+                    </div>
+                </td>
             </tr>
             </tbody>
         </table>
     </section>
+
+    <p class="cancel-note">Regla: el organizador puede cancelar solo si faltan 24 horas o más. Al cancelar se conserva una copia administrativa para trazabilidad.</p>
 </main>
 </body>
 </html>
