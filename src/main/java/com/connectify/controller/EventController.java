@@ -1,6 +1,7 @@
 package com.connectify.controller;
 
 import com.connectify.entity.Event;
+import com.connectify.repository.TicketTypeRepository;
 import com.connectify.service.EventService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class EventController {
 
     private final EventService eventService;
+    private final TicketTypeRepository ticketTypeRepository;
 
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, TicketTypeRepository ticketTypeRepository) {
         this.eventService = eventService;
+        this.ticketTypeRepository = ticketTypeRepository;
     }
 
     @GetMapping
@@ -35,6 +38,7 @@ public class EventController {
     public String detail(@PathVariable Long id, Model model) {
         Event event = eventService.findById(id).orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
         model.addAttribute("event", event);
+        model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id));
         return "events/detail";
     }
 }
