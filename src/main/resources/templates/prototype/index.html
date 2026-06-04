@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Prototipo - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/}">
+        <span class="logo">🧭</span>
+        <div><strong>Connectify</strong><small>Panel prototipo</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/}">Inicio</a>
+        <a class="btn secondary" th:href="@{/events}">Eventos</a>
+        <a class="btn primary compact" th:href="@{/communications}">Comunicaciones</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Demo navegable</p>
+        <h1>Centro de operación por roles</h1>
+        <p class="muted">Vista pública de prototipo para revisar los módulos sin depender todavía del login.</p>
+    </section>
+
+    <section class="dashboard-grid">
+        <a class="module-card" th:href="@{/communications(role='ADMIN')}">
+            <span>🛡️</span>
+            <h3>Administrador</h3>
+            <p>Revisión de eventos, coordinación interna, acceso de puerta y soporte.</p>
+            <strong>Ir a bandeja Admin</strong>
+        </a>
+
+        <a class="module-card" th:href="@{/communications(role='ORGANIZER')}">
+            <span>🎯</span>
+            <h3>Organizador</h3>
+            <p>Coordina aprobación de eventos, diseño, tickets y operación.</p>
+            <strong>Ir a bandeja Organizador</strong>
+        </a>
+
+        <a class="module-card" th:href="@{/communications(role='DESIGNER')}">
+            <span>🎨</span>
+            <h3>Diseñador</h3>
+            <p>Recibe solicitudes de portada, banner, feedback visual y ajustes.</p>
+            <strong>Ir a bandeja Diseñador</strong>
+        </a>
+
+        <a class="module-card" th:href="@{/communications(role='CLIENT')}">
+            <span>🛒</span>
+            <h3>Cliente</h3>
+            <p>Soporte de tickets, consultas de compra y validación de acceso.</p>
+            <strong>Ir a bandeja Cliente</strong>
+        </a>
+
+        <a class="module-card" th:href="@{/tickets/validate}">
+            <span>✅</span>
+            <h3>Auxiliar de puerta</h3>
+            <p>Validación por código de evento, contraseña diaria y ticket QR/manual.</p>
+            <strong>Validar tickets</strong>
+        </a>
+
+        <a class="module-card" th:href="@{/communications/new}">
+            <span>✉️</span>
+            <h3>Nueva solicitud</h3>
+            <p>Crear coordinación entre agentes con prioridad, estado y evento relacionado.</p>
+            <strong>Crear solicitud</strong>
+        </a>
+    </section>
+</main>
+</body>
+</html>
