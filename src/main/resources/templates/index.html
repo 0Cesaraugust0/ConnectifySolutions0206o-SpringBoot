@@ -17,6 +17,7 @@
         </div>
     </div>
     <nav class="top-actions">
+        <a th:href="@{/prototype}" class="btn secondary">Panel prototipo</a>
         <a th:href="@{/events}" class="btn secondary">Eventos</a>
         <a th:href="@{/communications}" class="btn secondary">Comunicaciones</a>
         <a th:href="@{/tickets/validate}" class="btn primary compact">Validar ticket</a>
@@ -30,7 +31,8 @@
             <h1 th:text="${projectName}">Connectify Solutions</h1>
             <p class="hero-text" th:text="${subtitle}">Migración progresiva a Spring Boot + Thymeleaf + JPA + MySQL/MariaDB</p>
             <div class="actions" style="justify-content:flex-start">
-                <a th:href="@{/events}" class="btn primary">Explorar eventos</a>
+                <a th:href="@{/prototype}" class="btn primary">Abrir panel prototipo</a>
+                <a th:href="@{/events}" class="btn secondary">Explorar eventos</a>
                 <a th:href="@{/communications}" class="btn secondary">Centro de comunicaciones</a>
             </div>
         </div>
@@ -42,6 +44,11 @@
     </section>
 
     <section class="dashboard-grid">
+        <a class="module-card" th:href="@{/prototype}">
+            <span>🧭</span>
+            <h3>Panel prototipo</h3>
+            <p>Centro de operación visible por roles sin depender todavía del login.</p>
+        </a>
         <a class="module-card" th:href="@{/events}">
             <span>🛍️</span>
             <h3>Marketplace</h3>
