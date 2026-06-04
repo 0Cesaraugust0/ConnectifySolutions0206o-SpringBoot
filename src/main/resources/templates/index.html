@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${projectName}">Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -16,24 +17,51 @@
         </div>
     </div>
     <nav class="top-actions">
-        <a th:href="@{/events}" class="btn secondary">Explorar eventos</a>
-        <a th:href="@{/login}" class="btn primary">Iniciar sesión</a>
+        <a th:href="@{/events}" class="btn secondary">Eventos</a>
+        <a th:href="@{/communications}" class="btn secondary">Comunicaciones</a>
+        <a th:href="@{/tickets/validate}" class="btn primary compact">Validar ticket</a>
     </nav>
 </header>
 
-<main class="hero">
-    <section class="hero-card">
-        <p class="badge">Spring Boot + Thymeleaf + JPA</p>
-        <h1 th:text="${projectName}">Connectify Solutions</h1>
-        <p th:text="${subtitle}">
-            Migración progresiva a Spring Boot + Thymeleaf + JPA + MySQL/MariaDB
-        </p>
-
-        <div class="actions">
-            <a th:href="@{/events}" class="btn primary">Explorar eventos</a>
-            <a th:href="@{/login}" class="btn secondary">Iniciar sesión</a>
-            <a th:href="@{/dashboard}" class="btn secondary">Ir a mi dashboard</a>
+<main class="dashboard-page">
+    <section class="marketplace-hero">
+        <div>
+            <p class="badge glow">Spring Boot + Thymeleaf + JPA</p>
+            <h1 th:text="${projectName}">Connectify Solutions</h1>
+            <p class="hero-text" th:text="${subtitle}">Migración progresiva a Spring Boot + Thymeleaf + JPA + MySQL/MariaDB</p>
+            <div class="actions" style="justify-content:flex-start">
+                <a th:href="@{/events}" class="btn primary">Explorar eventos</a>
+                <a th:href="@{/communications}" class="btn secondary">Centro de comunicaciones</a>
+            </div>
         </div>
+        <div class="hero-stats">
+            <div><strong>Ruta B</strong><span>Arquitectura Spring Boot</span></div>
+            <div><strong>JPA</strong><span>Datos persistentes</span></div>
+            <div><strong>QR</strong><span>Validación de tickets</span></div>
+        </div>
+    </section>
+
+    <section class="dashboard-grid">
+        <a class="module-card" th:href="@{/events}">
+            <span>🛍️</span>
+            <h3>Marketplace</h3>
+            <p>Explorar eventos publicados, ver detalle, agregar entradas al carrito y continuar compra.</p>
+        </a>
+        <a class="module-card" th:href="@{/communications}">
+            <span>💬</span>
+            <h3>Comunicaciones internas</h3>
+            <p>Bandeja operativa entre administrador, organizador, diseñador, cliente y auxiliar.</p>
+        </a>
+        <a class="module-card" th:href="@{/communications/new}">
+            <span>✉️</span>
+            <h3>Nueva solicitud</h3>
+            <p>Crear coordinaciones por rol, prioridad, estado, tipo y evento relacionado.</p>
+        </a>
+        <a class="module-card" th:href="@{/tickets/validate}">
+            <span>✅</span>
+            <h3>Validación de tickets</h3>
+            <p>Desbloquear con código de evento y contraseña del día para consultar o marcar ticket usado.</p>
+        </a>
     </section>
 </main>
 </body>
