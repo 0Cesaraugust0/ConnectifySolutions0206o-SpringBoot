@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Setup inicial - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/}">
+        <span class="logo">🛠️</span>
+        <div><strong>Connectify</strong><small>Setup inicial</small></div>
+    </a>
+</header>
+
+<main class="auth-page">
+    <section class="auth-card">
+        <p class="badge">Primer arranque</p>
+        <h1>Crear usuario Developer</h1>
+        <p class="muted">Esta pantalla solo funciona si no existe ningún usuario en la base de datos.</p>
+
+        <div th:if="${error}" class="alert error" th:text="${error}">Error</div>
+
+        <form class="auth-form" th:action="@{/setup}" method="post">
+            <label>Nombre completo</label>
+            <input name="fullName" type="text" placeholder="Developer Principal" required>
+
+            <label>Correo</label>
+            <input name="email" type="email" placeholder="tu correo" required>
+
+            <label>Contraseña</label>
+            <input name="password" type="password" placeholder="mínimo 6 caracteres" required>
+
+            <button class="btn primary full" type="submit">Crear usuario inicial</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>
