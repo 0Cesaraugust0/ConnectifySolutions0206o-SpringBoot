@@ -50,7 +50,7 @@ public class AdminPrototypeController {
 
     @PostMapping("/{id}/approve")
     public String approve(@PathVariable Long id,
-                          @RequestParam(required = false, defaultValue = "Evento aprobado por administración.") String note) {
+                          @RequestParam(required = false, defaultValue = "Evento conforme para pase administrativo.") String note) {
         Event event = findEvent(id);
         event.setStatus(EventStatus.APPROVED);
         eventRepository.save(event);
@@ -60,7 +60,7 @@ public class AdminPrototypeController {
 
     @PostMapping("/{id}/publish")
     public String publish(@PathVariable Long id,
-                          @RequestParam(required = false, defaultValue = "Evento publicado por administración.") String note) {
+                          @RequestParam(required = false, defaultValue = "Evento publicado en marketplace.") String note) {
         Event event = findEvent(id);
         event.setStatus(EventStatus.PUBLISHED);
         eventRepository.save(event);
@@ -68,9 +68,19 @@ public class AdminPrototypeController {
         return "redirect:/prototype/admin/events/" + id + "?published=true";
     }
 
+    @PostMapping("/{id}/observe")
+    public String observe(@PathVariable Long id,
+                          @RequestParam(required = false, defaultValue = "Evento observado. Requiere ajustes del organizador.") String note) {
+        Event event = findEvent(id);
+        event.setStatus(EventStatus.OBSERVED);
+        eventRepository.save(event);
+        createRecord(event, EventAdminRecordType.ADMIN_COPY, note);
+        return "redirect:/prototype/admin/events/" + id + "?observed=true";
+    }
+
     @PostMapping("/{id}/reject")
     public String reject(@PathVariable Long id,
-                         @RequestParam(required = false, defaultValue = "Evento rechazado por administración.") String note) {
+                         @RequestParam(required = false, defaultValue = "Evento rechazado definitivamente por administración.") String note) {
         Event event = findEvent(id);
         event.setStatus(EventStatus.REJECTED);
         eventRepository.save(event);
