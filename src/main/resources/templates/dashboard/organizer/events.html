@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis eventos - Organizador</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/organizer}">
+        <span class="logo">🎯</span>
+        <div><strong>Connectify</strong><small>Organizador</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a>
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a>
+        <a class="btn primary compact" th:href="@{/dashboard/organizer/events/new}">Crear evento</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="organizer-hero">
+        <p class="badge">Panel organizador</p>
+        <h1>Mis eventos</h1>
+        <p class="hero-text">Administra eventos creados, entradas por tipo, cupos liberados y estado de revisión administrativa.</p>
+    </section>
+
+    <section class="toolbar">
+        <a class="btn primary" th:href="@{/dashboard/organizer/events/new}">Crear nuevo evento</a>
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Ver métricas</a>
+        <a class="btn secondary" th:href="@{/events}">Ver marketplace</a>
+    </section>
+
+    <div th:if="${param.deleted}" class="alert success">Evento eliminado dentro de la ventana permitida. Se conservó trazabilidad administrativa.</div>
+    <div th:if="${param.deleteDenied}" class="alert error">No se puede eliminar: ya pasaron más de 24 horas desde la creación. Requiere revisión del administrador.</div>
+
+    <section class="table-card">
+        <table class="table-modern">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Evento</th>
+                <th>Categoría</th>
+                <th>Ciudad</th>
+                <th>Precio base</th>
+                <th>Capacidad</th>
+                <th>Vendidos</th>
+                <th>Estado</th>
+                <th>Gestión</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${events}">
+                <td th:text="${event.id}">1</td>
+                <td class="event-title-cell">
+                    <strong th:text="${event.title}">Evento</strong>
+                    <span class="event-subtext" th:text="${event.location + ' · ' + event.city}">Lugar</span>
+                </td>
+                <td th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</td>
+                <td th:text="${event.city}">Lima</td>
+                <td th:text="${'S/ ' + event.price}">S/ 0.00</td>
+                <td th:text="${event.capacity}">0</td>
+                <td th:text="${event.sold}">0</td>
+                <td><span class="status-pill status-open" th:text="${event.status}">PENDING_REVIEW</span></td>
+                <td>
+                    <div class="organizer-action-row">
+                        <a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Ver</a>
+                        <a class="btn secondary compact" th:href="@{/dashboard/organizer/events/{id}/ticket-types(id=${event.id})}">Entradas</a>
+                        <form th:action="@{/dashboard/organizer/events/{id}/delete(id=${event.id})}" method="post">
+                            <button class="btn secondary compact" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <p class="cancel-note">Regla: el organizador puede eliminar durante las primeras 24 horas desde la creación del evento. Después, requiere revisión del administrador. Siempre se conserva trazabilidad.</p>
+</main>
+</body>
+</html>
