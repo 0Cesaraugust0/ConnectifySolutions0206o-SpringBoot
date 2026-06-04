@@ -21,13 +21,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/login", "/setup",
-                                "/events",
-                                "/cart", "/cart/checkout",
-                                "/tickets/validate", "/tickets/validate/open", "/tickets/validate/consult", "/tickets/gate",
-                                "/communications", "/communications/new", "/communications/sent",
-                                "/css/**", "/js/**", "/images/**"
-                        ).permitAll()
+        "/", "/login", "/setup",
+        "/events",
+        "/cart", "/cart/checkout",
+        "/tickets/validate", "/tickets/validate/open", "/tickets/validate/consult", "/tickets/gate",
+        "/communications", "/communications/new", "/communications/sent",
+        "/css/**", "/js/**", "/images/**"
+).permitAll()
                         .requestMatchers("/events/*").permitAll()
                         .requestMatchers("/cart/add/*", "/cart/remove/*", "/cart/clear", "/cart/confirmation/*").permitAll()
                         .requestMatchers("/communications/*", "/communications/*/status").permitAll()
