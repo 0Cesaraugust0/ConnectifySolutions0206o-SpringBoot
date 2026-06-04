@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Connectify Solutions'">Panel prototipo</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/prototype}">
+        <span class="logo">🧭</span>
+        <div><strong>Connectify</strong><small th:text="${title}">Panel prototipo</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/prototype}">Roles</a>
+        <a class="btn secondary" th:href="@{/events}">Eventos</a>
+        <a class="btn primary compact" th:href="@{/communications}">Comunicaciones</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Vista prototipo por rol</p>
+        <h1 th:text="${title}">Panel prototipo</h1>
+        <p class="muted" th:text="${description}">Descripción del rol</p>
+    </section>
+
+    <section class="dashboard-grid" th:if="${role == 'admin'}">
+        <a class="module-card" th:href="@{/communications(role='ADMIN')}"><span>💬</span><h3>Bandeja Admin</h3><p>Recibe solicitudes de organizadores, clientes, diseñadores y auxiliares.</p></a>
+        <a class="module-card" th:href="@{/communications/new}"><span>✉️</span><h3>Crear solicitud</h3><p>Enviar instrucciones a diseñador, organizador o auxiliar.</p></a>
+        <a class="module-card" th:href="@{/tickets/validate}"><span>✅</span><h3>Validación de tickets</h3><p>Probar operación de acceso con código de evento y clave diaria.</p></a>
+        <a class="module-card" th:href="@{/events}"><span>📅</span><h3>Eventos publicados</h3><p>Revisar marketplace y disponibilidad de eventos.</p></a>
+        <div class="module-card"><span>🚪</span><h3>Acceso de puerta</h3><p>Asignación de código de evento y contraseña diaria queda vinculada al módulo admin.</p></div>
+        <div class="module-card"><span>📊</span><h3>KPIs</h3><p>Vista próxima: ventas, tickets, eventos activos y soporte.</p></div>
+    </section>
+
+    <section class="dashboard-grid" th:if="${role == 'organizer'}">
+        <a class="module-card" th:href="@{/communications(role='ORGANIZER')}"><span>💬</span><h3>Bandeja Organizador</h3><p>Solicitudes de aprobación, diseño, operación y soporte.</p></a>
+        <a class="module-card" th:href="@{/communications/new}"><span>🎨</span><h3>Solicitar diseño</h3><p>Coordinar portada, banner, feedback o correcciones visuales.</p></a>
+        <a class="module-card" th:href="@{/events}"><span>📅</span><h3>Mis eventos</h3><p>Vista prototipo del listado público mientras se crea gestión privada.</p></a>
+        <a class="module-card" th:href="@{/tickets/validate}"><span>🎫</span><h3>Tickets</h3><p>Validar flujo de tickets emitidos y control en puerta.</p></a>
+    </section>
+
+    <section class="dashboard-grid" th:if="${role == 'designer'}">
+        <a class="module-card" th:href="@{/communications(role='DESIGNER')}"><span>💬</span><h3>Bandeja Diseñador</h3><p>Recibe solicitudes visuales y feedback de admin u organizador.</p></a>
+        <a class="module-card" th:href="@{/communications/new}"><span>📝</span><h3>Responder coordinación</h3><p>Registrar avances, observaciones o entregables visuales.</p></a>
+        <a class="module-card" th:href="@{/events}"><span>🖼️</span><h3>Previsualizar eventos</h3><p>Revisar cómo se presentan los eventos al público.</p></a>
+        <div class="module-card"><span>🎨</span><h3>Guía visual</h3><p>Próximo: assets, banners, portada, mobile y consistencia UI.</p></div>
+    </section>
+
+    <section class="dashboard-grid" th:if="${role == 'client'}">
+        <a class="module-card" th:href="@{/events}"><span>🛍️</span><h3>Explorar eventos</h3><p>Marketplace público con detalle, carrito y compra prototipo.</p></a>
+        <a class="module-card" th:href="@{/cart}"><span>🛒</span><h3>Carrito</h3><p>Revisar entradas agregadas y avanzar al checkout.</p></a>
+        <a class="module-card" th:href="@{/communications(role='CLIENT')}"><span>💬</span><h3>Soporte cliente</h3><p>Consulta de tickets, pago, acceso o compra.</p></a>
+        <a class="module-card" th:href="@{/communications/new}"><span>🙋</span><h3>Nueva consulta</h3><p>Crear solicitud hacia administración o soporte.</p></a>
+    </section>
+
+    <section class="dashboard-grid" th:if="${role == 'gate'}">
+        <a class="module-card" th:href="@{/tickets/validate}"><span>✅</span><h3>Validar ingreso</h3><p>Desbloquear con código del evento y contraseña del día.</p></a>
+        <a class="module-card" th:href="@{/communications(role='GATE_AGENT')}"><span>💬</span><h3>Bandeja auxiliar</h3><p>Recibir instrucciones de admin u organizador para control de puerta.</p></a>
+        <a class="module-card" th:href="@{/communications/new}"><span>⚠️</span><h3>Reportar incidencia</h3><p>Notificar ticket duplicado, QR inválido o acceso observado.</p></a>
+        <div class="module-card"><span>📲</span><h3>Modo escaneo</h3><p>El input de validación queda listo para lector QR o ingreso manual.</p></div>
+    </section>
+</main>
+</body>
+</html>
