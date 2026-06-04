@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear evento - Organizador</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/organizer/events}">
+        <span class="logo">🎯</span>
+        <div><strong>Connectify</strong><small>Crear evento</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a>
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="organizer-hero">
+        <p class="badge">Nuevo evento</p>
+        <h1>Crear evento</h1>
+        <p class="hero-text">El evento se enviará a revisión administrativa antes de publicarse en el marketplace.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <form class="form-card" th:action="@{/dashboard/organizer/events}" method="post">
+            <h2>Datos principales</h2>
+            <div class="field-grid">
+                <label class="wide">Título
+                    <input class="search-input" name="title" type="text" placeholder="Nombre comercial del evento" required>
+                </label>
+                <label class="wide">Descripción
+                    <textarea class="search-input" name="description" rows="5" placeholder="Describe la experiencia, público objetivo y beneficios." required></textarea>
+                </label>
+                <label>Categoría
+                    <select class="search-input" name="categoryId" required>
+                        <option value="">Selecciona categoría</option>
+                        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">Categoría</option>
+                    </select>
+                </label>
+                <label>Fecha y hora
+                    <input class="search-input" name="eventDate" type="datetime-local" required>
+                </label>
+                <label>Ubicación
+                    <input class="search-input" name="location" type="text" placeholder="Centro de Convenciones" required>
+                </label>
+                <label>Ciudad
+                    <input class="search-input" name="city" type="text" placeholder="Lima" required>
+                </label>
+                <label>Precio base S/
+                    <input class="search-input" name="price" type="number" min="0" step="0.01" placeholder="49.00" required>
+                </label>
+                <label>Capacidad base
+                    <input class="search-input" name="capacity" type="number" min="1" placeholder="500" required>
+                </label>
+                <label class="wide">Imagen URL opcional
+                    <input class="search-input" name="imageUrl" type="url" placeholder="https://...">
+                </label>
+            </div>
+            <button class="btn primary full" type="submit">Crear y enviar a revisión</button>
+        </form>
+
+        <aside class="summary-card">
+            <h2>Flujo</h2>
+            <div class="mini-item"><span>Estado inicial</span><strong>PENDING_REVIEW</strong></div>
+            <div class="mini-item"><span>Marketplace</span><strong>No visible aún</strong></div>
+            <div class="mini-item"><span>Admin</span><strong>Revisa / observa / publica</strong></div>
+            <p class="muted small">Luego de crear el evento, configura sus tipos de entrada: General, VIP, Early Bird, entre otros.</p>
+        </aside>
+    </section>
+</main>
+</body>
+</html>
