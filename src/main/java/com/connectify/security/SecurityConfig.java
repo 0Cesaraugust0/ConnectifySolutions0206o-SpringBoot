@@ -28,7 +28,9 @@ public class SecurityConfig {
                                 "/communications", "/communications/new", "/communications/sent",
                                 "/css/**", "/js/**", "/images/**"
                         ).permitAll()
-                        .requestMatchers("/prototype/*", "/prototype/organizer/events", "/prototype/organizer/events/new", "/prototype/organizer/metrics").permitAll()
+                        .requestMatchers("/prototype/*").permitAll()
+                        .requestMatchers("/prototype/organizer/events", "/prototype/organizer/events/new", "/prototype/organizer/events/metrics").permitAll()
+                        .requestMatchers("/prototype/organizer/events/*/ticket-types", "/prototype/organizer/events/*/cancel").permitAll()
                         .requestMatchers("/events/*").permitAll()
                         .requestMatchers("/cart/add/*", "/cart/remove/*", "/cart/clear", "/cart/confirmation/*").permitAll()
                         .requestMatchers("/communications/*", "/communications/*/status").permitAll()
