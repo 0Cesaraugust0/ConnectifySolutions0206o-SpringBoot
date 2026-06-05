@@ -5,11 +5,16 @@ import com.connectify.entity.Event;
 import com.connectify.entity.EventAdminRecord;
 import com.connectify.entity.EventAdminRecordType;
 import com.connectify.entity.EventStatus;
+import com.connectify.entity.MessagePriority;
+import com.connectify.entity.MessageType;
+import com.connectify.entity.Role;
 import com.connectify.entity.TicketType;
 import com.connectify.repository.CategoryRepository;
 import com.connectify.repository.EventAdminRecordRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
+import com.connectify.service.InternalMessageService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,15 +36,18 @@ public class OrganizerDashboardController {
     private final CategoryRepository categoryRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventAdminRecordRepository recordRepository;
+    private final InternalMessageService messageService;
 
     public OrganizerDashboardController(EventRepository eventRepository,
                                         CategoryRepository categoryRepository,
                                         TicketTypeRepository ticketTypeRepository,
-                                        EventAdminRecordRepository recordRepository) {
+                                        EventAdminRecordRepository recordRepository,
+                                        InternalMessageService messageService) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.recordRepository = recordRepository;
+        this.messageService = messageService;
     }
 
     @GetMapping
@@ -84,7 +92,69 @@ public class OrganizerDashboardController {
         event.setUpdatedAt(LocalDateTime.now());
         Event saved = eventRepository.save(event);
         createRecord(saved, EventAdminRecordType.CREATED, "Evento creado por organizador y enviado a revisión administrativa.");
-        return "redirect:/dashboard/organizer/events";
+        return "redirect:/dashboard/organizer/events/" + saved.getId();
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        Event event = findEvent(id);
+        model.addAttribute("event", event);
+        model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdOrderByPriceAsc(id));
+        model.addAttribute("records", recordRepository.findByEventIdOrderByCreatedAtDesc(id));
+        model.addAttribute("requests", messageService.relatedToEvent(id));
+        model.addAttribute("canDelete", canOrganizerDelete(event));
+        return "dashboard/organizer/event-detail";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editEvent(@PathVariable Long id, Model model) {
+        model.addAttribute("event", findEvent(id));
+        model.addAttribute("categories", categoryRepository.findAll());
+        return "dashboard/organizer/event-edit";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updateEvent(@PathVariable Long id,
+                              @RequestParam String title,
+                              @RequestParam String description,
+                              @RequestParam Long categoryId,
+                              @RequestParam String eventDate,
+                              @RequestParam String location,
+                              @RequestParam String city,
+                              @RequestParam BigDecimal price,
+                              @RequestParam Integer capacity,
+                              @RequestParam(required = false) String imageUrl) {
+        Event event = findEvent(id);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+        event.setTitle(title);
+        event.setDescription(description);
+        event.setCategory(category);
+        event.setEventDate(LocalDateTime.parse(eventDate));
+        event.setLocation(location);
+        event.setCity(city);
+        event.setPrice(price);
+        event.setCapacity(capacity);
+        event.setImageUrl(imageUrl == null ? "" : imageUrl);
+        event.setStatus(EventStatus.PENDING_REVIEW);
+        eventRepository.save(event);
+        createRecord(event, EventAdminRecordType.UPDATED, "Evento editado por organizador y devuelto a revisión administrativa.");
+        return "redirect:/dashboard/organizer/events/" + id + "?updated=true";
+    }
+
+    @PostMapping("/{id}/request-support")
+    public String requestSupport(@PathVariable Long id,
+                                 @RequestParam Role targetRole,
+                                 @RequestParam String subject,
+                                 @RequestParam String body,
+                                 @RequestParam(required = false, defaultValue = "NORMAL") MessagePriority priority,
+                                 Authentication authentication) {
+        Event event = findEvent(id);
+        MessageType type = targetRole == Role.DESIGNER ? MessageType.DESIGN_REQUEST : MessageType.EVENT_REVIEW;
+        String email = authentication != null ? authentication.getName() : "organizador@eventos.com";
+        messageService.create("Organizador", email, Role.ORGANIZER, targetRole, type, priority, subject, body, id);
+        createRecord(event, EventAdminRecordType.ADMIN_COPY, "Solicitud enviada a " + targetRole + ": " + subject);
+        return "redirect:/dashboard/organizer/events/" + id + "?requestSent=true";
     }
 
     @GetMapping("/{id}/ticket-types")
@@ -150,7 +220,7 @@ public class OrganizerDashboardController {
     public String deleteEvent(@PathVariable Long id) {
         Event event = findEvent(id);
         if (!canOrganizerDelete(event)) {
-            return "redirect:/dashboard/organizer/events?deleteDenied=true";
+            return "redirect:/dashboard/organizer/events/" + id + "?deleteDenied=true";
         }
         event.setStatus(EventStatus.CANCELLED);
         eventRepository.save(event);
