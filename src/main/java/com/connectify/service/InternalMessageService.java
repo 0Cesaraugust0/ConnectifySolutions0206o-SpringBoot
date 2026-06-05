@@ -32,6 +32,10 @@ public class InternalMessageService {
         return internalMessageRepository.findBySenderEmailOrderByCreatedAtDesc(senderEmail);
     }
 
+    public List<InternalMessage> relatedToEvent(Long eventId) {
+        return internalMessageRepository.findByRelatedEventIdOrderByCreatedAtDesc(eventId);
+    }
+
     public long unread(Role targetRole) {
         return internalMessageRepository.countByTargetRoleAndReadByTargetFalse(targetRole);
     }
@@ -85,6 +89,6 @@ public class InternalMessageService {
         InternalMessage message = findById(id);
         message.setReadByTarget(true);
         message.setUpdatedAt(LocalDateTime.now());
-        return internalMessageRepository.save(message);
+        return message;
     }
 }
