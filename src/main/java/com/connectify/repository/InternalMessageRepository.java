@@ -15,5 +15,7 @@ public interface InternalMessageRepository extends JpaRepository<InternalMessage
 
     List<InternalMessage> findByTargetRoleAndStatusOrderByCreatedAtDesc(Role targetRole, MessageStatus status);
 
+    List<InternalMessage> findByRelatedEventIdOrderByCreatedAtDesc(Long eventId);
+
     long countByTargetRoleAndReadByTargetFalse(Role targetRole);
 }
