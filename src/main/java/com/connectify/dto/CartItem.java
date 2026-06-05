@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 public class CartItem {
 
     private Long eventId;
+    private Long ticketTypeId;
+    private String ticketTypeName;
     private String eventTitle;
     private String eventDate;
     private String eventLocation;
@@ -23,12 +25,39 @@ public class CartItem {
         this.unitPrice = unitPrice;
     }
 
+    public CartItem(Long eventId, Long ticketTypeId, String ticketTypeName, String eventTitle, String eventDate, String eventLocation, int quantity, BigDecimal unitPrice) {
+        this.eventId = eventId;
+        this.ticketTypeId = ticketTypeId;
+        this.ticketTypeName = ticketTypeName;
+        this.eventTitle = eventTitle;
+        this.eventDate = eventDate;
+        this.eventLocation = eventLocation;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+    }
+
     public Long getEventId() {
         return eventId;
     }
 
     public void setEventId(Long eventId) {
         this.eventId = eventId;
+    }
+
+    public Long getTicketTypeId() {
+        return ticketTypeId;
+    }
+
+    public void setTicketTypeId(Long ticketTypeId) {
+        this.ticketTypeId = ticketTypeId;
+    }
+
+    public String getTicketTypeName() {
+        return ticketTypeName;
+    }
+
+    public void setTicketTypeName(String ticketTypeName) {
+        this.ticketTypeName = ticketTypeName;
     }
 
     public String getEventTitle() {
