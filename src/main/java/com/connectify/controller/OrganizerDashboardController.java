@@ -98,14 +98,17 @@ public class OrganizerDashboardController {
 
     @PostMapping("/{id}/ticket-types")
     public String createTicketType(@PathVariable Long id,
-                                   @RequestParam String name,
+                                   @RequestParam(required = false) String namePreset,
+                                   @RequestParam(required = false) String customName,
                                    @RequestParam String description,
                                    @RequestParam BigDecimal price,
                                    @RequestParam Integer quantityAvailable) {
         Event event = findEvent(id);
+        String finalName = resolveTicketTypeName(namePreset, customName);
+
         TicketType ticketType = new TicketType();
         ticketType.setEvent(event);
-        ticketType.setName(name);
+        ticketType.setName(finalName);
         ticketType.setDescription(description);
         ticketType.setPrice(price);
         ticketType.setQuantityAvailable(quantityAvailable);
@@ -113,8 +116,34 @@ public class OrganizerDashboardController {
         ticketType.setActive(true);
         ticketTypeRepository.save(ticketType);
         createRecord(event, EventAdminRecordType.TICKET_TYPE_CREATED,
-                "Tipo de entrada creado: " + name + " / S/ " + price + " / cantidad " + quantityAvailable);
+                "Tipo de entrada creado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable);
         return "redirect:/dashboard/organizer/events/" + id + "/ticket-types";
+    }
+
+    @PostMapping("/{id}/ticket-types/{typeId}/update")
+    public String updateTicketType(@PathVariable Long id,
+                                   @PathVariable Long typeId,
+                                   @RequestParam(required = false) String namePreset,
+                                   @RequestParam(required = false) String customName,
+                                   @RequestParam String description,
+                                   @RequestParam BigDecimal price,
+                                   @RequestParam Integer quantityAvailable,
+                                   @RequestParam(required = false, defaultValue = "false") boolean active) {
+        Event event = findEvent(id);
+        TicketType ticketType = ticketTypeRepository.findById(typeId)
+                .orElseThrow(() -> new IllegalArgumentException("Tipo de entrada no encontrado"));
+        String finalName = resolveTicketTypeName(namePreset, customName);
+
+        ticketType.setName(finalName);
+        ticketType.setDescription(description);
+        ticketType.setPrice(price);
+        ticketType.setQuantityAvailable(quantityAvailable);
+        ticketType.setActive(active);
+        ticketTypeRepository.save(ticketType);
+
+        createRecord(event, EventAdminRecordType.TICKET_TYPE_UPDATED,
+                "Tipo de entrada actualizado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable + " / activo: " + active);
+        return "redirect:/dashboard/organizer/events/" + id + "/ticket-types?updated=true";
     }
 
     @PostMapping("/{id}/delete")
@@ -157,6 +186,19 @@ public class OrganizerDashboardController {
 
     private boolean canOrganizerDelete(Event event) {
         return event.getCreatedAt() != null && Duration.between(event.getCreatedAt(), LocalDateTime.now()).toHours() < 24;
+    }
+
+    private String resolveTicketTypeName(String namePreset, String customName) {
+        if ("OTRO".equalsIgnoreCase(namePreset) && customName != null && !customName.isBlank()) {
+            return customName.trim();
+        }
+        if (namePreset != null && !namePreset.isBlank()) {
+            return namePreset.trim();
+        }
+        if (customName != null && !customName.isBlank()) {
+            return customName.trim();
+        }
+        return "Entrada general";
     }
 
     private void createRecord(Event event, EventAdminRecordType type, String description) {
