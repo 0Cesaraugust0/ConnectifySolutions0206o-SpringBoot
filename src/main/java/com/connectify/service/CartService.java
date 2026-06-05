@@ -2,6 +2,7 @@ package com.connectify.service;
 
 import com.connectify.dto.CartItem;
 import com.connectify.entity.Event;
+import com.connectify.entity.TicketType;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CartService {
@@ -29,19 +31,28 @@ public class CartService {
     }
 
     public void addEvent(HttpSession session, Event event, int quantity) {
+        addEvent(session, event, null, quantity);
+    }
+
+    public void addEvent(HttpSession session, Event event, TicketType ticketType, int quantity) {
         List<CartItem> items = getItems(session);
         int safeQuantity = Math.max(quantity, 1);
+        Long ticketTypeId = ticketType != null ? ticketType.getId() : null;
 
         for (CartItem item : items) {
-            if (item.getEventId().equals(event.getId())) {
+            if (item.getEventId().equals(event.getId()) && Objects.equals(item.getTicketTypeId(), ticketTypeId)) {
                 item.setQuantity(item.getQuantity() + safeQuantity);
                 return;
             }
         }
 
         String date = event.getEventDate() != null ? event.getEventDate().format(FORMATTER) : "Por definir";
-        BigDecimal price = event.getPrice() != null ? event.getPrice() : BigDecimal.ZERO;
-        items.add(new CartItem(event.getId(), event.getTitle(), date, event.getLocation(), safeQuantity, price));
+        BigDecimal price = ticketType != null && ticketType.getPrice() != null
+                ? ticketType.getPrice()
+                : event.getPrice() != null ? event.getPrice() : BigDecimal.ZERO;
+        String ticketTypeName = ticketType != null ? ticketType.getName() : "Entrada general";
+
+        items.add(new CartItem(event.getId(), ticketTypeId, ticketTypeName, event.getTitle(), date, event.getLocation(), safeQuantity, price));
     }
 
     public void removeEvent(HttpSession session, Long eventId) {
