@@ -2,6 +2,8 @@ package com.connectify.controller;
 
 import com.connectify.entity.Event;
 import com.connectify.entity.Purchase;
+import com.connectify.entity.TicketType;
+import com.connectify.repository.TicketTypeRepository;
 import com.connectify.service.CartService;
 import com.connectify.service.EventService;
 import com.connectify.service.PurchaseService;
@@ -21,11 +23,16 @@ public class CartController {
     private final CartService cartService;
     private final EventService eventService;
     private final PurchaseService purchaseService;
+    private final TicketTypeRepository ticketTypeRepository;
 
-    public CartController(CartService cartService, EventService eventService, PurchaseService purchaseService) {
+    public CartController(CartService cartService,
+                          EventService eventService,
+                          PurchaseService purchaseService,
+                          TicketTypeRepository ticketTypeRepository) {
         this.cartService = cartService;
         this.eventService = eventService;
         this.purchaseService = purchaseService;
+        this.ticketTypeRepository = ticketTypeRepository;
     }
 
     @GetMapping
@@ -37,10 +44,18 @@ public class CartController {
     @PostMapping("/add/{eventId}")
     public String add(@PathVariable Long eventId,
                       @RequestParam(defaultValue = "1") int quantity,
+                      @RequestParam(required = false) Long ticketTypeId,
                       HttpSession session) {
         Event event = eventService.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
-        cartService.addEvent(session, event, quantity);
+
+        TicketType ticketType = null;
+        if (ticketTypeId != null) {
+            ticketType = ticketTypeRepository.findById(ticketTypeId)
+                    .orElseThrow(() -> new IllegalArgumentException("Tipo de entrada no encontrado"));
+        }
+
+        cartService.addEvent(session, event, ticketType, quantity);
         return "redirect:/cart";
     }
 
