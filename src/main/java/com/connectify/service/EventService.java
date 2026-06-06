@@ -46,6 +46,10 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
+    public Event save(Event event) {
+        return eventRepository.save(event);
+    }
+
     @Transactional
     public Event updateGateAccess(Long id, String gateAccessCode, String gatePassword) {
         Event event = eventRepository.findById(id)
