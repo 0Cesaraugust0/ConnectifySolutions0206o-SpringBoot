@@ -11,8 +11,8 @@
 <header class="navbar dashboard-nav">
     <div class="brand"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div></div>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/dashboard/admin/events}">Revisión de eventos</a>
-        <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Bandeja</a>
+        <a class="btn secondary" th:href="@{/dashboard/admin/events}">Kanban de eventos</a>
+        <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Solicitudes</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
@@ -21,24 +21,24 @@
     <section class="dashboard-hero">
         <p class="badge">Gestión global</p>
         <h1 th:text="${title}">Panel Administrador</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">admin</strong></p>
+        <p class="muted">Sesión activa: <strong th:text="${email}">admin</strong>. Revisa novedades, mueve eventos por estados y confirma publicación final.</p>
     </section>
 
     <section class="dashboard-grid">
         <a class="module-card" th:href="@{/dashboard/admin/events}">
-            <span>🧾</span><h3>Revisar eventos</h3><p>Ver eventos enviados por organizadores, revisar detalle, entradas y trazabilidad.</p>
+            <span>🆕</span><h3>Novedades de revisión</h3><p>Ver qué llegó nuevo: eventos pendientes, solicitudes del organizador y pedidos relacionados al diseñador.</p>
         </a>
         <a class="module-card" th:href="@{/dashboard/admin/events}">
-            <span>👁️</span><h3>Observar / Publicar</h3><p>Marcar eventos como observados, conformes o publicados en marketplace.</p>
+            <span>🧩</span><h3>Tablero Kanban</h3><p>Separar eventos por columnas: pendiente, observado/rechazado y aprobado/publicado.</p>
         </a>
         <a class="module-card" th:href="@{/communications(role='ADMIN')}">
-            <span>💬</span><h3>Bandeja administrativa</h3><p>Coordinar con organizadores, diseñadores, clientes y auxiliares de puerta.</p>
+            <span>💬</span><h3>Solicitudes internas</h3><p>Atender peticiones del organizador o diseñador y cambiar su estado: pendiente, en proceso, observado o aprobado.</p>
         </a>
         <a class="module-card" th:href="@{/tickets/validate}">
             <span>🚪</span><h3>Control de puerta</h3><p>Probar validación de tickets por código de evento y contraseña del día.</p>
         </a>
         <a class="module-card" th:href="@{/events}">
-            <span>🛍️</span><h3>Marketplace</h3><p>Ver qué eventos están visibles para compradores.</p>
+            <span>👁️</span><h3>Vista pública</h3><p>Ver qué eventos están publicados en el marketplace para compradores.</p>
         </a>
     </section>
 </main>
