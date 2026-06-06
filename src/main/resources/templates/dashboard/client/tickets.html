@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis tickets QR - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/client}">
+        <span class="logo">🎟️</span>
+        <div><strong>Connectify</strong><small>Mis tickets QR</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/dashboard/client}">Panel cliente</a>
+        <a class="btn secondary" th:href="@{/events}">Explorar eventos</a>
+        <a class="btn secondary" th:href="@{/cart}">Carrito</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Repositorio del asistente</p>
+        <h1>Mis tickets QR</h1>
+        <p class="muted">Aquí se guardan los tickets generados después de confirmar una compra. Cuenta: <strong th:text="${email}">cliente</strong></p>
+    </section>
+
+    <section class="dashboard-grid" th:if="${tickets != null && !tickets.isEmpty()}">
+        <article class="module-card" th:each="ticket : ${tickets}">
+            <span>🎫</span>
+            <h3 th:text="${ticket.event.title}">Evento</h3>
+            <p class="muted small" th:text="${ticket.event.eventDate != null ? #temporals.format(ticket.event.eventDate, 'dd/MM/yyyy HH:mm') : 'Fecha por definir'}">Fecha</p>
+            <p><strong>Código:</strong> <span th:text="${ticket.code}">CNF-1-XXXX</span></p>
+            <div class="qr-placeholder">
+                <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + ${ticket.code}}" alt="QR del ticket">
+            </div>
+            <p class="muted small" th:text="${ticket.used ? 'Usado en puerta' : 'Disponible para ingreso'}">Disponible</p>
+        </article>
+    </section>
+
+    <section class="empty-state" th:if="${tickets == null || tickets.isEmpty()}">
+        <h2>Aún no tienes tickets QR</h2>
+        <p class="muted">Después de confirmar una compra, tus QR aparecerán aquí y el carrito quedará vacío.</p>
+        <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
+    </section>
+</main>
+</body>
+</html>
