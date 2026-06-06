@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Diseñador - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <div class="brand"><span class="logo">🎨</span><div><strong>Connectify</strong><small>Diseñador</small></div></div>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Solicitudes</a>
+        <a class="btn secondary" th:href="@{/events}">Vista pública</a>
+        <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Diseño y apoyo visual</p>
+        <h1 th:text="${title}">Panel Diseñador</h1>
+        <p class="muted">Sesión activa: <strong th:text="${email}">diseñador</strong>. Atiende solicitudes visuales relacionadas con eventos.</p>
+    </section>
+
+    <section class="dashboard-grid">
+        <a class="module-card" th:href="@{/communications(role='DESIGNER')}">
+            <span>📥</span><h3>Solicitudes recibidas</h3><p>Ver solicitudes de diseño enviadas por organizadores o administración.</p>
+        </a>
+        <a class="module-card" th:href="@{/events}">
+            <span>👁️</span><h3>Revisar vista pública</h3><p>Visualizar cómo se presentan los eventos publicados en marketplace.</p>
+        </a>
+        <div class="module-card">
+            <span>🔵</span><h3>En proceso</h3><p>Marca solicitudes como en proceso cuando empieces a trabajarlas.</p>
+        </div>
+        <div class="module-card">
+            <span>🟢</span><h3>Aprobado / Resuelto</h3><p>Marca solicitudes como aprobadas cuando la propuesta visual esté lista.</p>
+        </div>
+    </section>
+</main>
+</body>
+</html>
