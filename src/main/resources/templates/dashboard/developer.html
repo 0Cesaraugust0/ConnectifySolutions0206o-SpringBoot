@@ -24,14 +24,14 @@
     <section class="dashboard-hero">
         <p class="badge">Acceso total</p>
         <h1 th:text="${title}">Panel Developer</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong></p>
+        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Revisión técnica de roles; la compra real se valida desde el perfil cliente/asistente.</p>
     </section>
 
     <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/dashboard/admin}"><span>🛡️</span><h3>Ver como Administrador</h3><p>Aprobar eventos, categorías y estadísticas.</p></a>
-        <a class="module-card" th:href="@{/dashboard/organizer}"><span>🎯</span><h3>Ver como Organizador</h3><p>Crear eventos, gestionar ventas y tickets.</p></a>
-        <a class="module-card" th:href="@{/dashboard/client}"><span>🛒</span><h3>Ver como Cliente</h3><p>Explorar eventos, carrito y tickets.</p></a>
-        <a class="module-card" th:href="@{/dashboard/designer}"><span>🎨</span><h3>Ver como Diseñador</h3><p>Diseñar páginas de evento y previsualizar.</p></a>
+        <a class="module-card" th:href="@{/dashboard/admin}"><span>🛡️</span><h3>Ver como Administrador</h3><p>Revisar eventos, observar, aprobar y publicar.</p></a>
+        <a class="module-card" th:href="@{/dashboard/organizer}"><span>🎯</span><h3>Ver como Organizador</h3><p>Crear eventos, gestionar tickets y solicitudes. No compra entradas.</p></a>
+        <a class="module-card" th:href="@{/dashboard/client}"><span>🛒</span><h3>Ver como Cliente / Asistente</h3><p>Único camino de compra: explorar eventos, carrito y checkout.</p></a>
+        <a class="module-card" th:href="@{/dashboard/designer}"><span>🎨</span><h3>Ver como Diseñador</h3><p>Diseñar páginas de evento y atender solicitudes visuales.</p></a>
         <div class="module-card"><span>👥</span><h3>Gestionar usuarios</h3><p>Módulo próximo: altas, roles y estado de cuentas.</p></div>
         <div class="module-card"><span>📊</span><h3>Estadísticas globales</h3><p>Módulo próximo: KPIs de ventas, eventos y tickets.</p></div>
     </section>
