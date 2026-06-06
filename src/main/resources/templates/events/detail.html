@@ -11,16 +11,18 @@
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/events}">
         <span class="logo">🎫</span>
-        <div><strong>Connectify</strong><small>Detalle</small></div>
+        <div><strong>Connectify</strong><small>Vista pública</small></div>
     </a>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/events}">Volver a eventos</a>
+        <a class="btn secondary" th:href="@{/dashboard/client}">Panel cliente</a>
+        <a class="btn secondary" th:href="@{/events}">Explorar eventos</a>
         <a class="btn primary compact" th:href="@{/cart}">Ver carrito</a>
     </nav>
 </header>
 
 <main class="dashboard-page">
     <section class="event-detail-card detail-pro">
+        <p class="badge">Vista pública para comprador / asistente</p>
         <p class="badge" th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p>
         <h1 th:text="${event.title}">Título del evento</h1>
         <p class="muted" th:text="${event.description}">Descripción del evento</p>
@@ -35,7 +37,8 @@
         </div>
 
         <section class="table-card" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}">
-            <h2>Tipos de entrada disponibles</h2>
+            <h2>Elige tu tipo de entrada</h2>
+            <p class="muted small">Esta compra corresponde al cliente/asistente. La gestión interna del evento se realiza desde el panel del organizador.</p>
             <table class="table-modern">
                 <thead>
                 <tr>
@@ -55,7 +58,7 @@
                         <form class="organizer-action-row" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
                             <input type="hidden" name="ticketTypeId" th:value="${type.id}">
                             <input name="quantity" type="number" min="1" max="10" value="1" style="max-width:90px">
-                            <button class="btn primary compact" type="submit">Agregar</button>
+                            <button class="btn primary compact" type="submit">Agregar al carrito</button>
                         </form>
                     </td>
                     <td><span class="status-pill status-open">Disponible</span></td>
