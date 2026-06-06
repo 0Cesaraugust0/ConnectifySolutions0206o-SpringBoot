@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Cliente - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <div class="brand"><span class="logo">🎟️</span><div><strong>Connectify</strong><small>Cliente / Asistente</small></div></div>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/events}">Explorar eventos</a>
+        <a class="btn secondary" th:href="@{/cart}">Carrito</a>
+        <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Compra de entradas</p>
+        <h1 th:text="${title}">Panel Cliente</h1>
+        <p class="muted">Sesión activa: <strong th:text="${email}">cliente</strong>. Explora eventos publicados, elige tipos de entrada y gestiona tus tickets.</p>
+    </section>
+
+    <section class="dashboard-grid">
+        <a class="module-card" th:href="@{/events}">
+            <span>🛍️</span><h3>Explorar eventos</h3><p>Ver eventos publicados en marketplace y elegir entradas disponibles.</p>
+        </a>
+        <a class="module-card" th:href="@{/cart}">
+            <span>🛒</span><h3>Carrito</h3><p>Revisar entradas seleccionadas antes del checkout.</p>
+        </a>
+        <a class="module-card" th:href="@{/cart/checkout}">
+            <span>💳</span><h3>Checkout</h3><p>Completar datos del asistente y generar compra.</p>
+        </a>
+        <a class="module-card" th:href="@{/tickets/validate}">
+            <span>🔎</span><h3>Consultar ticket</h3><p>Validar estado de un ticket con su código, si corresponde.</p>
+        </a>
+    </section>
+</main>
+</body>
+</html>
