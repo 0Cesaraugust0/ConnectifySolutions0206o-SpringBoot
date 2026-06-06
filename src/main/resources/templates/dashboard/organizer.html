@@ -22,12 +22,12 @@
     <section class="organizer-hero">
         <p class="badge">Gestión comercial</p>
         <h1 th:text="${title}">Panel Organizador</h1>
-        <p class="hero-text">Sesión activa: <strong th:text="${email}">organizador</strong>. Administra eventos, tipos de entrada, métricas y publicación.</p>
+        <p class="hero-text">Sesión activa: <strong th:text="${email}">organizador</strong>. Administra eventos, tipos de entrada, métricas y publicación. La compra pertenece al cliente/asistente.</p>
     </section>
 
     <section class="dashboard-grid">
         <a class="module-card" th:href="@{/dashboard/organizer/events}">
-            <span>📅</span><h3>Mis eventos</h3><p>Ver eventos creados, estado, capacidad, ventas y acciones de gestión.</p>
+            <span>📅</span><h3>Mis eventos</h3><p>Ver eventos creados, estado, capacidad, ventas y seguimiento.</p>
         </a>
         <a class="module-card" th:href="@{/dashboard/organizer/events/new}">
             <span>➕</span><h3>Crear evento</h3><p>Registrar un evento y enviarlo a revisión administrativa.</p>
@@ -36,7 +36,7 @@
             <span>📊</span><h3>Métricas</h3><p>Consultar ventas, aforo, disponibilidad e ingresos estimados.</p>
         </a>
         <a class="module-card" th:href="@{/events}">
-            <span>🛍️</span><h3>Ver marketplace</h3><p>Validar cómo se visualizan los eventos publicados para compradores.</p>
+            <span>👁️</span><h3>Previsualizar marketplace</h3><p>Revisar cómo se verán los eventos publicados para compradores. No es flujo de compra del organizador.</p>
         </a>
     </section>
 </main>
