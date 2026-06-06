@@ -9,11 +9,12 @@
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/events}">
+    <a class="brand brand-link" th:href="@{/dashboard/client}">
         <span class="logo">🛒</span>
-        <div><strong>Connectify</strong><small>Carrito</small></div>
+        <div><strong>Connectify</strong><small>Cliente / Asistente</small></div>
     </a>
     <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/dashboard/client}">Panel cliente</a>
         <a class="btn secondary" th:href="@{/events}">Seguir comprando</a>
         <a class="btn primary compact" th:href="@{/cart/checkout}">Checkout</a>
     </nav>
@@ -21,9 +22,9 @@
 
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge">Carrito de compra</p>
-        <h1>Mis entradas</h1>
-        <p class="muted">Revisa tus entradas antes de continuar al checkout.</p>
+        <p class="badge">Carrito de cliente / asistente</p>
+        <h1>Mis entradas seleccionadas</h1>
+        <p class="muted">Revisa evento, tipo de entrada, cantidad y subtotal antes de continuar.</p>
     </section>
 
     <section class="cart-layout" th:if="${!items.isEmpty()}">
@@ -34,7 +35,8 @@
                     <h3 th:text="${item.eventTitle}">Evento</h3>
                     <p class="muted small" th:text="${item.eventDate}">Fecha</p>
                     <p class="muted small" th:text="${item.eventLocation}">Ubicación</p>
-                    <p><strong th:text="${item.quantity + ' entrada(s)'}">1 entrada</strong> · <span th:text="${'S/ ' + item.unitPrice}">S/ 0.00</span></p>
+                    <p><span class="status-pill status-open" th:text="${item.ticketTypeName}">Entrada general</span></p>
+                    <p><strong th:text="${item.quantity + ' entrada(s)'}">1 entrada</strong> · <span th:text="${'S/ ' + item.unitPrice}">S/ 0.00</span> c/u</p>
                 </div>
                 <div class="cart-actions">
                     <strong th:text="${'S/ ' + item.subtotal}">S/ 0.00</strong>
@@ -60,7 +62,7 @@
 
     <section class="empty-state" th:if="${items.isEmpty()}">
         <h2>Tu carrito está vacío</h2>
-        <p class="muted">Explora eventos y agrega entradas para continuar.</p>
+        <p class="muted">Explora eventos publicados y agrega entradas como cliente/asistente.</p>
         <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
     </section>
 </main>
