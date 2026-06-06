@@ -54,6 +54,11 @@ public class Event {
 
     private String gatePassword;
 
+    @Enumerated(EnumType.STRING)
+    private EventDesignTemplate designTemplate = EventDesignTemplate.CLASSIC;
+
+    private boolean designEnabled = false;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt = LocalDateTime.now();
@@ -201,6 +206,24 @@ public class Event {
 
     public void setGatePassword(String gatePassword) {
         this.gatePassword = gatePassword;
+        touch();
+    }
+
+    public EventDesignTemplate getDesignTemplate() {
+        return designTemplate;
+    }
+
+    public void setDesignTemplate(EventDesignTemplate designTemplate) {
+        this.designTemplate = designTemplate;
+        touch();
+    }
+
+    public boolean isDesignEnabled() {
+        return designEnabled;
+    }
+
+    public void setDesignEnabled(boolean designEnabled) {
+        this.designEnabled = designEnabled;
         touch();
     }
 
