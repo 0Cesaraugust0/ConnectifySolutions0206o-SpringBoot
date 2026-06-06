@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revisión de eventos - Administrador</title>
+    <title>Kanban de eventos - Administrador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
 </head>
@@ -11,50 +11,94 @@
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/admin}">
         <span class="logo">🛡️</span>
-        <div><strong>Connectify</strong><small>Administrador</small></div>
+        <div><strong>Connectify</strong><small>Kanban administrativo</small></div>
     </a>
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/dashboard/admin}">Dashboard</a>
-        <a class="btn secondary" th:href="@{/events}">Marketplace</a>
+        <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Solicitudes</a>
+        <a class="btn secondary" th:href="@{/events}">Vista pública</a>
     </nav>
 </header>
 
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge">Control administrativo</p>
-        <h1>Revisión de eventos</h1>
-        <p class="muted">Eventos creados por organizadores. Revisa detalle, tipos de entrada y trazabilidad antes de publicar.</p>
+        <p class="badge">Tablero de aprobación</p>
+        <h1>Revisión administrativa de eventos</h1>
+        <p class="muted">Mueve cada evento por estado: pendiente, observado/rechazado y aprobado/publicado. La revisión puede venir del organizador o del diseñador.</p>
     </section>
 
-    <section class="table-card">
-        <table class="table-modern">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Evento</th>
-                <th>Categoría</th>
-                <th>Ciudad</th>
-                <th>Fecha</th>
-                <th>Capacidad</th>
-                <th>Vendidos</th>
-                <th>Estado</th>
-                <th>Acción</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="event : ${events}">
-                <td th:text="${event.id}">1</td>
-                <td><strong th:text="${event.title}">Evento</strong><br><span class="muted small" th:text="${event.location}">Lugar</span></td>
-                <td th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</td>
-                <td th:text="${event.city}">Lima</td>
-                <td th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
-                <td th:text="${event.capacity}">0</td>
-                <td th:text="${event.sold}">0</td>
-                <td><span class="status-pill status-open" th:text="${event.status}">PENDING_REVIEW</span></td>
-                <td><a class="btn primary compact" th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Revisar</a></td>
-            </tr>
-            </tbody>
-        </table>
+    <section class="toolbar">
+        <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Ver solicitudes del organizador/diseñador</a>
+        <a class="btn secondary" th:href="@{/dashboard/admin}">Volver al panel</a>
+    </section>
+
+    <section class="dashboard-grid">
+        <div class="module-card">
+            <span>🟡</span>
+            <h3>Pendiente de revisión</h3>
+            <p>Eventos que acaban de llegar o fueron editados por el organizador.</p>
+            <article class="summary-card" th:each="event : ${pendingEvents}" style="margin-top:12px">
+                <p class="badge">Organizador &lt;&lt; &gt;&gt; Diseñador</p>
+                <h3 th:text="${event.title}">Evento</h3>
+                <p class="muted small" th:text="${event.city + ' · ' + event.location}">Lugar</p>
+                <p class="muted small">Estado: <strong th:text="${event.status}">PENDING_REVIEW</strong></p>
+                <div class="organizer-action-row">
+                    <a class="btn secondary compact" th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Revisar</a>
+                    <form th:action="@{/dashboard/admin/events/{id}/status(id=${event.id})}" method="post">
+                        <input type="hidden" name="status" value="APPROVED">
+                        <button class="btn primary compact" type="submit">OK / aprobar</button>
+                    </form>
+                    <form th:action="@{/dashboard/admin/events/{id}/status(id=${event.id})}" method="post">
+                        <input type="hidden" name="status" value="OBSERVED">
+                        <button class="btn secondary compact" type="submit">Observar</button>
+                    </form>
+                </div>
+            </article>
+            <p class="muted small" th:if="${pendingEvents == null || pendingEvents.isEmpty()}">Sin eventos pendientes.</p>
+        </div>
+
+        <div class="module-card">
+            <span>🟠</span>
+            <h3>Observado / rechazado</h3>
+            <p>Eventos devueltos para corrección o no conformes.</p>
+            <article class="summary-card" th:each="event : ${observedEvents}" style="margin-top:12px">
+                <p class="badge" th:text="${event.status}">OBSERVED</p>
+                <h3 th:text="${event.title}">Evento</h3>
+                <p class="muted small" th:text="${event.city + ' · ' + event.location}">Lugar</p>
+                <div class="organizer-action-row">
+                    <a class="btn secondary compact" th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Revisar</a>
+                    <form th:action="@{/dashboard/admin/events/{id}/status(id=${event.id})}" method="post">
+                        <input type="hidden" name="status" value="PENDING_REVIEW">
+                        <button class="btn secondary compact" type="submit">Volver a revisión</button>
+                    </form>
+                    <form th:action="@{/dashboard/admin/events/{id}/status(id=${event.id})}" method="post">
+                        <input type="hidden" name="status" value="REJECTED">
+                        <button class="btn secondary compact" type="submit">Rechazar</button>
+                    </form>
+                </div>
+            </article>
+            <p class="muted small" th:if="${observedEvents == null || observedEvents.isEmpty()}">Sin eventos observados o rechazados.</p>
+        </div>
+
+        <div class="module-card">
+            <span>🟢</span>
+            <h3>Aprobado / publicado</h3>
+            <p>Eventos conformes. Pueden quedar aprobados o visibles en marketplace.</p>
+            <article class="summary-card" th:each="event : ${approvedEvents}" style="margin-top:12px">
+                <p class="badge" th:text="${event.status}">APPROVED</p>
+                <h3 th:text="${event.title}">Evento</h3>
+                <p class="muted small" th:text="${event.city + ' · ' + event.location}">Lugar</p>
+                <div class="organizer-action-row">
+                    <a class="btn secondary compact" th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Ver detalle</a>
+                    <form th:if="${event.status.name() == 'APPROVED'}" th:action="@{/dashboard/admin/events/{id}/status(id=${event.id})}" method="post">
+                        <input type="hidden" name="status" value="PUBLISHED">
+                        <button class="btn primary compact" type="submit">Publicar</button>
+                    </form>
+                    <a class="btn secondary compact" th:if="${event.status.name() == 'PUBLISHED'}" th:href="@{/events/{id}(id=${event.id})}">Ver publicado</a>
+                </div>
+            </article>
+            <p class="muted small" th:if="${approvedEvents == null || approvedEvents.isEmpty()}">Sin eventos aprobados o publicados.</p>
+        </div>
     </section>
 </main>
 </body>
