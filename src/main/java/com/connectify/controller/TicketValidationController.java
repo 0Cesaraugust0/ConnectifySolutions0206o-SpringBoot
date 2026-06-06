@@ -1,6 +1,8 @@
 package com.connectify.controller;
 
+import com.connectify.entity.Event;
 import com.connectify.entity.Ticket;
+import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,50 +18,131 @@ import java.util.Optional;
 public class TicketValidationController {
 
     private final TicketRepository ticketRepository;
+    private final EventRepository eventRepository;
 
-    public TicketValidationController(TicketRepository ticketRepository) {
+    public TicketValidationController(TicketRepository ticketRepository, EventRepository eventRepository) {
         this.ticketRepository = ticketRepository;
+        this.eventRepository = eventRepository;
     }
 
     @GetMapping
-    public String form() {
+    public String form(Model model) {
+        model.addAttribute("gateUnlocked", false);
+        return "tickets/validate";
+    }
+
+    @PostMapping("/open")
+    public String openGate(@RequestParam String eventCode,
+                           @RequestParam String gatePassword,
+                           Model model) {
+        Optional<Event> event = eventRepository.findByGateAccessCode(eventCode.trim());
+        if (event.isEmpty() || event.get().getGatePassword() == null || !event.get().getGatePassword().equals(gatePassword)) {
+            model.addAttribute("gateError", "Código de evento o contraseña incorrectos.");
+            model.addAttribute("gateUnlocked", false);
+            model.addAttribute("eventCode", eventCode);
+            return "tickets/validate";
+        }
+
+        model.addAttribute("gateUnlocked", true);
+        model.addAttribute("selectedEvent", event.get());
+        model.addAttribute("eventCode", eventCode);
+        model.addAttribute("gatePassword", gatePassword);
+        return "tickets/validate";
+    }
+
+    @PostMapping("/consult")
+    public String consult(@RequestParam Long eventId,
+                          @RequestParam String eventCode,
+                          @RequestParam String gatePassword,
+                          @RequestParam String code,
+                          Model model) {
+        Event selectedEvent = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        model.addAttribute("gateUnlocked", true);
+        model.addAttribute("selectedEvent", selectedEvent);
+        model.addAttribute("eventCode", eventCode);
+        model.addAttribute("gatePassword", gatePassword);
+        model.addAttribute("code", code);
+        model.addAttribute("searched", true);
+
+        Optional<Ticket> ticket = ticketRepository.findByCode(code.trim());
+        if (ticket.isEmpty()) {
+            model.addAttribute("ticket", null);
+            return "tickets/validate";
+        }
+
+        Ticket found = ticket.get();
+        if (!found.getEvent().getId().equals(eventId)) {
+            model.addAttribute("ticket", found);
+            model.addAttribute("ticketError", "El ticket existe, pero pertenece a otro evento.");
+            return "tickets/validate";
+        }
+
+        model.addAttribute("ticket", found);
         return "tickets/validate";
     }
 
     @PostMapping
-    public String validate(@RequestParam String code, Model model) {
+    public String validateAndUse(@RequestParam Long eventId,
+                                 @RequestParam String eventCode,
+                                 @RequestParam String gatePassword,
+                                 @RequestParam String code,
+                                 Model model) {
+        Event selectedEvent = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        model.addAttribute("gateUnlocked", true);
+        model.addAttribute("selectedEvent", selectedEvent);
+        model.addAttribute("eventCode", eventCode);
+        model.addAttribute("gatePassword", gatePassword);
+        model.addAttribute("code", code);
+        model.addAttribute("searched", true);
+
         Optional<Ticket> ticket = ticketRepository.findByCode(code.trim());
         if (ticket.isEmpty()) {
-            model.addAttribute("error", "No se encontró un ticket con ese código.");
-            model.addAttribute("code", code);
+            model.addAttribute("result", new ValidationResult("NOT_FOUND", code, "Ticket no encontrado."));
             return "tickets/validate";
         }
 
-        model.addAttribute("ticket", ticket.get());
-        model.addAttribute("code", code);
+        Ticket found = ticket.get();
+        model.addAttribute("ticket", found);
+
+        if (!found.getEvent().getId().equals(eventId)) {
+            model.addAttribute("result", new ValidationResult("WRONG_EVENT", code, "El ticket pertenece a otro evento."));
+            return "tickets/validate";
+        }
+
+        if (found.isUsed()) {
+            model.addAttribute("result", new ValidationResult("USED", code, "El ticket ya fue usado anteriormente."));
+            return "tickets/validate";
+        }
+
+        found.setUsed(true);
+        ticketRepository.save(found);
+        model.addAttribute("result", new ValidationResult("VALID", code, "Acceso autorizado."));
         return "tickets/validate";
     }
 
-    @PostMapping("/use")
-    public String markAsUsed(@RequestParam String code, Model model) {
-        Optional<Ticket> found = ticketRepository.findByCode(code.trim());
-        if (found.isEmpty()) {
-            model.addAttribute("error", "No se encontró un ticket con ese código.");
-            model.addAttribute("code", code);
-            return "tickets/validate";
+    public static class ValidationResult {
+        private final String status;
+        private final String code;
+        private final String message;
+
+        public ValidationResult(String status, String code, String message) {
+            this.status = status;
+            this.code = code;
+            this.message = message;
         }
 
-        Ticket ticket = found.get();
-        if (ticket.isUsed()) {
-            model.addAttribute("warning", "Este ticket ya fue usado anteriormente.");
-            model.addAttribute("ticket", ticket);
-            return "tickets/validate";
+        public String getStatus() {
+            return status;
         }
 
-        ticket.setUsed(true);
-        ticketRepository.save(ticket);
-        model.addAttribute("success", "Ingreso validado correctamente. Ticket marcado como usado.");
-        model.addAttribute("ticket", ticket);
-        return "tickets/validate";
+        public String getCode() {
+            return code;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }
