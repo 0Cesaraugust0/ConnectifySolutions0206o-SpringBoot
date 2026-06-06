@@ -33,13 +33,7 @@ public class AdminDashboardController {
         this.recordRepository = recordRepository;
     }
 
-    @GetMapping
-    public String events(Model model) {
-        model.addAttribute("events", eventRepository.findAll());
-        return "dashboard/admin/events";
-    }
-
-    @GetMapping("/{id}")
+     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
         model.addAttribute("event", event);
