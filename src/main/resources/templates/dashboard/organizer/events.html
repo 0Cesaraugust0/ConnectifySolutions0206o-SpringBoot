@@ -25,7 +25,7 @@
     <section class="organizer-hero">
         <p class="badge">Panel organizador</p>
         <h1>Mis eventos</h1>
-        <p class="hero-text">Administra eventos creados, entradas por tipo, cupos liberados y estado de revisión administrativa.</p>
+        <p class="hero-text">Listado de eventos creados. Ingresa al detalle para editar, gestionar tickets, eliminar o solicitar apoyo.</p>
     </section>
 
     <section class="toolbar">
@@ -35,7 +35,6 @@
     </section>
 
     <div th:if="${param.deleted}" class="alert success">Evento eliminado dentro de la ventana permitida. Se conservó trazabilidad administrativa.</div>
-    <div th:if="${param.deleteDenied}" class="alert error">No se puede eliminar: ya pasaron más de 24 horas desde la creación. Requiere revisión del administrador.</div>
 
     <section class="table-card">
         <table class="table-modern">
@@ -49,7 +48,7 @@
                 <th>Capacidad</th>
                 <th>Vendidos</th>
                 <th>Estado</th>
-                <th>Gestión</th>
+                <th>Seguimiento</th>
             </tr>
             </thead>
             <tbody>
@@ -66,20 +65,14 @@
                 <td th:text="${event.sold}">0</td>
                 <td><span class="status-pill status-open" th:text="${event.status}">PENDING_REVIEW</span></td>
                 <td>
-                    <div class="organizer-action-row">
-                        <a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Ver</a>
-                        <a class="btn secondary compact" th:href="@{/dashboard/organizer/events/{id}/ticket-types(id=${event.id})}">Entradas</a>
-                        <form th:action="@{/dashboard/organizer/events/{id}/delete(id=${event.id})}" method="post">
-                            <button class="btn secondary compact" type="submit">Eliminar</button>
-                        </form>
-                    </div>
+                    <a class="btn primary compact" th:href="@{/dashboard/organizer/events/{id}(id=${event.id})}">Ver detalle</a>
                 </td>
             </tr>
             </tbody>
         </table>
     </section>
 
-    <p class="cancel-note">Regla: el organizador puede eliminar durante las primeras 24 horas desde la creación del evento. Después, requiere revisión del administrador. Siempre se conserva trazabilidad.</p>
+    <p class="cancel-note">Seguimiento: abre el detalle de cada evento para editarlo, gestionar tickets, solicitar apoyo o revisar solicitudes relacionadas.</p>
 </main>
 </body>
 </html>
