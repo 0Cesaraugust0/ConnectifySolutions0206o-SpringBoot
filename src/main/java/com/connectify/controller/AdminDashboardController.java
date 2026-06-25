@@ -55,31 +55,39 @@ public class AdminDashboardController {
         Event event = findEvent(id);
         event.setStatus(EventStatus.APPROVED);
         eventRepository.save(event);
-        createRecord(event, "Conforme: " + note);
+        createRecord(event, "Conforme: " + note + " Se bloquean servicios de edición para organizador y diseñador hasta nueva decisión administrativa.");
         messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
                 MessageType.EVENT_REVIEW, MessagePriority.NORMAL,
                 "Evento aprobado: " + event.getTitle(),
-                "La construcción del evento fue aprobada. Antes de hacerlo público, el administrador realizará la publicación final. Nota: " + note,
+                "La construcción fue aprobada y quedó bloqueada para nuevas ediciones. El administrador realizará la publicación final. Nota: " + note,
+                id);
+        messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.DESIGNER,
+                MessageType.DESIGN_FEEDBACK, MessagePriority.NORMAL,
+                "Diseño aprobado y bloqueado: " + event.getTitle(),
+                "La propuesta fue aprobada. Las acciones de diseño para este evento quedan bloqueadas hasta nueva decisión administrativa.",
                 id);
         return "redirect:/dashboard/admin/events/" + id + "?ok=true";
     }
 
     @PostMapping("/{id}/observe")
     public String observe(@PathVariable Long id,
-                          @RequestParam(required = false, defaultValue = "Evento observado. Requiere ajustes del organizador.") String note) {
+                          @RequestParam(required = false, defaultValue = "Evento observado. Requiere ajustes del organizador.") String note,
+                          @RequestParam(required = false, defaultValue = "false") boolean notifyDesigner) {
         Event event = findEvent(id);
         event.setStatus(EventStatus.OBSERVED);
         eventRepository.save(event);
-        createRecord(event, "Observado: " + note);
+        createRecord(event, "Observado: " + note + (notifyDesigner ? " Aviso enviado también al diseñador." : " Aviso enviado al organizador."));
 
         String subject = "Observación administrativa: " + event.getTitle();
         String organizerBody = "El evento fue observado y requiere ajustes antes de volver a revisión. Detalle: " + note;
-        String designerBody = "Revisa la observación administrativa asociada al evento. Si requiere corrección visual o de presentación, coordina el ajuste. Detalle: " + note;
-
         messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
                 MessageType.EVENT_REVIEW, MessagePriority.HIGH, subject, organizerBody, id);
-        messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.DESIGNER,
-                MessageType.DESIGN_FEEDBACK, MessagePriority.NORMAL, subject, designerBody, id);
+
+        if (notifyDesigner) {
+            String designerBody = "Revisa la observación administrativa asociada al evento. Se solicitó apoyo visual o de presentación. Detalle: " + note;
+            messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.DESIGNER,
+                    MessageType.DESIGN_FEEDBACK, MessagePriority.NORMAL, subject, designerBody, id);
+        }
 
         return "redirect:/dashboard/admin/events/" + id + "?observed=true";
     }
