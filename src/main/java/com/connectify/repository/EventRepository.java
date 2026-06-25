@@ -18,5 +18,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByCategoryNameAndStatusAndEventDateAfterOrderByEventDateAsc(String categoryName, EventStatus status, LocalDateTime now);
 
+    List<Event> findByOrganizerEmailIgnoreCaseOrderByUpdatedAtDesc(String organizerEmail);
+
     Optional<Event> findByGateAccessCode(String gateAccessCode);
 }
