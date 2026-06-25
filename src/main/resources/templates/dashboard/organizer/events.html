@@ -7,6 +7,19 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
     <link rel="stylesheet" th:href="@{/css/organizer.css}">
+    <style>
+        .event-list { display:grid; gap:16px; }
+        .event-row-card { display:grid; grid-template-columns:150px 1fr auto; gap:18px; align-items:center; padding:16px; border:1px solid #e6e8f0; border-radius:16px; background:#fff; box-shadow:0 8px 20px rgba(19,25,55,.05); }
+        .event-row-card img { width:150px; height:112px; object-fit:cover; border-radius:12px; background:#f0f2f8; }
+        .event-row-card h3 { margin:0 0 7px; }
+        .event-meta { display:flex; flex-wrap:wrap; gap:14px; color:#667085; font-size:.9rem; margin:8px 0; }
+        .event-kpis { display:grid; grid-template-columns:repeat(3,minmax(90px,1fr)); gap:10px; border-top:1px solid #edf0f5; padding-top:10px; }
+        .event-kpi small { display:block; color:#768099; }
+        .event-kpi strong { display:block; margin-top:2px; }
+        .event-actions { display:flex; flex-direction:column; align-items:stretch; gap:9px; min-width:132px; }
+        .event-empty { padding:34px; text-align:center; border:1px dashed #d9dfeb; border-radius:14px; }
+        @media (max-width:800px) { .event-row-card { grid-template-columns:1fr; } .event-row-card img { width:100%; height:180px; } .event-actions { flex-direction:row; } .event-kpis { grid-template-columns:1fr 1fr; } }
+    </style>
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -25,54 +38,50 @@
     <section class="organizer-hero">
         <p class="badge">Panel organizador</p>
         <h1>Mis eventos</h1>
-        <p class="hero-text">Listado de eventos creados. Ingresa al detalle para editar, gestionar tickets, eliminar o solicitar apoyo.</p>
+        <p class="hero-text">Gestiona los eventos creados desde un listado visual. Entra al detalle para editar, eliminar, revisar entradas y solicitar apoyo al administrador o diseñador.</p>
     </section>
 
     <section class="toolbar">
         <a class="btn primary" th:href="@{/dashboard/organizer/events/new}">Crear nuevo evento</a>
         <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Ver métricas</a>
-        <a class="btn secondary" th:href="@{/events}">Ver marketplace</a>
+        <a class="btn secondary" th:href="@{/events}">Previsualizar marketplace</a>
     </section>
 
-    <div th:if="${param.deleted}" class="alert success">Evento eliminado dentro de la ventana permitida. Se conservó trazabilidad administrativa.</div>
+    <div th:if="${param.deleted}" class="alert success">Evento eliminado dentro de la ventana permitida. Se conservó la trazabilidad administrativa.</div>
 
-    <section class="table-card">
-        <table class="table-modern">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Evento</th>
-                <th>Categoría</th>
-                <th>Ciudad</th>
-                <th>Precio base</th>
-                <th>Capacidad</th>
-                <th>Vendidos</th>
-                <th>Estado</th>
-                <th>Seguimiento</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="event : ${events}">
-                <td th:text="${event.id}">1</td>
-                <td class="event-title-cell">
-                    <strong th:text="${event.title}">Evento</strong>
-                    <span class="event-subtext" th:text="${event.location + ' · ' + event.city}">Lugar</span>
-                </td>
-                <td th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</td>
-                <td th:text="${event.city}">Lima</td>
-                <td th:text="${'S/ ' + event.price}">S/ 0.00</td>
-                <td th:text="${event.capacity}">0</td>
-                <td th:text="${event.sold}">0</td>
-                <td><span class="status-pill status-open" th:text="${event.status}">PENDING_REVIEW</span></td>
-                <td>
-                    <a class="btn primary compact" th:href="@{/dashboard/organizer/events/{id}(id=${event.id})}">Ver detalle</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <section class="event-list" th:if="${events != null && !events.isEmpty()}">
+        <article class="event-row-card" th:each="event : ${events}">
+            <img th:src="${event.imageUrl != null && !event.imageUrl.isBlank() ? event.imageUrl : '/images/event-placeholder.jpg'}" alt="Imagen del evento">
+            <div>
+                <div class="organizer-action-row">
+                    <span class="status-pill status-open" th:text="${event.status}">PENDING_REVIEW</span>
+                    <span class="badge" th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</span>
+                </div>
+                <h3 th:text="${event.title}">Nombre del evento</h3>
+                <div class="event-meta">
+                    <span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Fecha por definir'}">Fecha</span>
+                    <span th:text="${event.location + ' · ' + event.city}">Lugar</span>
+                </div>
+                <div class="event-kpis">
+                    <div class="event-kpi"><small>Entradas vendidas</small><strong th:text="${event.sold + ' / ' + event.capacity}">0 / 0</strong></div>
+                    <div class="event-kpi"><small>Ingreso estimado</small><strong th:text="${'S/ ' + (event.sold * event.price)}">S/ 0</strong></div>
+                    <div class="event-kpi"><small>Estado de revisión</small><strong th:text="${event.status}">PENDING_REVIEW</strong></div>
+                </div>
+            </div>
+            <div class="event-actions">
+                <a class="btn primary compact" th:href="@{/dashboard/organizer/events/{id}(id=${event.id})}">Ver detalle</a>
+                <a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Vista pública</a>
+            </div>
+        </article>
     </section>
 
-    <p class="cancel-note">Seguimiento: abre el detalle de cada evento para editarlo, gestionar tickets, solicitar apoyo o revisar solicitudes relacionadas.</p>
+    <section class="event-empty" th:if="${events == null || events.isEmpty()}">
+        <h2>Aún no tienes eventos creados</h2>
+        <p class="muted">Crea tu primer evento para administrar fechas, entradas y solicitudes relacionadas.</p>
+        <a class="btn primary" th:href="@{/dashboard/organizer/events/new}">Crear evento</a>
+    </section>
+
+    <p class="cancel-note">El detalle de cada evento concentra las acciones operativas: editar, eliminar dentro de las 24 horas permitidas, gestionar entradas y crear solicitudes de apoyo.</p>
 </main>
 </body>
 </html>
