@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
     <style>
-        .view-switch{display:flex;gap:8px;margin:18px 0}.view-switch a{border:1px solid #d9def2;background:#f7f8fd;border-radius:10px;padding:9px 14px;font-weight:700}.view-switch a.active{background:#17113f;color:#fff}.summary-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}.summary-strip .module-card{padding:14px}.kanban-layout{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.kanban-item{border-top:1px solid #e8ebf2;padding:11px 0}.kanban-item:first-of-type{border-top:0}@media(max-width:900px){.summary-strip,.kanban-layout{grid-template-columns:1fr}}
+        .admin-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.view-switch{display:flex;gap:7px}.view-switch a{border:1px solid #d9def2;background:#fff;border-radius:8px;padding:8px 12px;font-size:.88rem;font-weight:700}.view-switch a.active{background:#17113f;color:#fff}.refresh-row{display:flex;justify-content:flex-end;margin-bottom:14px}.summary-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 22px}.status-summary{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border:1px solid #e5e8f0;border-radius:11px}.status-summary small{display:block;color:#657085}.status-summary strong{display:block;font-size:1.55rem;margin-top:4px}.status-summary b{font-size:1.6rem}.pending-card{background:#fff8ef}.approved-card{background:#f0fff6}.rejected-card{background:#fff4f4}.event-cell{display:flex;align-items:center;gap:10px;min-width:190px}.event-thumb{width:42px;height:42px;border-radius:8px;background:#eef1f7;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}.event-thumb img{width:100%;height:100%;object-fit:cover}.table-modern td{vertical-align:middle}.kanban-layout{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.kanban-item{border-top:1px solid #e8ebf2;padding:11px 0}.kanban-item:first-of-type{border-top:0}@media(max-width:900px){.admin-title-row,.summary-strip,.kanban-layout{grid-template-columns:1fr;display:grid}.view-switch{justify-content:flex-start}.refresh-row{justify-content:flex-start}}
     </style>
 </head>
 <body>
@@ -15,29 +15,31 @@
     <a class="brand brand-link" th:href="@{/dashboard/admin}"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div></a>
     <nav class="top-actions"><a class="btn secondary" th:href="@{/dashboard/admin}">Dashboard</a><a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Solicitudes</a></nav>
 </header>
+
 <main class="dashboard-page">
-    <section class="dashboard-hero"><p class="badge">Gestión administrativa</p><h1>Gestión de eventos</h1><p class="muted">Cambia entre la bandeja de ingresos y el tablero de seguimiento sin salir de este módulo.</p></section>
     <section class="table-card">
-        <nav class="view-switch">
-            <a th:href="@{/dashboard/admin/events(view='list')}" th:classappend="${activeView == 'list'} ? ' active'">▦ Lista de ingresos</a>
-            <a th:href="@{/dashboard/admin/events(view='kanban')}" th:classappend="${activeView == 'kanban'} ? ' active'">▤ Tablero Kanban</a>
-        </nav>
+        <div class="admin-title-row">
+            <div><h1>Gestión de Eventos</h1><p class="muted">Revisa ingresos nuevos o consulta el seguimiento por estado.</p></div>
+            <nav class="view-switch"><a th:href="@{/dashboard/admin/events(view='kanban')}" th:classappend="${activeView == 'kanban'} ? ' active'">▦ Kanban</a><a th:href="@{/dashboard/admin/events(view='list')}" th:classappend="${activeView == 'list'} ? ' active'">☷ Lista</a></nav>
+        </div>
+
         <div th:if="${activeView == 'list'}">
+            <div class="refresh-row"><a class="btn secondary compact" th:href="@{/dashboard/admin/events(view='list')}">↻ Refrescar eventos</a></div>
             <section class="summary-strip">
-                <article class="module-card"><small>Pendientes</small><h2 th:text="${pendingCount}">0</h2></article>
-                <article class="module-card"><small>Aprobados / publicados</small><h2 th:text="${approvedCount}">0</h2></article>
-                <article class="module-card"><small>Rechazados</small><h2 th:text="${rejectedCount}">0</h2></article>
+                <article class="status-summary pending-card"><div><small>Pendientes</small><strong th:text="${pendingCount}">0</strong></div><b>◷</b></article>
+                <article class="status-summary approved-card"><div><small>Aprobados</small><strong th:text="${approvedCount}">0</strong></div><b>✓</b></article>
+                <article class="status-summary rejected-card"><div><small>Rechazados</small><strong th:text="${rejectedCount}">0</strong></div><b>×</b></article>
             </section>
-            <h2>Eventos pendientes de aprobación</h2>
-            <p class="muted small">Nuevas propuestas o cambios finales guardados por el organizador. Las decisiones administrativas están dentro del detalle.</p>
+            <h2>◷ Eventos Pendientes de Aprobación</h2>
+            <p class="muted small">Aquí solo ingresan propuestas nuevas o cambios finales del organizador. Las decisiones se toman al abrir el detalle.</p>
             <table class="table-modern">
                 <thead><tr><th>Evento</th><th>Categoría</th><th>Fecha &amp; hora</th><th>Ubicación</th><th>Organizador</th><th>Capacidad</th><th>Acciones</th></tr></thead>
                 <tbody>
                     <tr th:each="event : ${pendingEvents}">
-                        <td><strong th:text="${event.title}">Evento</strong><br><span class="muted small" th:text="${event.city}">Lima</span></td>
-                        <td th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</td>
-                        <td th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
-                        <td th:text="${event.location}">Lugar</td>
+                        <td><div class="event-cell"><div class="event-thumb" th:if="${event.imageUrl != null && !event.imageUrl.isBlank()}"><img th:src="${event.imageUrl}" alt="Evento"></div><div class="event-thumb" th:unless="${event.imageUrl != null && !event.imageUrl.isBlank()}">🎟</div><div><strong th:text="${event.title}">Evento</strong><br><span class="muted small" th:text="${event.city}">Lima</span></div></div></td>
+                        <td><span class="status-pill" th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</span></td>
+                        <td th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMM yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
+                        <td><strong th:text="${event.location}">Lugar</strong><br><span class="muted small" th:text="${event.city}">Ciudad</span></td>
                         <td><strong th:text="${event.organizerName != null && !event.organizerName.isBlank() ? event.organizerName : 'Organizador registrado'}">Organizador</strong><br><span class="muted small" th:text="${event.organizerEmail != null && !event.organizerEmail.isBlank() ? event.organizerEmail : 'Cuenta no registrada'}">correo</span></td>
                         <td><strong th:text="${event.capacity}">0</strong><br><span class="muted small">personas</span></td>
                         <td><a class="btn primary compact" th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Ver detalles</a></td>
@@ -46,12 +48,13 @@
                 </tbody>
             </table>
         </div>
+
         <div th:if="${activeView == 'kanban'}">
-            <h2>Tablero de seguimiento</h2><p class="muted small">Vista estratégica por estado. No repite la tabla de ingresos ni los indicadores superiores.</p>
+            <h2>Tablero de seguimiento</h2><p class="muted small">Esta vista es estratégica: no replica la franja de métricas ni la tabla de ingresos.</p>
             <section class="kanban-layout">
-                <article class="module-card"><h3>🟡 Pendiente / observado</h3><p class="muted small">Requiere decisión o corrección.</p><div class="kanban-item" th:each="event : ${pendingEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small">Pendiente de revisión</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Abrir detalle</a></div><div class="kanban-item" th:each="event : ${observedEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small">Observado</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Abrir detalle</a></div></article>
-                <article class="module-card"><h3>🟢 Aprobado / publicado</h3><p class="muted small">Conformes o visibles en marketplace.</p><div class="kanban-item" th:each="event : ${approvedEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small" th:text="${event.status}">APPROVED</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Abrir detalle</a></div></article>
-                <article class="module-card"><h3>🔴 Rechazado</h3><p class="muted small">Propuestas no conformes.</p><div class="kanban-item" th:each="event : ${rejectedEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small">Rechazado</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Ver registro</a></div></article>
+                <article class="module-card"><h3>🟡 Pendiente / Observado</h3><p class="muted small">En revisión o esperando corrección.</p><div class="kanban-item" th:each="event : ${pendingEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small">Pendiente de revisión</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Abrir detalle</a></div><div class="kanban-item" th:each="event : ${observedEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small">Observado</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Abrir detalle</a></div></article>
+                <article class="module-card"><h3>🟢 Aprobado / Publicado</h3><p class="muted small">Conforme o visible para compradores.</p><div class="kanban-item" th:each="event : ${approvedEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small" th:text="${event.status}">APPROVED</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Abrir detalle</a></div></article>
+                <article class="module-card"><h3>🔴 Rechazado</h3><p class="muted small">Propuestas cerradas.</p><div class="kanban-item" th:each="event : ${rejectedEvents}"><strong th:text="${event.title}">Evento</strong><br><span class="muted small">Rechazado</span><br><a th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Ver registro</a></div></article>
             </section>
         </div>
     </section>
