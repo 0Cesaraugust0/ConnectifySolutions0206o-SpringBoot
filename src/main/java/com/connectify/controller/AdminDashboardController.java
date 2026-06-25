@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequestMapping("/dashboard/admin/events")
@@ -43,9 +44,17 @@ public class AdminDashboardController {
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
+        List<EventAdminRecord> records = recordRepository.findByEventIdOrderByCreatedAtDesc(id);
+        List<EventAdminRecord> changeRecords = records.stream()
+                .filter(record -> record.getType() == EventAdminRecordType.UPDATED
+                        || record.getType() == EventAdminRecordType.TICKET_TYPE_CREATED
+                        || record.getType() == EventAdminRecordType.TICKET_TYPE_UPDATED)
+                .toList();
+
         model.addAttribute("event", event);
         model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdOrderByPriceAsc(id));
-        model.addAttribute("records", recordRepository.findByEventIdOrderByCreatedAtDesc(id));
+        model.addAttribute("records", records);
+        model.addAttribute("changeRecords", changeRecords);
         return "dashboard/admin/event-detail";
     }
 
@@ -54,12 +63,14 @@ public class AdminDashboardController {
                          @RequestParam(required = false, defaultValue = "Evento conforme para continuar revisión administrativa.") String note) {
         Event event = findEvent(id);
         event.setStatus(EventStatus.APPROVED);
+        event.setDesignEnabled(false);
         eventRepository.save(event);
-        createRecord(event, "Conforme: " + note + " Se bloquean servicios de edición para organizador y diseñador hasta nueva decisión administrativa.");
+
+        createRecord(event, "Conforme: " + note + " Servicios del organizador y diseño bloqueados hasta nueva decisión administrativa.");
         messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
                 MessageType.EVENT_REVIEW, MessagePriority.NORMAL,
                 "Evento aprobado: " + event.getTitle(),
-                "La construcción fue aprobada y quedó bloqueada para nuevas ediciones. El administrador realizará la publicación final. Nota: " + note,
+                "La construcción fue aprobada y quedó bloqueada para nuevas ediciones. Aún no es visible al público. Nota: " + note,
                 id);
         messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.DESIGNER,
                 MessageType.DESIGN_FEEDBACK, MessagePriority.NORMAL,
@@ -75,20 +86,22 @@ public class AdminDashboardController {
                           @RequestParam(required = false, defaultValue = "false") boolean notifyDesigner) {
         Event event = findEvent(id);
         event.setStatus(EventStatus.OBSERVED);
+        event.setDesignEnabled(notifyDesigner);
         eventRepository.save(event);
-        createRecord(event, "Observado: " + note + (notifyDesigner ? " Aviso enviado también al diseñador." : " Aviso enviado al organizador."));
 
+        createRecord(event, "Observado: " + note + (notifyDesigner ? " Aviso enviado también al diseñador." : " Aviso enviado al organizador."));
         String subject = "Observación administrativa: " + event.getTitle();
-        String organizerBody = "El evento fue observado y requiere ajustes antes de volver a revisión. Detalle: " + note;
         messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
-                MessageType.EVENT_REVIEW, MessagePriority.HIGH, subject, organizerBody, id);
+                MessageType.EVENT_REVIEW, MessagePriority.HIGH, subject,
+                "El evento fue observado y requiere ajustes antes de volver a revisión. Detalle: " + note,
+                id);
 
         if (notifyDesigner) {
-            String designerBody = "Revisa la observación administrativa asociada al evento. Se solicitó apoyo visual o de presentación. Detalle: " + note;
             messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.DESIGNER,
-                    MessageType.DESIGN_FEEDBACK, MessagePriority.NORMAL, subject, designerBody, id);
+                    MessageType.DESIGN_FEEDBACK, MessagePriority.NORMAL, subject,
+                    "Se solicitó apoyo visual o de presentación para este evento. Detalle: " + note,
+                    id);
         }
-
         return "redirect:/dashboard/admin/events/" + id + "?observed=true";
     }
 
@@ -108,6 +121,24 @@ public class AdminDashboardController {
                 "El evento fue publicado en marketplace. " + note,
                 id);
         return "redirect:/dashboard/admin/events/" + id + "?published=true";
+    }
+
+    @PostMapping("/{id}/unpublish")
+    public String unpublish(@PathVariable Long id,
+                            @RequestParam(required = false, defaultValue = "Evento retirado temporalmente de marketplace.") String note) {
+        Event event = findEvent(id);
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            return "redirect:/dashboard/admin/events/" + id + "?unpublishDenied=true";
+        }
+        event.setStatus(EventStatus.APPROVED);
+        eventRepository.save(event);
+        createRecord(event, "Despublicado: " + note + " El evento permanece aprobado y bloqueado.");
+        messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
+                MessageType.EVENT_REVIEW, MessagePriority.NORMAL,
+                "Evento despublicado: " + event.getTitle(),
+                "El evento fue retirado temporalmente del marketplace y permanece bloqueado en estado aprobado. " + note,
+                id);
+        return "redirect:/dashboard/admin/events/" + id + "?unpublished=true";
     }
 
     private Event findEvent(Long id) {
