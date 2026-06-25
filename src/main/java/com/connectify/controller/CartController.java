@@ -1,6 +1,7 @@
 package com.connectify.controller;
 
 import com.connectify.entity.Event;
+import com.connectify.entity.EventStatus;
 import com.connectify.entity.Purchase;
 import com.connectify.entity.TicketType;
 import com.connectify.repository.TicketTypeRepository;
@@ -25,9 +26,7 @@ public class CartController {
     private final PurchaseService purchaseService;
     private final TicketTypeRepository ticketTypeRepository;
 
-    public CartController(CartService cartService,
-                          EventService eventService,
-                          PurchaseService purchaseService,
+    public CartController(CartService cartService, EventService eventService, PurchaseService purchaseService,
                           TicketTypeRepository ticketTypeRepository) {
         this.cartService = cartService;
         this.eventService = eventService;
@@ -48,11 +47,17 @@ public class CartController {
                       HttpSession session) {
         Event event = eventService.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            return "redirect:/events";
+        }
 
         TicketType ticketType = null;
         if (ticketTypeId != null) {
             ticketType = ticketTypeRepository.findById(ticketTypeId)
                     .orElseThrow(() -> new IllegalArgumentException("Tipo de entrada no encontrado"));
+            if (!ticketType.isActive() || ticketType.getEvent() == null || !eventId.equals(ticketType.getEvent().getId())) {
+                return "redirect:/events/" + eventId;
+            }
         }
 
         cartService.addEvent(session, event, ticketType, quantity);
