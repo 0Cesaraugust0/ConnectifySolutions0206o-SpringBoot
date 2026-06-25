@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class AdminDashboardEventController {
     }
 
     @GetMapping
-    public String board(Model model) {
+    public String board(@RequestParam(defaultValue = "list") String view, Model model) {
         List<Event> events = eventService.findAll();
         List<Event> pendingEvents = filter(events, EventStatus.PENDING_REVIEW);
         List<Event> observedEvents = filter(events, EventStatus.OBSERVED);
@@ -30,7 +31,7 @@ public class AdminDashboardEventController {
                 .filter(event -> event.getStatus() == EventStatus.APPROVED || event.getStatus() == EventStatus.PUBLISHED)
                 .toList();
 
-        model.addAttribute("events", events);
+        model.addAttribute("activeView", "kanban".equalsIgnoreCase(view) ? "kanban" : "list");
         model.addAttribute("pendingEvents", pendingEvents);
         model.addAttribute("observedEvents", observedEvents);
         model.addAttribute("rejectedEvents", rejectedEvents);
