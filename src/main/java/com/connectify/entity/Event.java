@@ -39,6 +39,10 @@ public class Event {
 
     private String city;
 
+    private String organizerName;
+
+    private String organizerEmail;
+
     private BigDecimal price;
 
     private Integer capacity;
@@ -143,6 +147,24 @@ public class Event {
 
     public void setCity(String city) {
         this.city = city;
+        touch();
+    }
+
+    public String getOrganizerName() {
+        return organizerName;
+    }
+
+    public void setOrganizerName(String organizerName) {
+        this.organizerName = organizerName;
+        touch();
+    }
+
+    public String getOrganizerEmail() {
+        return organizerEmail;
+    }
+
+    public void setOrganizerEmail(String organizerEmail) {
+        this.organizerEmail = organizerEmail;
         touch();
     }
 
