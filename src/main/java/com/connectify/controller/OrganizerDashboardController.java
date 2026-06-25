@@ -71,10 +71,12 @@ public class OrganizerDashboardController {
                               @RequestParam String city,
                               @RequestParam BigDecimal price,
                               @RequestParam Integer capacity,
-                              @RequestParam(required = false) String imageUrl) {
+                              @RequestParam(required = false) String imageUrl,
+                              Authentication authentication) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
 
+        String organizerEmail = authentication != null ? authentication.getName() : "organizador@eventos.com";
         Event event = new Event();
         event.setTitle(title);
         event.setDescription(description);
@@ -82,6 +84,8 @@ public class OrganizerDashboardController {
         event.setEventDate(LocalDateTime.parse(eventDate));
         event.setLocation(location);
         event.setCity(city);
+        event.setOrganizerName(displayNameFromEmail(organizerEmail));
+        event.setOrganizerEmail(organizerEmail);
         event.setPrice(price);
         event.setCapacity(capacity);
         event.setSold(0);
@@ -138,7 +142,7 @@ public class OrganizerDashboardController {
         event.setImageUrl(imageUrl == null ? "" : imageUrl);
         event.setStatus(EventStatus.PENDING_REVIEW);
         eventRepository.save(event);
-        createRecord(event, EventAdminRecordType.UPDATED, "Evento editado por organizador y devuelto a revisión administrativa.");
+        createRecord(event, EventAdminRecordType.UPDATED, "Cambios finales guardados por organizador. Evento devuelto a revisión administrativa.");
         return "redirect:/dashboard/organizer/events/" + id + "?updated=true";
     }
 
@@ -185,8 +189,10 @@ public class OrganizerDashboardController {
         ticketType.setQuantitySold(0);
         ticketType.setActive(true);
         ticketTypeRepository.save(ticketType);
+        event.setStatus(EventStatus.PENDING_REVIEW);
+        eventRepository.save(event);
         createRecord(event, EventAdminRecordType.TICKET_TYPE_CREATED,
-                "Tipo de entrada creado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable);
+                "Tipo de entrada creado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable + ". Evento devuelto a revisión.");
         return "redirect:/dashboard/organizer/events/" + id + "/ticket-types";
     }
 
@@ -210,9 +216,11 @@ public class OrganizerDashboardController {
         ticketType.setQuantityAvailable(quantityAvailable);
         ticketType.setActive(active);
         ticketTypeRepository.save(ticketType);
+        event.setStatus(EventStatus.PENDING_REVIEW);
+        eventRepository.save(event);
 
         createRecord(event, EventAdminRecordType.TICKET_TYPE_UPDATED,
-                "Tipo de entrada actualizado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable + " / activo: " + active);
+                "Tipo de entrada actualizado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable + " / activo: " + active + ". Evento devuelto a revisión.");
         return "redirect:/dashboard/organizer/events/" + id + "/ticket-types?updated=true";
     }
 
@@ -269,6 +277,15 @@ public class OrganizerDashboardController {
             return customName.trim();
         }
         return "Entrada general";
+    }
+
+    private String displayNameFromEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return "Organizador";
+        }
+        String localPart = email.contains("@") ? email.substring(0, email.indexOf('@')) : email;
+        String normalized = localPart.replace('.', ' ').replace('_', ' ').replace('-', ' ').trim();
+        return normalized.isBlank() ? "Organizador" : normalized.substring(0, 1).toUpperCase() + normalized.substring(1);
     }
 
     private void createRecord(Event event, EventAdminRecordType type, String description) {
