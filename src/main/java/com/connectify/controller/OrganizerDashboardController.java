@@ -14,6 +14,7 @@ import com.connectify.repository.EventAdminRecordRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
 import com.connectify.service.InternalMessageService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,8 +57,8 @@ public class OrganizerDashboardController {
     }
 
     @GetMapping
-    public String events(Model model) {
-        model.addAttribute("events", eventRepository.findAll());
+    public String events(Model model, Authentication authentication) {
+        model.addAttribute("events", eventRepository.findByOrganizerEmailIgnoreCaseOrderByUpdatedAtDesc(currentEmail(authentication)));
         return "dashboard/organizer/events";
     }
 
@@ -81,7 +82,7 @@ public class OrganizerDashboardController {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
 
-        String organizerEmail = authentication != null ? authentication.getName() : "organizador@eventos.com";
+        String organizerEmail = currentEmail(authentication);
         Event event = new Event();
         event.setTitle(title);
         event.setDescription(description);
@@ -105,8 +106,8 @@ public class OrganizerDashboardController {
     }
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        Event event = findEvent(id);
+    public String detail(@PathVariable Long id, Model model, Authentication authentication) {
+        Event event = findOwnedEvent(id, authentication);
         model.addAttribute("event", event);
         model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdOrderByPriceAsc(id));
         model.addAttribute("records", recordRepository.findByEventIdOrderByCreatedAtDesc(id));
@@ -117,8 +118,8 @@ public class OrganizerDashboardController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editEvent(@PathVariable Long id, Model model) {
-        Event event = findEvent(id);
+    public String editEvent(@PathVariable Long id, Model model, Authentication authentication) {
+        Event event = findOwnedEvent(id, authentication);
         if (isLocked(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
         }
@@ -137,8 +138,9 @@ public class OrganizerDashboardController {
                               @RequestParam String city,
                               @RequestParam BigDecimal price,
                               @RequestParam Integer capacity,
-                              @RequestParam(required = false) String imageUrl) {
-        Event event = findEvent(id);
+                              @RequestParam(required = false) String imageUrl,
+                              Authentication authentication) {
+        Event event = findOwnedEvent(id, authentication);
         if (isLocked(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
         }
@@ -169,20 +171,20 @@ public class OrganizerDashboardController {
                                  @RequestParam String body,
                                  @RequestParam(required = false, defaultValue = "NORMAL") MessagePriority priority,
                                  Authentication authentication) {
-        Event event = findEvent(id);
+        Event event = findOwnedEvent(id, authentication);
         if (isLocked(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
         }
         MessageType type = targetRole == Role.DESIGNER ? MessageType.DESIGN_REQUEST : MessageType.EVENT_REVIEW;
-        String email = authentication != null ? authentication.getName() : "organizador@eventos.com";
+        String email = currentEmail(authentication);
         messageService.create("Organizador", email, Role.ORGANIZER, targetRole, type, priority, subject, body, id);
         createRecord(event, EventAdminRecordType.ADMIN_COPY, "Solicitud enviada a " + targetRole + ": " + subject);
         return "redirect:/dashboard/organizer/events/" + id + "?requestSent=true";
     }
 
     @GetMapping("/{id}/ticket-types")
-    public String ticketTypes(@PathVariable Long id, Model model) {
-        Event event = findEvent(id);
+    public String ticketTypes(@PathVariable Long id, Model model, Authentication authentication) {
+        Event event = findOwnedEvent(id, authentication);
         if (isLocked(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
         }
@@ -198,8 +200,9 @@ public class OrganizerDashboardController {
                                    @RequestParam(required = false) String customName,
                                    @RequestParam String description,
                                    @RequestParam BigDecimal price,
-                                   @RequestParam Integer quantityAvailable) {
-        Event event = findEvent(id);
+                                   @RequestParam Integer quantityAvailable,
+                                   Authentication authentication) {
+        Event event = findOwnedEvent(id, authentication);
         if (isLocked(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
         }
@@ -229,13 +232,18 @@ public class OrganizerDashboardController {
                                    @RequestParam String description,
                                    @RequestParam BigDecimal price,
                                    @RequestParam Integer quantityAvailable,
-                                   @RequestParam(required = false, defaultValue = "false") boolean active) {
-        Event event = findEvent(id);
+                                   @RequestParam(required = false, defaultValue = "false") boolean active,
+                                   Authentication authentication) {
+        Event event = findOwnedEvent(id, authentication);
         if (isLocked(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
         }
         TicketType ticketType = ticketTypeRepository.findById(typeId)
                 .orElseThrow(() -> new IllegalArgumentException("Tipo de entrada no encontrado"));
+        if (!ticketType.getEvent().getId().equals(event.getId())) {
+            throw new AccessDeniedException("El tipo de entrada no pertenece a este evento");
+        }
+
         String finalName = resolveTicketTypeName(namePreset, customName);
         String previousTicket = ticketDescriptor(ticketType.getName(), ticketType.getPrice(), ticketType.getQuantityAvailable(), ticketType.isActive());
         String requestedTicket = ticketDescriptor(finalName, price, quantityAvailable, active);
@@ -248,15 +256,14 @@ public class OrganizerDashboardController {
         ticketTypeRepository.save(ticketType);
         event.setStatus(EventStatus.PENDING_REVIEW);
         eventRepository.save(event);
-
         createRecord(event, EventAdminRecordType.TICKET_TYPE_UPDATED,
                 "Cambios solicitados por organizador:\n\nEntradas:\nAntes: " + previousTicket + "\nDespués: " + requestedTicket + "\n\nEvento devuelto a revisión.");
         return "redirect:/dashboard/organizer/events/" + id + "/ticket-types?updated=true";
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteEvent(@PathVariable Long id) {
-        Event event = findEvent(id);
+    public String deleteEvent(@PathVariable Long id, Authentication authentication) {
+        Event event = findOwnedEvent(id, authentication);
         if (isLocked(event) || !canOrganizerDelete(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?deleteDenied=true";
         }
@@ -268,11 +275,11 @@ public class OrganizerDashboardController {
     }
 
     @GetMapping("/metrics")
-    public String metrics(Model model) {
-        List<Event> events = eventRepository.findAll();
+    public String metrics(Model model, Authentication authentication) {
+        List<Event> events = eventRepository.findByOrganizerEmailIgnoreCaseOrderByUpdatedAtDesc(currentEmail(authentication));
         int totalEvents = events.size();
-        int totalCapacity = events.stream().map(Event::getCapacity).filter(value -> value != null).mapToInt(Integer::intValue).sum();
-        int totalSold = events.stream().map(Event::getSold).filter(value -> value != null).mapToInt(Integer::intValue).sum();
+        int totalCapacity = events.stream().map(Event::getCapacity).filter(Objects::nonNull).mapToInt(Integer::intValue).sum();
+        int totalSold = events.stream().map(Event::getSold).filter(Objects::nonNull).mapToInt(Integer::intValue).sum();
         int availableTickets = Math.max(totalCapacity - totalSold, 0);
         double occupancyRate = totalCapacity == 0 ? 0 : totalSold * 100.0 / totalCapacity;
         BigDecimal revenue = events.stream()
@@ -288,8 +295,19 @@ public class OrganizerDashboardController {
         return "dashboard/organizer/metrics";
     }
 
-    private Event findEvent(Long id) {
-        return eventRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+    private Event findOwnedEvent(Long id, Authentication authentication) {
+        Event event = eventRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        if (event.getOrganizerEmail() == null || !event.getOrganizerEmail().equalsIgnoreCase(currentEmail(authentication))) {
+            throw new AccessDeniedException("No tienes acceso a este evento");
+        }
+        return event;
+    }
+
+    private String currentEmail(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null || authentication.getName().isBlank()) {
+            throw new AccessDeniedException("Se requiere una sesión de organizador");
+        }
+        return authentication.getName();
     }
 
     private boolean canOrganizerDelete(Event event) {
@@ -314,9 +332,6 @@ public class OrganizerDashboardController {
     }
 
     private String displayNameFromEmail(String email) {
-        if (email == null || email.isBlank()) {
-            return "Organizador";
-        }
         String localPart = email.contains("@") ? email.substring(0, email.indexOf('@')) : email;
         String normalized = localPart.replace('.', ' ').replace('_', ' ').replace('-', ' ').trim();
         return normalized.isBlank() ? "Organizador" : normalized.substring(0, 1).toUpperCase() + normalized.substring(1);
