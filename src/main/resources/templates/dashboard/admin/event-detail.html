@@ -4,6 +4,9 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalle de evento - Administrador</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}"><link rel="stylesheet" th:href="@{/css/ui.css}">
+  <style>
+    .change-log{height:190px;overflow-y:auto;border:1px solid #e7eaf2;border-radius:10px;background:#fafbff;padding:12px}.change-entry{white-space:pre-line;border-bottom:1px solid #e7eaf2;padding:0 0 12px;margin-bottom:12px}.change-entry:last-child{border-bottom:0;margin-bottom:0}.publication-actions{display:flex;gap:10px;align-items:stretch}.publication-actions>*{flex:1}
+  </style>
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -13,10 +16,24 @@
 <main class="dashboard-page">
   <section class="dashboard-hero"><p class="badge">Detalle administrativo</p><h1 th:text="${event.title}">Evento</h1><p class="muted">Revisa la construcción y toma la decisión administrativa correspondiente.</p></section>
   <section class="toolbar"><a class="btn secondary" th:href="@{/events/{id}(id=${event.id})}">Ver en el marketplace</a><a class="btn secondary" th:href="@{/dashboard/admin/events}">Volver a ingresos</a></section>
-  <div th:if="${param.ok}" class="alert success">Construcción aprobada. Ya se puede publicar.</div>
-  <div th:if="${param.observed}" class="alert error">Observación enviada al organizador y diseñador.</div>
+  <div th:if="${param.ok}" class="alert success">Construcción aprobada y bloqueada para Organizador y Diseñador. Ya se puede publicar.</div>
+  <div th:if="${param.observed}" class="alert error">Observación enviada a los destinatarios seleccionados.</div>
   <div th:if="${param.published}" class="alert success">Evento publicado en marketplace.</div>
-  <div th:if="${param.publishDenied}" class="alert error">Debes aprobar el evento antes de publicarlo.</div>
+  <div th:if="${param.unpublished}" class="alert success">Evento despublicado. Sigue aprobado y bloqueado.</div>
+  <div th:if="${param.publishDenied || param.unpublishDenied}" class="alert error">La acción no corresponde al estado actual del evento.</div>
+
+  <section class="table-card" style="margin-bottom:24px">
+    <h2>Cambios solicitados por organizador</h2>
+    <p class="muted small">Comparación de los cambios enviados a revisión. Desplázate para ver las solicitudes anteriores.</p>
+    <div class="change-log">
+      <article class="change-entry" th:each="record : ${changeRecords}">
+        <strong th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</strong>
+        <div th:text="${record.description}">Fecha: Antes / Después</div>
+      </article>
+      <p class="muted" th:if="${changeRecords == null || changeRecords.isEmpty()}">Aún no hay cambios comparativos solicitados por el organizador.</p>
+    </div>
+  </section>
+
   <section class="checkout-layout">
     <section class="summary-card">
       <h2>Construcción del evento</h2>
@@ -31,29 +48,26 @@
       <h2>Decisión administrativa</h2>
       <form th:if="${event.status.name() == 'PENDING_REVIEW' || event.status.name() == 'OBSERVED'}" th:action="@{/dashboard/admin/events/{id}/observe(id=${event.id})}" method="post" class="auth-form">
         <label>Observación</label><textarea class="search-input" name="note" rows="3" placeholder="Qué debe corregirse antes de continuar."></textarea>
-        <p class="muted small">Se informa al organizador y al diseñador.</p><button class="btn secondary full" type="submit">Observar y notificar</button>
+        <label class="muted small"><input type="checkbox" name="notifyDesigner" value="true"> Notificar también al Diseñador por ajuste visual o de presentación.</label>
+        <p class="muted small">El Organizador recibe la observación de forma obligatoria.</p><button class="btn secondary full" type="submit">Observar</button>
       </form>
       <form th:if="${event.status.name() == 'PENDING_REVIEW' || event.status.name() == 'OBSERVED'}" th:action="@{/dashboard/admin/events/{id}/mark-ok(id=${event.id})}" method="post" class="auth-form">
-        <label>Nota de aprobación</label><textarea class="search-input" name="note" rows="2" placeholder="Construcción conforme."></textarea>
-        <button class="btn secondary full" type="submit">Aprobar construcción</button>
+        <label>Nota de aprobación</label><textarea class="search-input" name="note" rows="2" placeholder="Construcción, datos y entradas conformes."></textarea>
+        <p class="muted small">Pasa a APPROVED y bloquea servicios de Organizador y Diseñador.</p><button class="btn secondary full" type="submit">Aprobar construcción</button>
       </form>
-      <form th:if="${event.status.name() == 'APPROVED'}" th:action="@{/dashboard/admin/events/{id}/publish(id=${event.id})}" method="post" class="auth-form">
-        <label>Nota de publicación</label><textarea class="search-input" name="note" rows="2" placeholder="Autorizado para venta pública."></textarea>
-        <button class="btn primary full" type="submit">Publicar en marketplace</button>
-      </form>
-      <p th:if="${event.status.name() == 'PUBLISHED'}" class="alert success">Evento ya publicado. Comprueba su vista pública desde el botón superior.</p>
+      <div th:if="${event.status.name() == 'APPROVED'}" class="publication-actions">
+        <form th:action="@{/dashboard/admin/events/{id}/publish(id=${event.id})}" method="post"><input type="hidden" name="note" value="Evento autorizado para venta pública."><button class="btn primary full" type="submit">Publicar</button></form>
+        <button class="btn secondary full" type="button" disabled>Despublicar</button>
+      </div>
+      <div th:if="${event.status.name() == 'PUBLISHED'}" class="publication-actions">
+        <button class="btn primary full" type="button" disabled>Publicar</button>
+        <form th:action="@{/dashboard/admin/events/{id}/unpublish(id=${event.id})}" method="post"><input type="hidden" name="note" value="Retirado temporalmente de marketplace."><button class="btn secondary full" type="submit">Despublicar</button></form>
+      </div>
     </section>
   </section>
-  <section class="table-card" style="margin-top:24px">
-    <h2>Tipos de entrada configurados</h2>
-    <table class="table-modern"><thead><tr><th>Tipo</th><th>Precio</th><th>Cantidad</th><th>Vendidas</th><th>Disponibles</th></tr></thead><tbody>
-      <tr th:each="type : ${ticketTypes}"><td><strong th:text="${type.name}">General</strong></td><td th:text="${'S/ ' + type.price}">S/ 0.00</td><td th:text="${type.quantityAvailable}">0</td><td th:text="${type.quantitySold}">0</td><td th:text="${type.remaining}">0</td></tr>
-    </tbody></table>
-  </section>
-  <section class="table-card" style="margin-top:24px">
-    <h2>Trazabilidad administrativa</h2>
-    <table class="table-modern"><thead><tr><th>Registro</th><th>Fecha</th></tr></thead><tbody><tr th:each="record : ${records}"><td th:text="${record.description}">Registro</td><td th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</td></tr></tbody></table>
-  </section>
+
+  <section class="table-card" style="margin-top:24px"><h2>Tipos de entrada configurados</h2><table class="table-modern"><thead><tr><th>Tipo</th><th>Precio</th><th>Cantidad</th><th>Vendidas</th><th>Disponibles</th></tr></thead><tbody><tr th:each="type : ${ticketTypes}"><td><strong th:text="${type.name}">General</strong></td><td th:text="${'S/ ' + type.price}">S/ 0.00</td><td th:text="${type.quantityAvailable}">0</td><td th:text="${type.quantitySold}">0</td><td th:text="${type.remaining}">0</td></tr></tbody></table></section>
+  <section class="table-card" style="margin-top:24px"><h2>Trazabilidad administrativa</h2><table class="table-modern"><thead><tr><th>Registro</th><th>Fecha</th></tr></thead><tbody><tr th:each="record : ${records}"><td th:text="${record.description}">Registro</td><td th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</td></tr></tbody></table></section>
 </main>
 </body>
 </html>
