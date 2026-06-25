@@ -4,9 +4,13 @@ import com.connectify.entity.Event;
 import com.connectify.entity.EventAdminRecord;
 import com.connectify.entity.EventAdminRecordType;
 import com.connectify.entity.EventStatus;
+import com.connectify.entity.MessagePriority;
+import com.connectify.entity.MessageType;
+import com.connectify.entity.Role;
 import com.connectify.repository.EventAdminRecordRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
+import com.connectify.service.InternalMessageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,16 +28,19 @@ public class AdminDashboardController {
     private final EventRepository eventRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventAdminRecordRepository recordRepository;
+    private final InternalMessageService messageService;
 
     public AdminDashboardController(EventRepository eventRepository,
                                     TicketTypeRepository ticketTypeRepository,
-                                    EventAdminRecordRepository recordRepository) {
+                                    EventAdminRecordRepository recordRepository,
+                                    InternalMessageService messageService) {
         this.eventRepository = eventRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.recordRepository = recordRepository;
+        this.messageService = messageService;
     }
 
-     @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
         model.addAttribute("event", event);
@@ -49,6 +56,11 @@ public class AdminDashboardController {
         event.setStatus(EventStatus.APPROVED);
         eventRepository.save(event);
         createRecord(event, "Conforme: " + note);
+        messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
+                MessageType.EVENT_REVIEW, MessagePriority.NORMAL,
+                "Evento aprobado: " + event.getTitle(),
+                "La construcción del evento fue aprobada. Antes de hacerlo público, el administrador realizará la publicación final. Nota: " + note,
+                id);
         return "redirect:/dashboard/admin/events/" + id + "?ok=true";
     }
 
@@ -59,6 +71,16 @@ public class AdminDashboardController {
         event.setStatus(EventStatus.OBSERVED);
         eventRepository.save(event);
         createRecord(event, "Observado: " + note);
+
+        String subject = "Observación administrativa: " + event.getTitle();
+        String organizerBody = "El evento fue observado y requiere ajustes antes de volver a revisión. Detalle: " + note;
+        String designerBody = "Revisa la observación administrativa asociada al evento. Si requiere corrección visual o de presentación, coordina el ajuste. Detalle: " + note;
+
+        messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
+                MessageType.EVENT_REVIEW, MessagePriority.HIGH, subject, organizerBody, id);
+        messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.DESIGNER,
+                MessageType.DESIGN_FEEDBACK, MessagePriority.NORMAL, subject, designerBody, id);
+
         return "redirect:/dashboard/admin/events/" + id + "?observed=true";
     }
 
@@ -66,9 +88,17 @@ public class AdminDashboardController {
     public String publish(@PathVariable Long id,
                           @RequestParam(required = false, defaultValue = "Evento publicado en marketplace.") String note) {
         Event event = findEvent(id);
+        if (event.getStatus() != EventStatus.APPROVED) {
+            return "redirect:/dashboard/admin/events/" + id + "?publishDenied=true";
+        }
         event.setStatus(EventStatus.PUBLISHED);
         eventRepository.save(event);
         createRecord(event, "Publicado: " + note);
+        messageService.create("Administrador", "admin@connectify.com", Role.ADMIN, Role.ORGANIZER,
+                MessageType.EVENT_REVIEW, MessagePriority.NORMAL,
+                "Evento publicado: " + event.getTitle(),
+                "El evento fue publicado en marketplace. " + note,
+                id);
         return "redirect:/dashboard/admin/events/" + id + "?published=true";
     }
 
