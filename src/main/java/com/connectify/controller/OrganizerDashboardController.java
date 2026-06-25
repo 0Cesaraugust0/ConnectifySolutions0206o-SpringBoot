@@ -26,11 +26,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/dashboard/organizer/events")
 public class OrganizerDashboardController {
+
+    private static final DateTimeFormatter BITACORA_DATE_FORMAT = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm", new Locale("es", "PE"));
 
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
@@ -107,12 +112,17 @@ public class OrganizerDashboardController {
         model.addAttribute("records", recordRepository.findByEventIdOrderByCreatedAtDesc(id));
         model.addAttribute("requests", messageService.relatedToEvent(id));
         model.addAttribute("canDelete", canOrganizerDelete(event));
+        model.addAttribute("locked", isLocked(event));
         return "dashboard/organizer/event-detail";
     }
 
     @GetMapping("/{id}/edit")
     public String editEvent(@PathVariable Long id, Model model) {
-        model.addAttribute("event", findEvent(id));
+        Event event = findEvent(id);
+        if (isLocked(event)) {
+            return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
+        }
+        model.addAttribute("event", event);
         model.addAttribute("categories", categoryRepository.findAll());
         return "dashboard/organizer/event-edit";
     }
@@ -129,12 +139,18 @@ public class OrganizerDashboardController {
                               @RequestParam Integer capacity,
                               @RequestParam(required = false) String imageUrl) {
         Event event = findEvent(id);
+        if (isLocked(event)) {
+            return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
+        }
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+        LocalDateTime requestedDate = LocalDateTime.parse(eventDate);
+        String changeSummary = buildEventChangeSummary(event, title, description, category, requestedDate, location, city, price, capacity, imageUrl);
+
         event.setTitle(title);
         event.setDescription(description);
         event.setCategory(category);
-        event.setEventDate(LocalDateTime.parse(eventDate));
+        event.setEventDate(requestedDate);
         event.setLocation(location);
         event.setCity(city);
         event.setPrice(price);
@@ -142,7 +158,7 @@ public class OrganizerDashboardController {
         event.setImageUrl(imageUrl == null ? "" : imageUrl);
         event.setStatus(EventStatus.PENDING_REVIEW);
         eventRepository.save(event);
-        createRecord(event, EventAdminRecordType.UPDATED, "Cambios finales guardados por organizador. Evento devuelto a revisión administrativa.");
+        createRecord(event, EventAdminRecordType.UPDATED, changeSummary + "\n\nEvento devuelto a revisión administrativa.");
         return "redirect:/dashboard/organizer/events/" + id + "?updated=true";
     }
 
@@ -154,6 +170,9 @@ public class OrganizerDashboardController {
                                  @RequestParam(required = false, defaultValue = "NORMAL") MessagePriority priority,
                                  Authentication authentication) {
         Event event = findEvent(id);
+        if (isLocked(event)) {
+            return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
+        }
         MessageType type = targetRole == Role.DESIGNER ? MessageType.DESIGN_REQUEST : MessageType.EVENT_REVIEW;
         String email = authentication != null ? authentication.getName() : "organizador@eventos.com";
         messageService.create("Organizador", email, Role.ORGANIZER, targetRole, type, priority, subject, body, id);
@@ -164,6 +183,9 @@ public class OrganizerDashboardController {
     @GetMapping("/{id}/ticket-types")
     public String ticketTypes(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
+        if (isLocked(event)) {
+            return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
+        }
         model.addAttribute("event", event);
         model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdOrderByPriceAsc(id));
         model.addAttribute("records", recordRepository.findByEventIdOrderByCreatedAtDesc(id));
@@ -178,6 +200,9 @@ public class OrganizerDashboardController {
                                    @RequestParam BigDecimal price,
                                    @RequestParam Integer quantityAvailable) {
         Event event = findEvent(id);
+        if (isLocked(event)) {
+            return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
+        }
         String finalName = resolveTicketTypeName(namePreset, customName);
 
         TicketType ticketType = new TicketType();
@@ -192,7 +217,7 @@ public class OrganizerDashboardController {
         event.setStatus(EventStatus.PENDING_REVIEW);
         eventRepository.save(event);
         createRecord(event, EventAdminRecordType.TICKET_TYPE_CREATED,
-                "Tipo de entrada creado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable + ". Evento devuelto a revisión.");
+                "Cambios solicitados por organizador:\n\nEntradas:\nAntes: Sin tipo de entrada registrado\nDespués: " + ticketDescriptor(finalName, price, quantityAvailable, true) + "\n\nEvento devuelto a revisión.");
         return "redirect:/dashboard/organizer/events/" + id + "/ticket-types";
     }
 
@@ -206,9 +231,14 @@ public class OrganizerDashboardController {
                                    @RequestParam Integer quantityAvailable,
                                    @RequestParam(required = false, defaultValue = "false") boolean active) {
         Event event = findEvent(id);
+        if (isLocked(event)) {
+            return "redirect:/dashboard/organizer/events/" + id + "?locked=true";
+        }
         TicketType ticketType = ticketTypeRepository.findById(typeId)
                 .orElseThrow(() -> new IllegalArgumentException("Tipo de entrada no encontrado"));
         String finalName = resolveTicketTypeName(namePreset, customName);
+        String previousTicket = ticketDescriptor(ticketType.getName(), ticketType.getPrice(), ticketType.getQuantityAvailable(), ticketType.isActive());
+        String requestedTicket = ticketDescriptor(finalName, price, quantityAvailable, active);
 
         ticketType.setName(finalName);
         ticketType.setDescription(description);
@@ -220,14 +250,14 @@ public class OrganizerDashboardController {
         eventRepository.save(event);
 
         createRecord(event, EventAdminRecordType.TICKET_TYPE_UPDATED,
-                "Tipo de entrada actualizado: " + finalName + " / S/ " + price + " / cantidad " + quantityAvailable + " / activo: " + active + ". Evento devuelto a revisión.");
+                "Cambios solicitados por organizador:\n\nEntradas:\nAntes: " + previousTicket + "\nDespués: " + requestedTicket + "\n\nEvento devuelto a revisión.");
         return "redirect:/dashboard/organizer/events/" + id + "/ticket-types?updated=true";
     }
 
     @PostMapping("/{id}/delete")
     public String deleteEvent(@PathVariable Long id) {
         Event event = findEvent(id);
-        if (!canOrganizerDelete(event)) {
+        if (isLocked(event) || !canOrganizerDelete(event)) {
             return "redirect:/dashboard/organizer/events/" + id + "?deleteDenied=true";
         }
         event.setStatus(EventStatus.CANCELLED);
@@ -266,6 +296,10 @@ public class OrganizerDashboardController {
         return event.getCreatedAt() != null && Duration.between(event.getCreatedAt(), LocalDateTime.now()).toHours() < 24;
     }
 
+    private boolean isLocked(Event event) {
+        return event.getStatus() == EventStatus.APPROVED || event.getStatus() == EventStatus.PUBLISHED;
+    }
+
     private String resolveTicketTypeName(String namePreset, String customName) {
         if ("OTRO".equalsIgnoreCase(namePreset) && customName != null && !customName.isBlank()) {
             return customName.trim();
@@ -286,6 +320,57 @@ public class OrganizerDashboardController {
         String localPart = email.contains("@") ? email.substring(0, email.indexOf('@')) : email;
         String normalized = localPart.replace('.', ' ').replace('_', ' ').replace('-', ' ').trim();
         return normalized.isBlank() ? "Organizador" : normalized.substring(0, 1).toUpperCase() + normalized.substring(1);
+    }
+
+    private String buildEventChangeSummary(Event event, String title, String description, Category category,
+                                           LocalDateTime eventDate, String location, String city,
+                                           BigDecimal price, Integer capacity, String imageUrl) {
+        StringBuilder summary = new StringBuilder("Cambios solicitados por organizador:");
+        appendChange(summary, "Título", event.getTitle(), title);
+        appendChange(summary, "Descripción", event.getDescription(), description);
+        appendChange(summary, "Categoría", categoryName(event.getCategory()), categoryName(category));
+        appendChange(summary, "Fecha", formatDate(event.getEventDate()), formatDate(eventDate));
+        appendChange(summary, "Ubicación", event.getLocation(), location);
+        appendChange(summary, "Ciudad", event.getCity(), city);
+        appendChange(summary, "Precio base", formatCurrency(event.getPrice()), formatCurrency(price));
+        appendChange(summary, "Capacidad", value(event.getCapacity()), value(capacity));
+        appendChange(summary, "Imagen principal", value(event.getImageUrl()), value(imageUrl));
+        if (summary.length() == "Cambios solicitados por organizador:".length()) {
+            summary.append("\n\nNo se detectaron cambios en los datos principales.");
+        }
+        return summary.toString();
+    }
+
+    private void appendChange(StringBuilder summary, String label, String before, String after) {
+        String cleanBefore = value(before);
+        String cleanAfter = value(after);
+        if (!Objects.equals(cleanBefore, cleanAfter)) {
+            summary.append("\n\n").append(label).append(":\nAntes: ").append(cleanBefore).append("\nDespués: ").append(cleanAfter);
+        }
+    }
+
+    private String ticketDescriptor(String name, BigDecimal price, Integer quantity, boolean active) {
+        return value(name) + " | " + formatCurrency(price) + " | Cantidad: " + value(quantity) + " | " + (active ? "Activo" : "Inactivo");
+    }
+
+    private String categoryName(Category category) {
+        return category == null ? "Sin categoría" : value(category.getName());
+    }
+
+    private String formatDate(LocalDateTime value) {
+        return value == null ? "Sin fecha" : BITACORA_DATE_FORMAT.format(value);
+    }
+
+    private String formatCurrency(BigDecimal value) {
+        return value == null ? "S/ 0.00" : "S/ " + value;
+    }
+
+    private String value(Object value) {
+        if (value == null) {
+            return "No registrado";
+        }
+        String text = String.valueOf(value).trim();
+        return text.isBlank() ? "No registrado" : text;
     }
 
     private void createRecord(Event event, EventAdminRecordType type, String description) {
