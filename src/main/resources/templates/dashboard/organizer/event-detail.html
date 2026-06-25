@@ -10,112 +10,49 @@
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/dashboard/organizer/events}">
-        <span class="logo">🎯</span>
-        <div><strong>Connectify</strong><small>Detalle del evento</small></div>
-    </a>
-    <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
-        <a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a>
-    </nav>
+    <a class="brand brand-link" th:href="@{/dashboard/organizer/events}"><span class="logo">🎯</span><div><strong>Connectify</strong><small>Detalle del evento</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a><a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a></nav>
 </header>
 
 <main class="dashboard-page">
-    <section class="organizer-hero">
-        <p class="badge" th:text="${event.status}">PENDING_REVIEW</p>
-        <h1 th:text="${event.title}">Evento</h1>
-        <p class="hero-text" th:text="${event.description}">Descripción</p>
-    </section>
-
+    <section class="organizer-hero"><p class="badge" th:text="${event.status}">PENDING_REVIEW</p><h1 th:text="${event.title}">Evento</h1><p class="hero-text" th:text="${event.description}">Descripción</p></section>
     <div th:if="${param.updated}" class="alert success">Evento actualizado y devuelto a revisión.</div>
     <div th:if="${param.requestSent}" class="alert success">Solicitud enviada correctamente.</div>
-    <div th:if="${param.deleteDenied}" class="alert error">No se puede eliminar: ya pasaron más de 24 horas desde la creación. Requiere revisión administrativa.</div>
+    <div th:if="${param.locked}" class="alert error">Este evento fue aprobado o publicado. Sus servicios de edición y diseño están bloqueados por control administrativo.</div>
+    <div th:if="${param.deleteDenied}" class="alert error">No se puede eliminar: la ventana permitida terminó o el evento está bloqueado por aprobación.</div>
 
-    <section class="organizer-kpi-strip">
-        <div class="organizer-kpi"><span>Ciudad</span><strong th:text="${event.city}">Lima</strong></div>
-        <div class="organizer-kpi"><span>Capacidad</span><strong th:text="${event.capacity}">0</strong></div>
-        <div class="organizer-kpi"><span>Vendidos</span><strong th:text="${event.sold}">0</strong></div>
-        <div class="organizer-kpi"><span>Disponibles</span><strong th:text="${event.availableTickets}">0</strong></div>
-    </section>
+    <section class="organizer-kpi-strip"><div class="organizer-kpi"><span>Ciudad</span><strong th:text="${event.city}">Lima</strong></div><div class="organizer-kpi"><span>Capacidad</span><strong th:text="${event.capacity}">0</strong></div><div class="organizer-kpi"><span>Vendidos</span><strong th:text="${event.sold}">0</strong></div><div class="organizer-kpi"><span>Disponibles</span><strong th:text="${event.availableTickets}">0</strong></div></section>
 
     <section class="checkout-layout">
         <section class="summary-card">
             <h2>Acciones del evento</h2>
-            <div class="organizer-action-row">
+            <div th:if="${!locked}" class="organizer-action-row">
                 <a class="btn primary compact" th:href="@{/dashboard/organizer/events/{id}/edit(id=${event.id})}">Editar</a>
                 <a class="btn secondary compact" th:href="@{/dashboard/organizer/events/{id}/ticket-types(id=${event.id})}">Gestión de Tickets</a>
                 <a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Ver marketplace</a>
-                <form th:if="${canDelete}" th:action="@{/dashboard/organizer/events/{id}/delete(id=${event.id})}" method="post">
-                    <button class="btn secondary compact" type="submit">Eliminar</button>
-                </form>
+                <form th:if="${canDelete}" th:action="@{/dashboard/organizer/events/{id}/delete(id=${event.id})}" method="post"><button class="btn secondary compact" type="submit">Eliminar</button></form>
             </div>
-            <p class="muted small">La eliminación solo está disponible durante las primeras 24 horas desde la creación.</p>
+            <div th:if="${locked}" class="alert success">Evento aprobado por Administración. Puedes consultar sus datos y el marketplace, pero no editar su construcción ni sus entradas.</div>
+            <a th:if="${locked}" class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Ver marketplace</a>
+            <p class="muted small">La eliminación solo está disponible durante las primeras 24 horas y antes de la aprobación administrativa.</p>
             <div class="summary-row"><span>Fecha</span><strong th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</strong></div>
             <div class="summary-row"><span>Ubicación</span><strong th:text="${event.location}">Lugar</strong></div>
         </section>
 
-        <form class="form-card" th:action="@{/dashboard/organizer/events/{id}/request-support(id=${event.id})}" method="post">
+        <form th:if="${!locked}" class="form-card" th:action="@{/dashboard/organizer/events/{id}/request-support(id=${event.id})}" method="post">
             <h2>Solicitar apoyo</h2>
             <div class="field-grid">
-                <label>Enviar a
-                    <select class="search-input" name="targetRole" required>
-                        <option value="ADMIN">Administrador</option>
-                        <option value="DESIGNER">Diseñador</option>
-                    </select>
-                </label>
-                <label>Prioridad
-                    <select class="search-input" name="priority">
-                        <option value="NORMAL">Normal</option>
-                        <option value="HIGH">Alta</option>
-                        <option value="URGENT">Urgente</option>
-                    </select>
-                </label>
-                <label class="wide">Asunto
-                    <input class="search-input" name="subject" type="text" placeholder="Ej. Revisar publicación / Ajustar banner" required>
-                </label>
-                <label class="wide">Mensaje
-                    <textarea class="search-input" name="body" rows="4" placeholder="Describe qué necesitas para este evento." required></textarea>
-                </label>
-            </div>
-            <button class="btn primary full" type="submit">Enviar solicitud</button>
+                <label>Enviar a<select class="search-input" name="targetRole" required><option value="ADMIN">Administrador</option><option value="DESIGNER">Diseñador</option></select></label>
+                <label>Prioridad<select class="search-input" name="priority"><option value="NORMAL">Normal</option><option value="HIGH">Alta</option><option value="URGENT">Urgente</option></select></label>
+                <label class="wide">Asunto<input class="search-input" name="subject" type="text" placeholder="Ej. Revisar publicación / Ajustar banner" required></label>
+                <label class="wide">Mensaje<textarea class="search-input" name="body" rows="4" placeholder="Describe qué necesitas para este evento." required></textarea></label>
+            </div><button class="btn primary full" type="submit">Enviar solicitud</button>
         </form>
+        <section th:if="${locked}" class="form-card"><h2>Servicios bloqueados</h2><p class="muted">La aprobación deja congeladas las solicitudes y ajustes de este evento. Para un cambio posterior, el Administrador debe reabrirlo o despublicarlo.</p></section>
     </section>
 
-    <section class="table-card" style="margin-top:24px">
-        <h2>Solicitudes relacionadas</h2>
-        <div class="dashboard-grid" th:if="${requests != null && !requests.isEmpty()}">
-            <a class="module-card" th:each="request : ${requests}" th:href="@{/communications/{id}(id=${request.id})}">
-                <span th:text="${request.status.icon}">🟡</span>
-                <h3 th:text="${request.subject}">Solicitud</h3>
-                <p><strong th:text="${request.status.categoryLabel}">Pendiente / En gestión</strong></p>
-                <p class="muted small">
-                    <span th:text="${request.status.label}">Pendiente</span>
-                    · Para <span th:text="${request.targetRole}">ADMIN</span>
-                    · <span th:text="${request.priority}">NORMAL</span>
-                </p>
-            </a>
-        </div>
-        <p class="muted" th:if="${requests == null || requests.isEmpty()}">Aún no hay solicitudes relacionadas con este evento.</p>
-    </section>
-
-    <section class="table-card" style="margin-top:24px">
-        <h2>Tipos de entrada</h2>
-        <table class="table-modern">
-            <thead>
-            <tr><th>Tipo</th><th>Precio</th><th>Cantidad</th><th>Vendidas</th><th>Disponibles</th><th>Estado</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="type : ${ticketTypes}">
-                <td><strong th:text="${type.name}">General</strong></td>
-                <td th:text="${'S/ ' + type.price}">S/ 0.00</td>
-                <td th:text="${type.quantityAvailable}">0</td>
-                <td th:text="${type.quantitySold}">0</td>
-                <td th:text="${type.remaining}">0</td>
-                <td><span class="status-pill status-open" th:text="${type.active ? 'Activo' : 'Inactivo'}">Activo</span></td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
+    <section class="table-card" style="margin-top:24px"><h2>Solicitudes relacionadas</h2><div class="dashboard-grid" th:if="${requests != null && !requests.isEmpty()}"><a class="module-card" th:each="request : ${requests}" th:href="@{/communications/{id}(id=${request.id})}"><span th:text="${request.status.icon}">🟡</span><h3 th:text="${request.subject}">Solicitud</h3><p><strong th:text="${request.status.categoryLabel}">Pendiente / En gestión</strong></p><p class="muted small"><span th:text="${request.status.label}">Pendiente</span> · Para <span th:text="${request.targetRole}">ADMIN</span> · <span th:text="${request.priority}">NORMAL</span></p></a></div><p class="muted" th:if="${requests == null || requests.isEmpty()}">Aún no hay solicitudes relacionadas con este evento.</p></section>
+    <section class="table-card" style="margin-top:24px"><h2>Tipos de entrada</h2><table class="table-modern"><thead><tr><th>Tipo</th><th>Precio</th><th>Cantidad</th><th>Vendidas</th><th>Disponibles</th><th>Estado</th></tr></thead><tbody><tr th:each="type : ${ticketTypes}"><td><strong th:text="${type.name}">General</strong></td><td th:text="${'S/ ' + type.price}">S/ 0.00</td><td th:text="${type.quantityAvailable}">0</td><td th:text="${type.quantitySold}">0</td><td th:text="${type.remaining}">0</td><td><span class="status-pill status-open" th:text="${type.active ? 'Activo' : 'Inactivo'}">Activo</span></td></tr></tbody></table></section>
 </main>
 </body>
 </html>
