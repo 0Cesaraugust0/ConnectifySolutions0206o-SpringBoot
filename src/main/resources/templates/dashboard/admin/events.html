@@ -22,7 +22,6 @@
             <a th:href="@{/dashboard/admin/events(view='list')}" th:classappend="${activeView == 'list'} ? ' active'">▦ Lista de ingresos</a>
             <a th:href="@{/dashboard/admin/events(view='kanban')}" th:classappend="${activeView == 'kanban'} ? ' active'">▤ Tablero Kanban</a>
         </nav>
-
         <div th:if="${activeView == 'list'}">
             <section class="summary-strip">
                 <article class="module-card"><small>Pendientes</small><h2 th:text="${pendingCount}">0</h2></article>
@@ -41,13 +40,12 @@
                         <td th:text="${event.location}">Lugar</td>
                         <td><strong th:text="${event.organizerName != null && !event.organizerName.isBlank() ? event.organizerName : 'Organizador registrado'}">Organizador</strong><br><span class="muted small" th:text="${event.organizerEmail != null && !event.organizerEmail.isBlank() ? event.organizerEmail : 'Cuenta no registrada'}">correo</span></td>
                         <td><strong th:text="${event.capacity}">0</strong><br><span class="muted small">personas</span></td>
-                        <td><a class="btn primary compact" th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Revisar y responder</a></td>
+                        <td><a class="btn primary compact" th:href="@{/dashboard/admin/events/{id}(id=${event.id})}">Ver detalles</a></td>
                     </tr>
                     <tr th:if="${pendingEvents == null || pendingEvents.isEmpty()}"><td colspan="7" class="muted">No hay propuestas nuevas ni cambios pendientes de revisión.</td></tr>
                 </tbody>
             </table>
         </div>
-
         <div th:if="${activeView == 'kanban'}">
             <h2>Tablero de seguimiento</h2><p class="muted small">Vista estratégica por estado. No repite la tabla de ingresos ni los indicadores superiores.</p>
             <section class="kanban-layout">
