@@ -50,6 +50,16 @@ public class AdminDashboardController {
         return "dashboard/admin/event-detail";
     }
 
+    @GetMapping("/{id}/preview")
+    public String preview(@PathVariable Long id, Model model) {
+        Event event = findEvent(id);
+        model.addAttribute("event", event);
+        model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id));
+        model.addAttribute("previewMode", true);
+        model.addAttribute("adminReturnUrl", "/dashboard/admin/events/" + id);
+        return "events/detail";
+    }
+
     @PostMapping("/{id}/observe")
     public String observe(@PathVariable Long id, @RequestParam(defaultValue = "Evento observado. Requiere ajustes del organizador.") String note,
                           @RequestParam(defaultValue = "false") boolean notifyDesigner) {
