@@ -9,20 +9,22 @@
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/events}">
+    <a class="brand brand-link" th:href="${previewMode} ? ${adminReturnUrl} : @{/events}">
         <span class="logo">🎫</span>
-        <div><strong>Connectify</strong><small>Marketplace público</small></div>
+        <div><strong>Connectify</strong><small th:text="${previewMode} ? 'Vista previa interna' : 'Marketplace público'">Marketplace público</small></div>
     </a>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/events}">Explorar eventos</a>
-        <a class="btn secondary" th:href="@{/auth/login}">Iniciar sesión</a>
-        <a class="btn primary compact" th:href="@{/cart}">Carrito</a>
+        <a class="btn secondary" th:if="${previewMode}" th:href="${adminReturnUrl}">Volver a revisión</a>
+        <a class="btn secondary" th:unless="${previewMode}" th:href="@{/events}">Explorar eventos</a>
+        <a class="btn secondary" th:unless="${previewMode}" th:href="@{/auth/login}">Iniciar sesión</a>
+        <a class="btn primary compact" th:unless="${previewMode}" th:href="@{/cart}">Carrito</a>
     </nav>
 </header>
 
 <main class="dashboard-page">
+    <div th:if="${previewMode}" class="alert success">Vista previa — Evento aún no publicado. Esta pantalla no permite compra ni carrito.</div>
     <section class="event-detail-card detail-pro">
-        <p class="badge">Vista pública para cliente / asistente</p>
+        <p class="badge" th:text="${previewMode} ? 'Previsualización de publicación' : 'Vista pública para cliente'">Vista pública para cliente</p>
         <p class="badge" th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p>
         <h1 th:text="${event.title}">Título del evento</h1>
         <p class="muted" th:text="${event.description}">Descripción del evento</p>
@@ -37,48 +39,38 @@
         </div>
 
         <section class="table-card" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}">
-            <h2>Elige tu tipo de entrada</h2>
-            <p class="muted small">Puedes explorar libremente. Al agregar al carrito o comprar, se pedirá iniciar sesión o crear una cuenta de cliente/asistente.</p>
+            <h2>Tipos de entrada</h2>
+            <p class="muted small" th:text="${previewMode} ? 'Modo revisión: los botones de compra están desactivados.' : 'Puedes explorar libremente. Al agregar al carrito o comprar, se pedirá iniciar sesión o crear una cuenta.'">Texto</p>
             <table class="table-modern">
-                <thead>
-                <tr>
-                    <th>Entrada</th>
-                    <th>Precio</th>
-                    <th>Disponibles</th>
-                    <th>Cantidad</th>
-                    <th>Compra</th>
-                </tr>
-                </thead>
+                <thead><tr><th>Entrada</th><th>Precio</th><th>Disponibles</th><th>Cantidad</th><th>Acción</th></tr></thead>
                 <tbody>
                 <tr th:each="type : ${ticketTypes}">
                     <td><strong th:text="${type.name}">General</strong><br><span class="muted small" th:text="${type.description}">Descripción</span></td>
                     <td th:text="${'S/ ' + type.price}">S/ 0.00</td>
                     <td th:text="${type.remaining}">0</td>
                     <td>
-                        <form class="organizer-action-row" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
+                        <form th:unless="${previewMode}" class="organizer-action-row" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
                             <input type="hidden" name="ticketTypeId" th:value="${type.id}">
                             <input name="quantity" type="number" min="1" max="10" value="1" style="max-width:90px">
                             <button class="btn primary compact" type="submit">Agregar al carrito</button>
                         </form>
+                        <span th:if="${previewMode}" class="muted small">Compra desactivada</span>
                     </td>
-                    <td><span class="status-pill status-open">Disponible</span></td>
+                    <td><span class="status-pill status-open" th:text="${previewMode} ? 'Vista previa' : 'Disponible'">Disponible</span></td>
                 </tr>
                 </tbody>
             </table>
         </section>
 
-        <form class="purchase-panel" th:if="${ticketTypes == null || ticketTypes.isEmpty()}" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
-            <div>
-                <label for="quantity">Cantidad de entradas</label>
-                <input id="quantity" name="quantity" type="number" min="1" max="10" value="1">
-                <p class="muted small">Para comprar se solicitará una cuenta de cliente/asistente.</p>
-            </div>
+        <form th:unless="${previewMode}" class="purchase-panel" th:if="${ticketTypes == null || ticketTypes.isEmpty()}" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
+            <div><label for="quantity">Cantidad de entradas</label><input id="quantity" name="quantity" type="number" min="1" max="10" value="1"><p class="muted small">Para comprar se solicitará una cuenta de cliente/asistente.</p></div>
             <button class="btn primary" type="submit">Agregar al carrito</button>
         </form>
 
         <div class="actions">
-            <a class="btn secondary" th:href="@{/events}">Seguir explorando</a>
-            <a class="btn secondary" th:href="@{/cart}">Ver carrito</a>
+            <a class="btn secondary" th:if="${previewMode}" th:href="${adminReturnUrl}">Volver a revisión</a>
+            <a class="btn secondary" th:unless="${previewMode}" th:href="@{/events}">Seguir explorando</a>
+            <a class="btn secondary" th:unless="${previewMode}" th:href="@{/cart}">Ver carrito</a>
         </div>
     </section>
 </main>
