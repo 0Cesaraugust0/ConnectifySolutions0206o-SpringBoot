@@ -22,7 +22,7 @@
 
 <main class="dashboard-page">
     <section class="dashboard-hero"><p class="badge">Detalle del evento</p><h1 th:text="${event.title}">Evento</h1><p class="muted">Verifica la construcción antes de decidir su estado.</p></section>
-    <section class="toolbar"><a class="btn secondary" th:href="@{/events/{id}(id=${event.id})}">Ver en marketplace</a><a class="btn secondary" th:href="@{/dashboard/admin/events}">Volver</a></section>
+    <section class="toolbar"><a class="btn secondary" th:href="@{/dashboard/admin/events/{id}/preview(id=${event.id})}">Vista previa de publicación</a><a class="btn secondary" th:href="@{/dashboard/admin/events}">Volver</a></section>
 
     <div th:if="${param.observed}" class="alert success">Observación enviada.</div>
     <div th:if="${param.approved}" class="alert success">Evento aprobado y bloqueado para nuevas ediciones.</div>
@@ -46,6 +46,7 @@
             <div class="summary-row"><span>Estado</span><strong th:text="${event.status}">PENDING_REVIEW</strong></div>
             <div class="summary-row"><span>Categoría</span><strong th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</strong></div>
             <div class="summary-row"><span>Organizador</span><strong th:text="${event.organizerName != null ? event.organizerName : 'Organizador'}">Organizador</strong></div>
+            <div class="summary-row"><span>Correo</span><strong th:text="${event.organizerEmail != null ? event.organizerEmail : 'No registrado'}">correo</strong></div>
             <div class="summary-row"><span>Capacidad</span><strong th:text="${event.capacity}">0</strong></div>
             <div class="summary-row"><span>Ubicación</span><strong th:text="${event.location + ' · ' + event.city}">Lugar</strong></div>
             <p class="muted small" th:text="${event.description}">Descripción</p>
