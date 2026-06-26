@@ -1,14 +1,17 @@
 package com.connectify.controller;
 
 import com.connectify.entity.Event;
+import com.connectify.entity.EventStatus;
 import com.connectify.repository.TicketTypeRepository;
 import com.connectify.service.EventService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/events")
@@ -36,9 +39,14 @@ public class EventController {
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
-        Event event = eventService.findById(id).orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        Event event = eventService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado"));
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no disponible en marketplace");
+        }
         model.addAttribute("event", event);
         model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id));
+        model.addAttribute("previewMode", false);
         return "events/detail";
     }
 }
