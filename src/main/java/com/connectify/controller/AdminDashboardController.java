@@ -3,12 +3,14 @@ package com.connectify.controller;
 import com.connectify.entity.Event;
 import com.connectify.entity.EventAdminRecord;
 import com.connectify.entity.EventAdminRecordType;
+import com.connectify.entity.EventPresentationSettings;
 import com.connectify.entity.EventStatus;
 import com.connectify.entity.MessagePriority;
 import com.connectify.entity.MessageType;
 import com.connectify.entity.Role;
 import com.connectify.entity.TicketType;
 import com.connectify.repository.EventAdminRecordRepository;
+import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
 import com.connectify.service.InternalMessageService;
@@ -35,13 +37,18 @@ public class AdminDashboardController {
     private final EventRepository eventRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventAdminRecordRepository recordRepository;
+    private final EventPresentationSettingsRepository presentationSettingsRepository;
     private final InternalMessageService messageService;
 
-    public AdminDashboardController(EventRepository eventRepository, TicketTypeRepository ticketTypeRepository,
-                                    EventAdminRecordRepository recordRepository, InternalMessageService messageService) {
+    public AdminDashboardController(EventRepository eventRepository,
+                                    TicketTypeRepository ticketTypeRepository,
+                                    EventAdminRecordRepository recordRepository,
+                                    EventPresentationSettingsRepository presentationSettingsRepository,
+                                    InternalMessageService messageService) {
         this.eventRepository = eventRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.recordRepository = recordRepository;
+        this.presentationSettingsRepository = presentationSettingsRepository;
         this.messageService = messageService;
     }
 
@@ -73,8 +80,13 @@ public class AdminDashboardController {
     @GetMapping("/{id}/preview")
     public String preview(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
+        EventPresentationSettings presentation = presentationSettingsRepository.findByEventId(id).orElse(null);
         model.addAttribute("event", event);
         model.addAttribute("ticketTypes", safeActiveTicketTypes(id));
+        model.addAttribute("presentation", presentation);
+        model.addAttribute("coverImageUrl", firstText(presentation == null ? null : presentation.getCoverImageUrl(), event.getImageUrl()));
+        model.addAttribute("thumbnailImageUrl", firstText(presentation == null ? null : presentation.getThumbnailImageUrl(), event.getImageUrl()));
+        model.addAttribute("presentationStyle", styleFor(presentation));
         model.addAttribute("previewMode", true);
         model.addAttribute("adminReturnUrl", "/dashboard/admin/events/" + id);
         return "events/detail";
@@ -205,6 +217,15 @@ public class AdminDashboardController {
         catch (RuntimeException ex) { return "Sin categoría"; }
     }
 
+    private String firstText(String preferred, String fallback) { return preferred != null && !preferred.isBlank() ? preferred : (fallback == null ? "" : fallback); }
+    private String styleFor(EventPresentationSettings presentation) {
+        if (presentation == null) return "";
+        return "--market-primary:" + safeColor(presentation.getPrimaryColor(), "#4338ca") + ";"
+                + "--market-accent:" + safeColor(presentation.getAccentColor(), "#7c3aed") + ";"
+                + "--market-cover-position:" + coverPosition(presentation.getCoverFocus()) + ";";
+    }
+    private String safeColor(String color, String fallback) { return color != null && color.matches("#[0-9a-fA-F]{6}") ? color : fallback; }
+    private String coverPosition(String value) { return "TOP".equals(value) ? "50% 18%" : "BOTTOM".equals(value) ? "50% 82%" : "50% 50%"; }
     private String formatDate(LocalDateTime date) { return date == null ? "Sin fecha" : DATE_FORMAT.format(date); }
     private String text(String value, String fallback) { return value == null || value.isBlank() ? fallback : value; }
     private String number(Integer value) { return String.valueOf(value == null ? 0 : value); }
