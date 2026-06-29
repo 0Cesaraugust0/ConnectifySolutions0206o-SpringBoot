@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${event.title} + ' - Connectify Solutions'">Detalle de evento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-presentation.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-account.css}">
+    <style>
+        :root{--market-primary:#4338ca;--market-accent:#7c3aed;--market-cover-position:center center}.market-stage{max-width:1120px;margin:0 auto}.market-layout{overflow:hidden;border-radius:28px;background:#fff;border:1px solid #e5e8f0;box-shadow:0 24px 60px rgba(15,23,42,.10)}.market-cover{height:310px;position:relative;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,var(--market-primary),var(--market-accent))}.market-cover img{width:100%;height:100%;object-fit:cover;object-position:var(--market-cover-position)}.market-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,35,.05),rgba(10,10,35,.68))}.market-cover-empty{font-size:5rem;color:#fff;z-index:1}.market-cover-title{position:absolute;z-index:2;left:34px;right:34px;bottom:28px;color:#fff}.market-cover-title h1{max-width:780px;margin:10px 0 0;font-size:clamp(2rem,4vw,3.4rem);line-height:1.03}.market-cover-title p{margin:8px 0 0;opacity:.9}.template-badge{background:rgba(255,255,255,.17);backdrop-filter:blur(10px);color:#fff;border:1px solid rgba(255,255,255,.24)}.market-content{padding:30px}.market-intro{font-size:1.04rem;line-height:1.72;color:#4f5870;max-width:860px}.market-highlight{max-width:860px;margin:18px 0;padding:14px 16px;border-left:4px solid var(--market-primary);border-radius:0 12px 12px 0;background:#f5f4ff;color:#4e5971;line-height:1.5}.market-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}.market-meta div{border:1px solid #e9ebf2;border-radius:15px;padding:14px;background:#fbfcff}.market-meta strong{display:block;font-size:.77rem;text-transform:uppercase;letter-spacing:.04em;color:#7a8397}.market-meta span{display:block;margin-top:5px;font-weight:800;color:#17214d}.market-tickets{margin-top:22px}.market-tickets .table-card{border-radius:18px;box-shadow:none}.market-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:24px}.market-layout[data-template="CARD_GRID"] .market-cover{height:190px}.market-layout[data-template="CARD_GRID"] .market-content{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}.market-layout[data-template="CARD_GRID"] .market-meta{grid-template-columns:1fr 1fr}.market-layout[data-template="CARD_GRID"] .market-tickets{margin-top:0}.market-layout[data-template="PROMO_DETAIL"] .market-cover{height:390px}.market-layout[data-template="PROMO_DETAIL"] .market-content{padding:38px}.market-layout[data-template="PROMO_DETAIL"] .market-cover-title h1{font-size:clamp(2.4rem,5vw,4.2rem)}.market-layout[data-template="IMMERSIVE"]{background:#12102f;border-color:#252052}.market-layout[data-template="IMMERSIVE"] .market-cover{height:430px}.market-layout[data-template="IMMERSIVE"] .market-content{background:radial-gradient(circle at top right,#332a70,#12102f 60%);color:#fff}.market-layout[data-template="IMMERSIVE"] .market-intro{color:#d7d4f2}.market-layout[data-template="IMMERSIVE"] .market-highlight{background:rgba(255,255,255,.10);color:#fff}.market-layout[data-template="IMMERSIVE"] .market-meta div{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}.market-layout[data-template="IMMERSIVE"] .market-meta strong{color:#c1bee3}.market-layout[data-template="IMMERSIVE"] .market-meta span{color:#fff}.market-layout[data-template="IMMERSIVE"] .table-card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}.market-layout[data-template="IMMERSIVE"] .table-modern th{background:rgba(255,255,255,.08);color:#fff}.market-layout[data-template="IMMERSIVE"] .table-modern td{border-color:rgba(255,255,255,.1);color:#f4f3ff}.market-layout[data-template="IMMERSIVE"] .muted{color:#d6d2f3!important}@media(max-width:780px){.market-cover{height:250px}.market-cover-title{left:22px;right:22px;bottom:20px}.market-content{padding:20px}.market-meta{grid-template-columns:1fr 1fr}.market-layout[data-template="CARD_GRID"] .market-content{display:block}.market-layout[data-template="PROMO_DETAIL"] .market-cover,.market-layout[data-template="IMMERSIVE"] .market-cover{height:290px}.market-actions{align-items:stretch;flex-direction:column}}
+    </style>
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo">🎫</span><div><strong>Connectify</strong><small>Marketplace</small></div></a>
+    <nav class="top-actions">
+        <a class="nav-link" th:href="@{/events}">Eventos</a>
+        <a class="nav-link" th:href="@{/events} + '#featured'">Destacados</a>
+        <div class="market-account-cluster" th:if="${clientAccount}">
+            <a class="account-name-control" th:href="@{/dashboard/client}" title="Mi cuenta Cliente"><span class="windows-person-icon" aria-hidden="true"></span><strong th:text="${accountFirstName}">Cliente</strong></a>
+            <a class="market-icon-control" th:href="@{/cart}" aria-label="Mi carrito" title="Mi carrito">🛒</a>
+            <a class="market-icon-control heart-control" th:href="@{/dashboard/client/favorites}" aria-label="Eventos seleccionados" title="Eventos seleccionados">♡<span class="market-icon-badge" th:if="${favoriteCount > 0}" th:text="${favoriteCount}">0</span></a>
+        </div>
+        <a class="btn secondary compact" th:if="${signedIn && !clientAccount}" th:href="@{/dashboard}">Mi panel</a>
+        <form th:if="${signedIn && !clientAccount}" th:action="@{/logout}" method="post"><button class="btn secondary compact" type="submit">Salir</button></form>
+        <a class="btn secondary compact" th:unless="${signedIn}" th:href="@{/login}">Iniciar sesión</a>
+        <a class="btn primary compact" th:unless="${signedIn}" th:href="@{/register}">Crear cuenta</a>
+    </nav>
+</header>
+
+<main class="dashboard-page market-stage">
+    <section class="market-layout" th:attr="data-template=${event.designTemplate != null ? event.designTemplate.name() : 'CLASSIC'},data-focus=${presentation != null ? presentation.contentFocus : 'BALANCED'},data-info-position=${presentation != null ? presentation.infoPosition : 'STANDARD'}" th:style="${presentationStyle}">
+        <div class="market-cover">
+            <img th:if="${coverImageUrl != null && !coverImageUrl.isBlank()}" th:src="${coverImageUrl}" alt="Portada del evento">
+            <div th:unless="${coverImageUrl != null && !coverImageUrl.isBlank()}" class="market-cover-empty">✦</div>
+            <div class="market-cover-title"><span class="badge template-badge" th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span><h1 th:text="${event.title}">Título del evento</h1><p th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p></div>
+        </div>
+        <div class="market-content">
+            <div>
+                <p class="market-intro" th:text="${event.description}">Descripción del evento</p>
+                <p class="market-highlight" th:if="${presentation != null && presentation.highlightText != null && !presentation.highlightText.isBlank()}" th:text="${presentation.highlightText}">Texto destacado</p>
+                <div class="market-detail-account-actions">
+                    <form th:if="${clientAccount}" th:action="@{/dashboard/client/favorites/toggle/{id}(id=${event.id})}" method="post"><input type="hidden" name="redirectTo" th:value="${'/events/' + event.id}"><button class="favorite-toggle" th:classappend="${favoriteSelected} ? ' saved' : ''" type="submit"><span class="heart-symbol" th:text="${favoriteSelected} ? '♥' : '♡'">♡</span><span th:text="${favoriteSelected} ? 'Guardado en seleccionados' : 'Guardar en seleccionados'">Guardar en seleccionados</span></button></form>
+                    <a class="btn secondary compact" th:if="${!signedIn}" th:href="@{/login}">Inicia sesión para guardar y comprar</a>
+                    <span class="muted small" th:if="${signedIn && !clientAccount}">La compra y los seleccionados están disponibles únicamente desde una cuenta Cliente.</span>
+                </div>
+                <div class="market-meta">
+                    <div><strong>Fecha</strong><span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</span></div>
+                    <div><strong>Ubicación</strong><span th:text="${(event.location != null ? event.location : 'Por definir') + ' · ' + (event.city != null ? event.city : '')}">Ubicación</span></div>
+                    <div th:if="${presentation == null || presentation.showOrganizer}"><strong>Organiza</strong><span th:text="${event.organizerName != null ? event.organizerName : 'Organizador'}">Organizador</span></div>
+                    <div><strong>Precio desde</strong><span th:text="${event.price != null ? 'S/ ' + event.price : 'Gratis / por definir'}">S/ 0.00</span></div>
+                    <div><strong>Capacidad</strong><span th:text="${event.capacity != null ? event.capacity : 0}">0</span></div>
+                    <div><strong>Disponibles</strong><span th:text="${event.availableTickets}">0</span></div>
+                </div>
+                <section class="market-extra-blocks" th:if="${presentation != null}">
+                    <article class="market-extra-block" th:if="${presentation.showAgenda && presentation.agendaText != null && !presentation.agendaText.isBlank()}"><b>Agenda</b><p th:text="${presentation.agendaText}">Agenda</p></article>
+                    <article class="market-extra-block" th:if="${presentation.showBenefits && presentation.benefitsText != null && !presentation.benefitsText.isBlank()}"><b>Beneficios</b><p th:text="${presentation.benefitsText}">Beneficios</p></article>
+                    <article class="market-extra-block" th:if="${presentation.showSponsors && presentation.sponsorsText != null && !presentation.sponsorsText.isBlank()}"><b>Sponsors y aliados</b><p th:text="${presentation.sponsorsText}">Sponsors</p></article>
+                </section>
+                <section class="market-gallery" th:if="${presentation != null && presentation.showGallery && coverImageUrl != null && !coverImageUrl.isBlank()}"><figure><img th:src="${coverImageUrl}" alt="Vista principal"><figcaption>Portada del evento</figcaption></figure><figure><img th:src="${thumbnailImageUrl != null && !thumbnailImageUrl.isBlank() ? thumbnailImageUrl : coverImageUrl}" alt="Vista secundaria"><figcaption>Vista de Marketplace</figcaption></figure></section>
+            </div>
+            <section class="market-tickets table-card" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}">
+                <h2 style="padding:20px 20px 0;margin:0">Elige tu tipo de entrada</h2><p class="muted small" style="padding:0 20px" th:text="${clientAccount} ? 'Selecciona tu entrada y agrégala al carrito personal.' : 'El checkout está disponible con una cuenta Cliente.'">Texto</p>
+                <table class="table-modern"><thead><tr><th>Entrada</th><th>Precio</th><th>Disponibles</th><th>Acción</th></tr></thead><tbody><tr th:each="type : ${ticketTypes}"><td><strong th:text="${type.name}">General</strong><br><span class="muted small" th:text="${type.description}">Descripción</span></td><td th:text="${'S/ ' + type.price}">S/ 0.00</td><td th:text="${type.remaining}">0</td><td><form th:if="${clientAccount}" class="organizer-action-row" th:action="@{/cart/add/{id}(id=${event.id})}" method="post"><input type="hidden" name="ticketTypeId" th:value="${type.id}"><input name="quantity" type="number" min="1" max="10" value="1" style="max-width:70px"><button class="btn primary compact" type="submit">Agregar</button></form><a th:if="${!signedIn}" class="btn secondary compact" th:href="@{/login}">Iniciar sesión</a><span th:if="${signedIn && !clientAccount}" class="muted small">Solo cuenta Cliente</span></td></tr></tbody></table>
+            </section>
+        </div>
+        <div class="market-actions" style="padding:0 30px 30px"><a class="btn secondary" th:href="@{/events}">Seguir explorando</a><a class="btn primary" th:if="${clientAccount}" th:href="@{/cart}">Ver mi carrito</a></div>
+    </section>
+</main>
+</body>
+</html>
