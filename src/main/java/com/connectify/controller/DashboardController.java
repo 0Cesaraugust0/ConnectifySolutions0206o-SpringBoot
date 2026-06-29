@@ -49,7 +49,7 @@ public class DashboardController {
     public String developer(Model model, Authentication authentication) {
         model.addAttribute("title", "Panel Developer");
         model.addAttribute("email", authentication.getName());
-        return "dashboard/developer";
+        return "dashboard/developer-console";
     }
 
     @GetMapping("/dashboard/admin")
@@ -68,7 +68,7 @@ public class DashboardController {
 
     @GetMapping("/dashboard/client")
     public String client(Model model, Authentication authentication) {
-        model.addAttribute("title", "Panel Cliente");
+        model.addAttribute("title", "Mi cuenta Cliente");
         model.addAttribute("email", authentication.getName());
         return "dashboard/client";
     }
