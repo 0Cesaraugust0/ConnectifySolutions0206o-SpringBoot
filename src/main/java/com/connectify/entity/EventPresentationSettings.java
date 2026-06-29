@@ -32,9 +32,39 @@ public class EventPresentationSettings {
     @Column(length = 500)
     private String highlightText;
 
+    @Column(length = 1000)
+    private String coverImageUrl;
+
+    @Column(length = 1000)
+    private String thumbnailImageUrl;
+
+    @Column(length = 20)
+    private String coverFocus = "CENTER";
+
+    @Column(length = 20)
+    private String contentFocus = "BALANCED";
+
+    @Column(length = 20)
+    private String infoPosition = "STANDARD";
+
     private boolean showGallery = true;
 
     private boolean showOrganizer = true;
+
+    private boolean showAgenda = false;
+
+    @Column(length = 1500)
+    private String agendaText;
+
+    private boolean showBenefits = false;
+
+    @Column(length = 1500)
+    private String benefitsText;
+
+    private boolean showSponsors = false;
+
+    @Column(length = 1200)
+    private String sponsorsText;
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -47,10 +77,32 @@ public class EventPresentationSettings {
     public void setAccentColor(String accentColor) { this.accentColor = accentColor; touch(); }
     public String getHighlightText() { return highlightText; }
     public void setHighlightText(String highlightText) { this.highlightText = highlightText; touch(); }
+    public String getCoverImageUrl() { return coverImageUrl; }
+    public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; touch(); }
+    public String getThumbnailImageUrl() { return thumbnailImageUrl; }
+    public void setThumbnailImageUrl(String thumbnailImageUrl) { this.thumbnailImageUrl = thumbnailImageUrl; touch(); }
+    public String getCoverFocus() { return coverFocus; }
+    public void setCoverFocus(String coverFocus) { this.coverFocus = coverFocus; touch(); }
+    public String getContentFocus() { return contentFocus; }
+    public void setContentFocus(String contentFocus) { this.contentFocus = contentFocus; touch(); }
+    public String getInfoPosition() { return infoPosition; }
+    public void setInfoPosition(String infoPosition) { this.infoPosition = infoPosition; touch(); }
     public boolean isShowGallery() { return showGallery; }
     public void setShowGallery(boolean showGallery) { this.showGallery = showGallery; touch(); }
     public boolean isShowOrganizer() { return showOrganizer; }
     public void setShowOrganizer(boolean showOrganizer) { this.showOrganizer = showOrganizer; touch(); }
+    public boolean isShowAgenda() { return showAgenda; }
+    public void setShowAgenda(boolean showAgenda) { this.showAgenda = showAgenda; touch(); }
+    public String getAgendaText() { return agendaText; }
+    public void setAgendaText(String agendaText) { this.agendaText = agendaText; touch(); }
+    public boolean isShowBenefits() { return showBenefits; }
+    public void setShowBenefits(boolean showBenefits) { this.showBenefits = showBenefits; touch(); }
+    public String getBenefitsText() { return benefitsText; }
+    public void setBenefitsText(String benefitsText) { this.benefitsText = benefitsText; touch(); }
+    public boolean isShowSponsors() { return showSponsors; }
+    public void setShowSponsors(boolean showSponsors) { this.showSponsors = showSponsors; touch(); }
+    public String getSponsorsText() { return sponsorsText; }
+    public void setSponsorsText(String sponsorsText) { this.sponsorsText = sponsorsText; touch(); }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
