@@ -26,9 +26,9 @@
 </header>
 
 <main class="dashboard-page">
-    <section class="dashboard-hero"><p class="badge">Detalle del evento</p><h1 th:text="${event.title}">Evento</h1><p class="muted">Verifica la construcción antes de decidir su estado.</p></section>
+    <section class="dashboard-hero"><p class="badge">Detalle del evento</p><h1 th:text="${eventTitle}">Evento</h1><p class="muted">Verifica la construcción antes de decidir su estado.</p></section>
     <section class="toolbar">
-        <a class="btn secondary" th:href="@{/dashboard/admin/events/{id}/preview(id=${event.id})}">Vista previa de publicación</a>
+        <a class="btn secondary" th:href="@{/dashboard/admin/events/{id}/preview(id=${eventId})}">Vista previa de publicación</a>
         <button class="btn secondary" type="button" data-open-modal="bitacoraModal">Ver bitácora</button>
         <a class="btn secondary" th:href="@{/dashboard/admin/events}">Volver</a>
     </section>
@@ -43,19 +43,20 @@
     <section class="checkout-layout">
         <section class="summary-card">
             <h2>Construcción actual</h2>
-            <div class="summary-row"><span>Estado</span><strong th:text="${event.status != null ? event.status : 'SIN_ESTADO'}">PENDING_REVIEW</strong></div>
-            <div class="summary-row"><span>Categoría</span><strong th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</strong></div>
-            <div class="summary-row"><span>Organizador</span><strong th:text="${event.organizerName != null ? event.organizerName : 'Organizador'}">Organizador</strong></div>
-            <div class="summary-row"><span>Correo</span><strong th:text="${event.organizerEmail != null ? event.organizerEmail : 'No registrado'}">correo</strong></div>
-            <div class="summary-row"><span>Capacidad</span><strong th:text="${event.capacity != null ? event.capacity : 0}">0</strong></div>
-            <div class="summary-row"><span>Ubicación</span><strong th:text="${(event.location != null ? event.location : 'Sin ubicación') + ' · ' + (event.city != null ? event.city : 'Sin ciudad')}">Lugar</strong></div>
-            <p class="muted small" th:text="${event.description != null ? event.description : 'Sin descripción registrada.'}">Descripción</p>
+            <div class="summary-row"><span>Estado</span><strong th:text="${eventStatus}">PENDING_REVIEW</strong></div>
+            <div class="summary-row"><span>Categoría</span><strong th:text="${eventCategory}">Categoría</strong></div>
+            <div class="summary-row"><span>Fecha</span><strong th:text="${eventDate}">Fecha</strong></div>
+            <div class="summary-row"><span>Organizador</span><strong th:text="${organizerName}">Organizador</strong></div>
+            <div class="summary-row"><span>Correo</span><strong th:text="${organizerEmail}">correo</strong></div>
+            <div class="summary-row"><span>Capacidad</span><strong th:text="${eventCapacity}">0</strong></div>
+            <div class="summary-row"><span>Ubicación</span><strong th:text="${eventLocation + ' · ' + eventCity}">Lugar</strong></div>
+            <p class="muted small" th:text="${eventDescription}">Descripción</p>
         </section>
 
         <section class="form-card">
             <h2>Decisión administrativa</h2>
 
-            <form th:if="${event.status != null && (event.status.name() == 'PENDING_REVIEW' || event.status.name() == 'OBSERVED')}" th:action="@{/dashboard/admin/events/{id}/observe(id=${event.id})}" method="post" class="auth-form">
+            <form th:if="${isReviewable}" th:action="@{/dashboard/admin/events/{id}/observe(id=${eventId})}" method="post" class="auth-form">
                 <label>Observación</label>
                 <textarea class="search-input" name="note" rows="3" placeholder="Indica exactamente qué debe corregirse."></textarea>
                 <label class="muted small"><input type="checkbox" name="notifyDesigner" value="true"> Notificar también al Diseñador por corrección visual.</label>
@@ -63,38 +64,38 @@
                 <button class="btn secondary full" type="submit">Observar</button>
             </form>
 
-            <form th:if="${event.status != null && (event.status.name() == 'PENDING_REVIEW' || event.status.name() == 'OBSERVED')}" th:action="@{/dashboard/admin/events/{id}/approve(id=${event.id})}" method="post" class="auth-form">
+            <form th:if="${isReviewable}" th:action="@{/dashboard/admin/events/{id}/approve(id=${eventId})}" method="post" class="auth-form">
                 <label>Nota de aprobación</label>
                 <textarea class="search-input" name="note" rows="2" placeholder="Construcción, datos y entradas conformes."></textarea>
                 <p class="muted small">Pasa a APPROVED y bloquea la edición del Organizador y Diseñador.</p>
                 <button class="btn primary full" type="submit">Aprobar construcción</button>
             </form>
 
-            <form th:if="${event.status != null && (event.status.name() == 'PENDING_REVIEW' || event.status.name() == 'OBSERVED')}" th:action="@{/dashboard/admin/events/{id}/reject(id=${event.id})}" method="post" class="auth-form">
+            <form th:if="${isReviewable}" th:action="@{/dashboard/admin/events/{id}/reject(id=${eventId})}" method="post" class="auth-form">
                 <label>Motivo del rechazo</label>
                 <textarea class="search-input" name="note" rows="2" placeholder="Explica por qué la propuesta no continúa."></textarea>
                 <label class="muted small"><input type="checkbox" name="notifyDesigner" value="true"> Informar también al Diseñador.</label>
                 <button class="btn secondary full" type="submit">Rechazar propuesta</button>
             </form>
 
-            <div th:if="${event.status != null && event.status.name() == 'APPROVED'}" class="publication-actions">
-                <form th:action="@{/dashboard/admin/events/{id}/publish(id=${event.id})}" method="post"><button class="btn primary full" type="submit">Publicar</button></form>
+            <div th:if="${isApproved}" class="publication-actions">
+                <form th:action="@{/dashboard/admin/events/{id}/publish(id=${eventId})}" method="post"><button class="btn primary full" type="submit">Publicar</button></form>
                 <button class="btn secondary full" type="button" disabled>Despublicar</button>
             </div>
 
-            <div th:if="${event.status != null && event.status.name() == 'PUBLISHED'}" class="publication-actions">
+            <div th:if="${isPublished}" class="publication-actions">
                 <button class="btn primary full" type="button" disabled>Publicar</button>
-                <form th:action="@{/dashboard/admin/events/{id}/unpublish(id=${event.id})}" method="post"><button class="btn secondary full" type="submit">Despublicar</button></form>
+                <form th:action="@{/dashboard/admin/events/{id}/unpublish(id=${eventId})}" method="post"><button class="btn secondary full" type="submit">Despublicar</button></form>
             </div>
 
-            <p th:if="${event.status != null && event.status.name() == 'REJECTED'}" class="alert error">La propuesta quedó cerrada en Rechazado.</p>
-            <p th:if="${event.status == null}" class="alert error">Este evento antiguo no tiene estado administrativo. Requiere regularización de datos.</p>
+            <p th:if="${isRejected}" class="alert error">La propuesta quedó cerrada en Rechazado.</p>
+            <p th:if="${!isReviewable && !isApproved && !isPublished && !isRejected}" class="alert error">Este evento requiere regularización de estado administrativo.</p>
         </section>
     </section>
 
     <section class="table-card" style="margin-top:24px">
         <h2>Tipos de entrada</h2>
-        <table class="table-modern"><thead><tr><th>Tipo</th><th>Precio</th><th>Cantidad</th><th>Vendidas</th><th>Disponibles</th></tr></thead><tbody><tr th:each="type : ${ticketTypes}"><td><strong th:text="${type.name}">General</strong></td><td th:text="${'S/ ' + type.price}">S/ 0.00</td><td th:text="${type.quantityAvailable != null ? type.quantityAvailable : 0}">0</td><td th:text="${type.quantitySold != null ? type.quantitySold : 0}">0</td><td th:text="${type.remaining}">0</td></tr><tr th:if="${ticketTypes == null || ticketTypes.isEmpty()}"><td colspan="5" class="muted">No hay tipos de entrada configurados.</td></tr></tbody></table>
+        <table class="table-modern"><thead><tr><th>Detalle</th></tr></thead><tbody><tr th:each="line : ${ticketLines}"><td th:text="${line}">Entrada</td></tr><tr th:if="${ticketLines == null || ticketLines.isEmpty()}"><td class="muted">No hay tipos de entrada configurados.</td></tr></tbody></table>
     </section>
 
     <div id="bitacoraModal" class="modal-backdrop" aria-hidden="true">
@@ -105,11 +106,11 @@
             </div>
             <div class="modal-body">
                 <h3>Cambios solicitados por organizador</h3>
-                <article class="change-entry" th:each="record : ${changeRecords}"><strong th:text="${record.createdAt != null ? #temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</strong><div th:text="${record.description != null ? record.description : 'Sin descripción'}">Cambios</div></article>
-                <p class="muted" th:if="${changeRecords == null || changeRecords.isEmpty()}">Aún no hay cambios comparativos.</p>
+                <article class="change-entry" th:each="line : ${changeLines}" th:text="${line}">Cambio</article>
+                <p class="muted" th:if="${changeLines == null || changeLines.isEmpty()}">Aún no hay cambios comparativos.</p>
                 <h3 style="margin-top:20px">Trazabilidad administrativa</h3>
-                <article class="change-entry" th:each="record : ${records}"><strong th:text="${record.createdAt != null ? #temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</strong><div th:text="${record.description != null ? record.description : 'Sin descripción'}">Registro</div></article>
-                <p class="muted" th:if="${records == null || records.isEmpty()}">Aún no hay trazabilidad administrativa.</p>
+                <article class="change-entry" th:each="line : ${recordLines}" th:text="${line}">Registro</article>
+                <p class="muted" th:if="${recordLines == null || recordLines.isEmpty()}">Aún no hay trazabilidad administrativa.</p>
             </div>
         </section>
     </div>
