@@ -6,109 +6,151 @@
     <title>Detalle de evento - Administrador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <style>
-        .change-entry { white-space:pre-line; border-bottom:1px solid #e7eaf2; padding-bottom:12px; margin-bottom:12px; }
-        .change-entry:last-child { border-bottom:0; margin-bottom:0; }
-        .publication-actions { display:flex; gap:10px; }
-        .publication-actions > * { flex:1; }
-        .modal-backdrop { position:fixed; inset:0; background:rgba(17,24,39,.55); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
-        .modal-backdrop.active { display:flex; }
-        .modal-card { width:min(760px, 96vw); max-height:82vh; overflow:hidden; background:#fff; border-radius:18px; box-shadow:0 24px 80px rgba(15,23,42,.28); }
-        .modal-head { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:18px 20px; border-bottom:1px solid #edf0f7; }
-        .modal-body { max-height:58vh; overflow-y:auto; padding:18px 20px; background:#fafbff; }
-        .modal-close { border:0; background:#f1f3f9; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/admin-event-detail-premium.css}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/dashboard/admin/events}"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Revisión administrativa</small></div></a>
-    <nav class="top-actions"><a class="btn secondary" th:href="@{/dashboard/admin/events}">Lista de ingresos</a></nav>
+    <a class="brand brand-link" th:href="@{/dashboard/admin/events}">
+        <span class="logo">🛡️</span><div><strong>Connectify</strong><small>Revisión administrativa</small></div>
+    </a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/dashboard/admin/events}">Gestión de eventos</a></nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero"><p class="badge">Detalle del evento</p><h1 th:text="${eventTitle}">Evento</h1><p class="muted">Verifica la construcción antes de decidir su estado.</p></section>
-    <section class="toolbar">
-        <a class="btn secondary" th:href="@{/dashboard/admin/events/{id}/preview(id=${eventId})}">Vista previa de publicación</a>
-        <button class="btn secondary" type="button" data-open-modal="bitacoraModal">Ver bitácora</button>
-        <a class="btn secondary" th:href="@{/dashboard/admin/events}">Volver</a>
+<main class="dashboard-page admin-event-detail-page">
+    <section class="review-hero">
+        <div>
+            <span class="review-eyebrow">▣ Revisión administrativa</span>
+            <h1 th:text="${eventTitle}">Evento</h1>
+            <p>Valida la información, las entradas y la propuesta antes de decidir su publicación.</p>
+            <div class="review-chip-row">
+                <span class="review-status" th:attr="data-state=${eventStatus}" th:switch="${eventStatus}">
+                    <span th:case="'PENDING_REVIEW'">Pendiente de revisión</span>
+                    <span th:case="'OBSERVED'">Observado</span>
+                    <span th:case="'APPROVED'">Aprobado</span>
+                    <span th:case="'PUBLISHED'">Publicado</span>
+                    <span th:case="'REJECTED'">Rechazado</span>
+                    <span th:case="*" th:text="${eventStatus}">Estado</span>
+                </span>
+                <span class="review-category" th:text="${eventCategory}">Categoría</span>
+            </div>
+        </div>
+        <div class="review-hero-actions">
+            <a class="btn secondary compact" th:href="@{/dashboard/admin/events/{id}/preview(id=${eventId})}">Vista previa</a>
+            <button class="btn secondary compact" type="button" data-open-modal="bitacoraModal">Bitácora</button>
+            <a class="btn secondary compact" th:href="@{/dashboard/admin/events}">Volver</a>
+        </div>
     </section>
 
-    <div th:if="${param.observed != null}" class="alert success">Observación enviada.</div>
-    <div th:if="${param.approved != null}" class="alert success">Evento aprobado y bloqueado para nuevas ediciones.</div>
-    <div th:if="${param.rejected != null}" class="alert error">Propuesta rechazada.</div>
-    <div th:if="${param.published != null}" class="alert success">Evento publicado en marketplace.</div>
-    <div th:if="${param.unpublished != null}" class="alert success">Evento despublicado y mantenido como aprobado.</div>
-    <div th:if="${param.publishDenied != null || param.unpublishDenied != null || param.decisionDenied != null}" class="alert error">La acción no corresponde al estado actual.</div>
-
-    <section class="checkout-layout">
-        <section class="summary-card">
-            <h2>Construcción actual</h2>
-            <div class="summary-row"><span>Estado</span><strong th:text="${eventStatus}">PENDING_REVIEW</strong></div>
-            <div class="summary-row"><span>Categoría</span><strong th:text="${eventCategory}">Categoría</strong></div>
-            <div class="summary-row"><span>Fecha</span><strong th:text="${eventDate}">Fecha</strong></div>
-            <div class="summary-row"><span>Organizador</span><strong th:text="${organizerName}">Organizador</strong></div>
-            <div class="summary-row"><span>Correo</span><strong th:text="${organizerEmail}">correo</strong></div>
-            <div class="summary-row"><span>Capacidad</span><strong th:text="${eventCapacity}">0</strong></div>
-            <div class="summary-row"><span>Ubicación</span><strong th:text="${eventLocation + ' · ' + eventCity}">Lugar</strong></div>
-            <p class="muted small" th:text="${eventDescription}">Descripción</p>
-        </section>
-
-        <section class="form-card">
-            <h2>Decisión administrativa</h2>
-
-            <form th:if="${isReviewable}" th:action="@{/dashboard/admin/events/{id}/observe(id=${eventId})}" method="post" class="auth-form">
-                <label>Observación</label>
-                <textarea class="search-input" name="note" rows="3" placeholder="Indica exactamente qué debe corregirse."></textarea>
-                <label class="muted small"><input type="checkbox" name="notifyDesigner" value="true"> Notificar también al Diseñador por corrección visual.</label>
-                <p class="muted small">El Organizador recibe esta observación obligatoriamente.</p>
-                <button class="btn secondary full" type="submit">Observar</button>
-            </form>
-
-            <form th:if="${isReviewable}" th:action="@{/dashboard/admin/events/{id}/approve(id=${eventId})}" method="post" class="auth-form">
-                <label>Nota de aprobación</label>
-                <textarea class="search-input" name="note" rows="2" placeholder="Construcción, datos y entradas conformes."></textarea>
-                <p class="muted small">Pasa a APPROVED y bloquea la edición del Organizador y Diseñador.</p>
-                <button class="btn primary full" type="submit">Aprobar construcción</button>
-            </form>
-
-            <form th:if="${isReviewable}" th:action="@{/dashboard/admin/events/{id}/reject(id=${eventId})}" method="post" class="auth-form">
-                <label>Motivo del rechazo</label>
-                <textarea class="search-input" name="note" rows="2" placeholder="Explica por qué la propuesta no continúa."></textarea>
-                <label class="muted small"><input type="checkbox" name="notifyDesigner" value="true"> Informar también al Diseñador.</label>
-                <button class="btn secondary full" type="submit">Rechazar propuesta</button>
-            </form>
-
-            <div th:if="${isApproved}" class="publication-actions">
-                <form th:action="@{/dashboard/admin/events/{id}/publish(id=${eventId})}" method="post"><button class="btn primary full" type="submit">Publicar</button></form>
-                <button class="btn secondary full" type="button" disabled>Despublicar</button>
-            </div>
-
-            <div th:if="${isPublished}" class="publication-actions">
-                <button class="btn primary full" type="button" disabled>Publicar</button>
-                <form th:action="@{/dashboard/admin/events/{id}/unpublish(id=${eventId})}" method="post"><button class="btn secondary full" type="submit">Despublicar</button></form>
-            </div>
-
-            <p th:if="${isRejected}" class="alert error">La propuesta quedó cerrada en Rechazado.</p>
-            <p th:if="${!isReviewable && !isApproved && !isPublished && !isRejected}" class="alert error">Este evento requiere regularización de estado administrativo.</p>
-        </section>
+    <section class="review-alerts">
+        <div th:if="${param.observed != null}" class="alert success">Observación enviada al Organizador.</div>
+        <div th:if="${param.approved != null}" class="alert success">Evento aprobado y bloqueado para nuevas ediciones.</div>
+        <div th:if="${param.rejected != null}" class="alert error">Propuesta rechazada.</div>
+        <div th:if="${param.published != null}" class="alert success">Evento publicado en Marketplace.</div>
+        <div th:if="${param.unpublished != null}" class="alert success">Evento despublicado y mantenido como aprobado.</div>
+        <div th:if="${param.publishDenied != null || param.unpublishDenied != null || param.decisionDenied != null}" class="alert error">La acción no corresponde al estado administrativo actual.</div>
     </section>
 
-    <section class="table-card" style="margin-top:24px">
-        <h2>Tipos de entrada</h2>
-        <table class="table-modern"><thead><tr><th>Detalle</th></tr></thead><tbody><tr th:each="line : ${ticketLines}"><td th:text="${line}">Entrada</td></tr><tr th:if="${ticketLines == null || ticketLines.isEmpty()}"><td class="muted">No hay tipos de entrada configurados.</td></tr></tbody></table>
+    <section class="review-layout">
+        <div class="review-stack">
+            <section class="review-panel">
+                <div class="panel-head">
+                    <div><h2>Construcción del evento</h2><p>Información registrada por el Organizador para esta propuesta.</p></div>
+                    <span class="panel-head-icon">⌘</span>
+                </div>
+                <div class="review-summary-content">
+                    <div class="detail-facts">
+                        <article class="fact-card"><small>Fecha y hora</small><strong th:text="${eventDate}">Fecha</strong></article>
+                        <article class="fact-card"><small>Ubicación</small><strong th:text="${eventLocation + ' · ' + eventCity}">Lugar</strong></article>
+                        <article class="fact-card"><small>Capacidad</small><strong th:text="${eventCapacity + ' personas'}">0 personas</strong></article>
+                        <article class="fact-card"><small>Categoría</small><strong th:text="${eventCategory}">Categoría</strong></article>
+                        <article class="fact-card"><small>Organizador</small><strong th:text="${organizerName}">Organizador</strong></article>
+                        <article class="fact-card"><small>Correo de contacto</small><strong th:text="${organizerEmail}">correo</strong></article>
+                    </div>
+                    <article class="description-block"><small>Descripción del evento</small><p th:text="${eventDescription}">Descripción</p></article>
+                </div>
+            </section>
+
+            <section class="ticket-review-panel">
+                <div class="panel-head">
+                    <div><h2>Tipos de entrada</h2><p>Variantes, precios y cupos definidos para el evento.</p></div>
+                    <span class="panel-head-icon">🎟</span>
+                </div>
+                <div class="ticket-table-wrap">
+                    <table class="table-modern">
+                        <thead><tr><th>Detalle de entrada</th></tr></thead>
+                        <tbody>
+                        <tr th:each="line : ${ticketLines}"><td th:text="${line}">Entrada</td></tr>
+                        <tr th:if="${ticketLines == null || ticketLines.isEmpty()}"><td class="muted">No hay tipos de entrada configurados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <aside class="decision-console">
+            <div class="decision-console-head">
+                <span class="console-kicker">Punto de decisión</span>
+                <h2>Decisión administrativa</h2>
+                <p>Las decisiones quedan registradas y notifican al Organizador. El evento solo llega a Marketplace cuando sea publicado.</p>
+            </div>
+
+            <div class="decision-body" th:if="${isReviewable}">
+                <form th:action="@{/dashboard/admin/events/{id}/observe(id=${eventId})}" method="post" class="decision-card observation-card">
+                    <div class="decision-card-title"><span>◌</span><strong>Solicitar corrección</strong></div>
+                    <p>Envía una observación clara. El Organizador será notificado obligatoriamente.</p>
+                    <label>Observación<textarea class="search-input" name="note" rows="3" placeholder="Indica exactamente qué debe corregirse."></textarea></label>
+                    <label class="check-line"><input type="checkbox" name="notifyDesigner" value="true"> Notificar también al Diseñador por corrección visual.</label>
+                    <button class="btn secondary" type="submit">Enviar observación</button>
+                </form>
+
+                <form th:action="@{/dashboard/admin/events/{id}/approve(id=${eventId})}" method="post" class="decision-card approval-card">
+                    <div class="decision-card-title"><span>✓</span><strong>Aprobar construcción</strong></div>
+                    <p>Bloquea la edición de Organizador y Diseñador; después podrás publicar.</p>
+                    <label>Nota de aprobación<textarea class="search-input" name="note" rows="2" placeholder="Construcción, datos y entradas conformes."></textarea></label>
+                    <button class="btn" type="submit">Aprobar evento</button>
+                </form>
+
+                <form th:action="@{/dashboard/admin/events/{id}/reject(id=${eventId})}" method="post" class="decision-card rejection-card">
+                    <div class="decision-card-title"><span>×</span><strong>Rechazar propuesta</strong></div>
+                    <p>Usa esta opción cuando la propuesta no puede continuar en el flujo.</p>
+                    <label>Motivo del rechazo<textarea class="search-input" name="note" rows="2" placeholder="Explica por qué la propuesta no continúa."></textarea></label>
+                    <label class="check-line"><input type="checkbox" name="notifyDesigner" value="true"> Informar también al Diseñador.</label>
+                    <button class="btn" type="submit">Rechazar propuesta</button>
+                </form>
+            </div>
+
+            <div class="publication-console" th:if="${isApproved}">
+                <div class="publication-banner"><span>◎</span><div><b>Construcción aprobada</b><small>El evento está bloqueado para edición y listo para decidir su salida al Marketplace.</small></div></div>
+                <div class="publication-actions">
+                    <form th:action="@{/dashboard/admin/events/{id}/publish(id=${eventId})}" method="post"><button class="btn primary" type="submit">Publicar</button></form>
+                    <button class="btn secondary" type="button" disabled>Despublicar</button>
+                </div>
+            </div>
+
+            <div class="publication-console" th:if="${isPublished}">
+                <div class="publication-banner"><span>◉</span><div><b>Evento visible en Marketplace</b><small>La publicación está activa. Puedes retirarla sin permitir nuevas ediciones del evento.</small></div></div>
+                <div class="publication-actions">
+                    <button class="btn secondary" type="button" disabled>Publicar</button>
+                    <form th:action="@{/dashboard/admin/events/{id}/unpublish(id=${eventId})}" method="post"><button class="btn primary" type="submit">Despublicar</button></form>
+                </div>
+            </div>
+
+            <div class="locked-console" th:if="${isRejected}"><div class="alert error">La propuesta quedó cerrada en estado Rechazado.</div></div>
+            <div class="locked-console" th:if="${!isReviewable && !isApproved && !isPublished && !isRejected}"><div class="alert error">Este evento requiere regularización de estado administrativo.</div></div>
+        </aside>
     </section>
 
     <div id="bitacoraModal" class="modal-backdrop" aria-hidden="true">
         <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bitacoraTitle">
             <div class="modal-head">
-                <div><h2 id="bitacoraTitle">Bitácora del evento</h2><p class="muted small">Cambios del organizador y trazabilidad administrativa real.</p></div>
+                <div><h2 id="bitacoraTitle">Bitácora del evento</h2><p>Cambios del Organizador y trazabilidad administrativa.</p></div>
                 <button class="modal-close" type="button" data-close-modal="bitacoraModal">Cerrar</button>
             </div>
             <div class="modal-body">
-                <h3>Cambios solicitados por organizador</h3>
+                <h3 class="modal-section-title">Cambios solicitados por Organizador</h3>
                 <article class="change-entry" th:each="line : ${changeLines}" th:text="${line}">Cambio</article>
                 <p class="muted" th:if="${changeLines == null || changeLines.isEmpty()}">Aún no hay cambios comparativos.</p>
-                <h3 style="margin-top:20px">Trazabilidad administrativa</h3>
+                <h3 class="modal-section-title" style="margin-top:22px">Trazabilidad administrativa</h3>
                 <article class="change-entry" th:each="line : ${recordLines}" th:text="${line}">Registro</article>
                 <p class="muted" th:if="${recordLines == null || recordLines.isEmpty()}">Aún no hay trazabilidad administrativa.</p>
             </div>
