@@ -98,7 +98,7 @@ public class DashboardController {
         model.addAttribute("selectedEvent", selectedEvent);
         model.addAttribute("presentation", presentation);
         model.addAttribute("templates", EventDesignTemplate.values());
-        return "dashboard/designer";
+        return "dashboard/designer-studio";
     }
 
     @GetMapping("/dashboard/gate-agent")
