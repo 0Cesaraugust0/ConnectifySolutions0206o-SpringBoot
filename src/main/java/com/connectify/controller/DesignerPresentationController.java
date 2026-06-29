@@ -4,8 +4,10 @@ import com.connectify.entity.Event;
 import com.connectify.entity.EventAdminRecord;
 import com.connectify.entity.EventAdminRecordType;
 import com.connectify.entity.EventDesignTemplate;
+import com.connectify.entity.EventPresentationSettings;
 import com.connectify.entity.EventStatus;
 import com.connectify.repository.EventAdminRecordRepository;
+import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.EventRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,10 +24,14 @@ public class DesignerPresentationController {
 
     private final EventRepository eventRepository;
     private final EventAdminRecordRepository recordRepository;
+    private final EventPresentationSettingsRepository presentationSettingsRepository;
 
-    public DesignerPresentationController(EventRepository eventRepository, EventAdminRecordRepository recordRepository) {
+    public DesignerPresentationController(EventRepository eventRepository,
+                                          EventAdminRecordRepository recordRepository,
+                                          EventPresentationSettingsRepository presentationSettingsRepository) {
         this.eventRepository = eventRepository;
         this.recordRepository = recordRepository;
+        this.presentationSettingsRepository = presentationSettingsRepository;
     }
 
     @PostMapping("/events/{id}/presentation")
@@ -48,14 +54,26 @@ public class DesignerPresentationController {
         event.setDesignEnabled(true);
         eventRepository.save(event);
 
+        EventPresentationSettings presentation = presentationSettingsRepository.findByEventId(id)
+                .orElseGet(EventPresentationSettings::new);
+        if (presentation.getEvent() == null) {
+            presentation.setEvent(event);
+        }
+        presentation.setPrimaryColor(safeColor(primaryColor, "#4f46e5"));
+        presentation.setAccentColor(safeColor(accentColor, "#8b5cf6"));
+        presentation.setHighlightText(clean(highlightText));
+        presentation.setShowGallery(showGallery);
+        presentation.setShowOrganizer(showOrganizer);
+        presentationSettingsRepository.save(presentation);
+
         EventAdminRecord record = new EventAdminRecord();
         record.setEvent(event);
         record.setType(EventAdminRecordType.ADMIN_COPY);
         record.setDescription("Propuesta visual guardada por Diseñador (" + safeName(authentication) + "):\n"
                 + "Plantilla: " + designTemplate.getLabel() + "\n"
-                + "Color principal: " + primaryColor + "\n"
-                + "Color de acento: " + accentColor + "\n"
-                + "Galería: " + (showGallery ? "Visible" : "Oculta") + "\n"
+                + "Color principal: " + presentation.getPrimaryColor() + "\n"
+                + "Color de acento: " + presentation.getAccentColor() + "\n"
+                + "Tarjetas de entradas: " + (showGallery ? "Visibles" : "Ocultas en la composición") + "\n"
                 + "Bloque organizador: " + (showOrganizer ? "Visible" : "Oculto") + "\n"
                 + "Texto destacado: " + clean(highlightText));
         record.setCreatedAt(LocalDateTime.now());
@@ -71,5 +89,9 @@ public class DesignerPresentationController {
 
     private String clean(String value) {
         return value == null || value.isBlank() ? "Sin texto adicional" : value.trim();
+    }
+
+    private String safeColor(String value, String fallback) {
+        return value != null && value.matches("#[0-9a-fA-F]{6}") ? value : fallback;
     }
 }
