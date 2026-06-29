@@ -1,10 +1,14 @@
 package com.connectify.controller;
 
+import com.connectify.entity.ClientFavorite;
 import com.connectify.entity.Event;
 import com.connectify.entity.EventPresentationSettings;
 import com.connectify.entity.EventStatus;
+import com.connectify.entity.UserAccount;
+import com.connectify.repository.ClientFavoriteRepository;
 import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.TicketTypeRepository;
+import com.connectify.repository.UserAccountRepository;
 import com.connectify.service.EventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,13 +33,19 @@ public class EventController {
     private final EventService eventService;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventPresentationSettingsRepository presentationSettingsRepository;
+    private final UserAccountRepository userAccountRepository;
+    private final ClientFavoriteRepository favoriteRepository;
 
     public EventController(EventService eventService,
                            TicketTypeRepository ticketTypeRepository,
-                           EventPresentationSettingsRepository presentationSettingsRepository) {
+                           EventPresentationSettingsRepository presentationSettingsRepository,
+                           UserAccountRepository userAccountRepository,
+                           ClientFavoriteRepository favoriteRepository) {
         this.eventService = eventService;
         this.ticketTypeRepository = ticketTypeRepository;
         this.presentationSettingsRepository = presentationSettingsRepository;
+        this.userAccountRepository = userAccountRepository;
+        this.favoriteRepository = favoriteRepository;
     }
 
     @GetMapping
@@ -51,13 +62,14 @@ public class EventController {
                 .filter(setting -> setting.getEvent() != null && setting.getEvent().getId() != null)
                 .collect(Collectors.toMap(setting -> setting.getEvent().getId(), Function.identity(), (first, ignored) -> first));
 
+        UserAccount client = addAccountNavigation(model, authentication);
+        model.addAttribute("favoriteEventIds", favoriteIds(client));
         model.addAttribute("events", events);
         model.addAttribute("presentationByEventId", presentationByEventId);
         model.addAttribute("q", q);
         model.addAttribute("city", city);
         model.addAttribute("category", category);
-        addAccountNavigation(model, authentication);
-        return "events/list";
+        return "events/marketplace-list";
     }
 
     @GetMapping("/{id}")
@@ -67,11 +79,12 @@ public class EventController {
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no disponible en marketplace");
         }
+
         EventPresentationSettings presentation = presentationSettingsRepository.findByEventId(id).orElse(null);
         addDetailModel(event, presentation, model);
-        model.addAttribute("previewMode", false);
-        addAccountNavigation(model, authentication);
-        return "events/detail";
+        UserAccount client = addAccountNavigation(model, authentication);
+        model.addAttribute("favoriteSelected", client != null && favoriteRepository.existsByClient_IdAndEvent_Id(client.getId(), id));
+        return "events/marketplace-detail";
     }
 
     private void addDetailModel(Event event, EventPresentationSettings presentation, Model model) {
@@ -83,14 +96,37 @@ public class EventController {
         model.addAttribute("presentationStyle", styleFor(presentation));
     }
 
-    private void addAccountNavigation(Model model, Authentication authentication) {
+    private UserAccount addAccountNavigation(Model model, Authentication authentication) {
         boolean signedIn = authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getName());
         boolean clientAccount = signedIn && authentication.getAuthorities().stream()
                 .anyMatch(authority -> "ROLE_CLIENT".equals(authority.getAuthority()));
+
+        UserAccount account = null;
+        if (clientAccount) {
+            account = userAccountRepository.findByEmailIgnoreCase(authentication.getName()).orElse(null);
+        }
+
         model.addAttribute("signedIn", signedIn);
-        model.addAttribute("clientAccount", clientAccount);
+        model.addAttribute("clientAccount", clientAccount && account != null);
         model.addAttribute("accountEmail", signedIn ? authentication.getName() : "");
+        model.addAttribute("accountFirstName", account == null ? "Mi cuenta" : firstName(account.getFullName()));
+        model.addAttribute("favoriteCount", account == null ? 0L : favoriteRepository.countByClient_Id(account.getId()));
+        return account;
+    }
+
+    private Set<Long> favoriteIds(UserAccount account) {
+        if (account == null) return Set.of();
+        return favoriteRepository.findByClient_EmailIgnoreCaseOrderByCreatedAtDesc(account.getEmail()).stream()
+                .map(ClientFavorite::getEvent)
+                .filter(event -> event != null && event.getId() != null)
+                .map(Event::getId)
+                .collect(Collectors.toSet());
+    }
+
+    private String firstName(String fullName) {
+        if (fullName == null || fullName.isBlank()) return "Mi cuenta";
+        return fullName.trim().split("\\s+")[0];
     }
 
     private String firstText(String preferred, String fallback) {
