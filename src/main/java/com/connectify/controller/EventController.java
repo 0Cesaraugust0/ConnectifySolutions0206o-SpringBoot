@@ -84,7 +84,7 @@ public class EventController {
         addDetailModel(event, presentation, model);
         UserAccount client = addAccountNavigation(model, authentication);
         model.addAttribute("favoriteSelected", client != null && favoriteRepository.existsByClient_IdAndEvent_Id(client.getId(), id));
-        return "events/marketplace-detail";
+        return "events/marketplace-purchase";
     }
 
     private void addDetailModel(Event event, EventPresentationSettings presentation, Model model) {
