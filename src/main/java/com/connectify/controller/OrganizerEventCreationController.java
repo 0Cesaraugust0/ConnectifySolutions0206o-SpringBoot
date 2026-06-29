@@ -4,6 +4,7 @@ import com.connectify.entity.Category;
 import com.connectify.entity.Event;
 import com.connectify.entity.EventAdminRecord;
 import com.connectify.entity.EventAdminRecordType;
+import com.connectify.entity.EventDesignTemplate;
 import com.connectify.entity.EventStatus;
 import com.connectify.entity.MessagePriority;
 import com.connectify.entity.MessageType;
@@ -56,6 +57,7 @@ public class OrganizerEventCreationController {
                                     @RequestParam BigDecimal price,
                                     @RequestParam Integer capacity,
                                     @RequestParam(required = false) String imageUrl,
+                                    @RequestParam(defaultValue = "CLASSIC") EventDesignTemplate designTemplate,
                                     @RequestParam(required = false) List<String> ticketName,
                                     @RequestParam(required = false) List<BigDecimal> ticketPrice,
                                     @RequestParam(required = false) List<Integer> ticketQuantity,
@@ -81,6 +83,7 @@ public class OrganizerEventCreationController {
         event.setSold(0);
         event.setImageUrl(imageUrl == null ? "" : imageUrl.trim());
         event.setFeatured(false);
+        event.setDesignTemplate(designTemplate);
         event.setDesignEnabled(requestDesigner);
         event.setStatus(EventStatus.PENDING_REVIEW);
         event.setCreatedAt(LocalDateTime.now());
@@ -88,7 +91,8 @@ public class OrganizerEventCreationController {
 
         Event saved = eventRepository.save(event);
         createRecord(saved, EventAdminRecordType.CREATED,
-                "Evento creado por organizador con información principal y enviado a revisión administrativa.");
+                "Evento creado por organizador y enviado a revisión administrativa.\n"
+                        + "Plantilla inicial de Marketplace: " + designTemplate.getLabel() + ".");
 
         TicketSummary ticketSummary = createTicketTypes(saved, ticketName, ticketPrice, ticketQuantity, ticketDescription);
         if (ticketSummary.createdCount() > 0) {
@@ -111,7 +115,8 @@ public class OrganizerEventCreationController {
                     MessageType.DESIGN_REQUEST, MessagePriority.NORMAL,
                     "Solicitud visual: " + saved.getTitle(), brief, saved.getId());
             createRecord(saved, EventAdminRecordType.ADMIN_COPY,
-                    "Solicitud visual enviada al Diseñador junto con la creación del evento.");
+                    "Solicitud visual enviada al Diseñador. Base seleccionada por el Organizador: "
+                            + designTemplate.getLabel() + ".");
         }
 
         return "redirect:/dashboard/organizer/events/" + saved.getId() + "?created=true";
