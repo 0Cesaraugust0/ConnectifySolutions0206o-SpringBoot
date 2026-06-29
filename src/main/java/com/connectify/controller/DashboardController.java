@@ -2,7 +2,9 @@ package com.connectify.controller;
 
 import com.connectify.entity.Event;
 import com.connectify.entity.EventDesignTemplate;
+import com.connectify.entity.EventPresentationSettings;
 import com.connectify.entity.EventStatus;
+import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.EventRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -17,9 +19,12 @@ import java.util.List;
 public class DashboardController {
 
     private final EventRepository eventRepository;
+    private final EventPresentationSettingsRepository presentationSettingsRepository;
 
-    public DashboardController(EventRepository eventRepository) {
+    public DashboardController(EventRepository eventRepository,
+                               EventPresentationSettingsRepository presentationSettingsRepository) {
         this.eventRepository = eventRepository;
+        this.presentationSettingsRepository = presentationSettingsRepository;
     }
 
     @GetMapping("/dashboard")
@@ -84,10 +89,14 @@ public class DashboardController {
                 .findFirst()
                 .orElse(designEvents.isEmpty() ? null : designEvents.get(0));
 
+        EventPresentationSettings presentation = selectedEvent == null ? null
+                : presentationSettingsRepository.findByEventId(selectedEvent.getId()).orElse(null);
+
         model.addAttribute("title", "Estudio de Presentación");
         model.addAttribute("email", authentication.getName());
         model.addAttribute("designEvents", designEvents);
         model.addAttribute("selectedEvent", selectedEvent);
+        model.addAttribute("presentation", presentation);
         model.addAttribute("templates", EventDesignTemplate.values());
         return "dashboard/designer";
     }
