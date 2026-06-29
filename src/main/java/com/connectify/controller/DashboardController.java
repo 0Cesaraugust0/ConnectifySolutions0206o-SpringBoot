@@ -37,7 +37,6 @@ public class DashboardController {
         if (client) return "redirect:/dashboard/client";
         if (designer) return "redirect:/dashboard/designer";
         if (gateAgent) return "redirect:/dashboard/gate-agent";
-
         return "redirect:/";
     }
 
@@ -73,7 +72,10 @@ public class DashboardController {
     public String designer(@RequestParam(required = false) Long eventId, Model model, Authentication authentication) {
         List<Event> designEvents = eventRepository.findAll().stream()
                 .filter(Event::isDesignEnabled)
-                .filter(event -> event.getStatus() != EventStatus.APPROVED && event.getStatus() != EventStatus.PUBLISHED)
+                .filter(event -> event.getStatus() != EventStatus.APPROVED
+                        && event.getStatus() != EventStatus.PUBLISHED
+                        && event.getStatus() != EventStatus.REJECTED
+                        && event.getStatus() != EventStatus.CANCELLED)
                 .sorted(Comparator.comparing(Event::getUpdatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
 
