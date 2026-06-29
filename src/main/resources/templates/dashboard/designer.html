@@ -3,41 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Diseñador - Connectify Solutions</title>
+    <title>Estudio de presentación - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <style>
+        :root{--design-primary:#4f46e5;--design-accent:#8b5cf6}.studio-hero{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:20px}.studio-hero h1{margin:4px 0 6px}.studio-board{display:grid;grid-template-columns:245px minmax(390px,1fr) 300px;gap:18px;align-items:start}.studio-panel{background:#fff;border:1px solid #e7eaf2;border-radius:20px;box-shadow:0 16px 35px rgba(15,23,42,.06)}.studio-panel-head{padding:18px;border-bottom:1px solid #eef0f5}.studio-panel-head h2{font-size:1rem;margin:0}.studio-panel-head p{margin:5px 0 0;font-size:.82rem;color:#68708a}.request-list{padding:10px;max-height:690px;overflow:auto}.request-item{display:block;padding:12px;border:1px solid transparent;border-radius:13px;text-decoration:none;color:#17214d}.request-item:hover{background:#f7f7ff}.request-item.selected{background:#f0efff;border-color:#d8d4ff}.request-item strong{display:block;font-size:.9rem}.request-item small{display:block;color:#68708a;margin-top:3px}.request-chip{display:inline-flex;margin-top:8px;padding:4px 7px;border-radius:999px;background:#e9f8f0;color:#15803d;font-weight:800;font-size:.7rem}.canvas-wrap{padding:16px}.canvas-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.canvas-toolbar span{font-weight:800}.preview-frame{overflow:hidden;border:1px solid #dfe3ee;border-radius:18px;background:#f8fafc;box-shadow:0 16px 35px rgba(15,23,42,.10);transition:.2s ease}.preview-frame.mobile{max-width:390px;margin:auto}.preview-cover{height:210px;position:relative;background:linear-gradient(135deg,var(--design-primary),var(--design-accent));display:grid;place-items:center;overflow:hidden}.preview-cover img{width:100%;height:100%;object-fit:cover}.preview-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(17,24,39,.04),rgba(17,24,39,.55))}.preview-label{position:absolute;left:18px;bottom:16px;z-index:1;color:#fff}.preview-label span{display:inline-block;padding:5px 9px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:999px;font-size:.75rem;font-weight:800}.preview-label h2{margin:8px 0 0;font-size:1.6rem;line-height:1.1}.preview-body{padding:18px;background:#fff}.preview-meta{display:flex;flex-wrap:wrap;gap:8px;color:#667085;font-size:.8rem;margin-bottom:14px}.preview-highlight{padding:12px;border-left:4px solid var(--design-primary);background:#f6f5ff;border-radius:0 10px 10px 0;font-size:.88rem;margin:14px 0}.preview-tickets{display:grid;grid-template-columns:1fr 1fr;gap:10px}.preview-ticket{padding:12px;border:1px solid #e6e9f2;border-radius:12px}.preview-ticket b{display:block}.preview-ticket small{color:#68708a}.template-card-grid{display:grid;gap:9px;padding:12px}.template-choice{display:block;border:1px solid #e5e8f0;border-radius:13px;padding:12px;cursor:pointer;transition:.18s}.template-choice:hover{border-color:#bdb8ff;background:#fafaff}.template-choice input{position:absolute;opacity:0}.template-choice:has(input:checked){border-color:var(--design-primary);box-shadow:0 0 0 3px #eeedff;background:#fbfaff}.template-choice strong{display:block;font-size:.9rem}.template-choice small{display:block;color:#68708a;line-height:1.35;margin-top:3px}.inspector-form{padding:14px;display:grid;gap:14px}.inspector-form label{display:grid;gap:7px;font-size:.83rem;font-weight:800;color:#3d4663}.color-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.color-control{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #e3e6ef;border-radius:12px;background:#fbfcff}.color-control input{width:34px;height:28px;border:0;background:transparent;padding:0}.toggle-line{display:flex!important;grid-template-columns:auto 1fr;align-items:center;gap:9px;padding:10px;border:1px solid #e6e9f2;border-radius:12px;background:#fafbff}.tool-actions{display:flex;gap:8px}.tool-actions .btn{flex:1}.empty-studio{padding:34px;text-align:center}.empty-studio h2{margin-top:0}.template-samples{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.template-sample{padding:14px;border:1px solid #e5e8f0;border-radius:14px;background:#fff}.template-sample b{display:block;color:#3429bd}.preview-frame[data-template="CARD_GRID"] .preview-cover{height:145px}.preview-frame[data-template="CARD_GRID"] .preview-body{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.preview-frame[data-template="PROMO_DETAIL"] .preview-cover{height:270px}.preview-frame[data-template="PROMO_DETAIL"] .preview-label h2{font-size:2rem}.preview-frame[data-template="IMMERSIVE"] .preview-cover{height:320px}.preview-frame[data-template="IMMERSIVE"] .preview-body{background:linear-gradient(135deg,#13103a,#2b1c67);color:#fff}.preview-frame[data-template="IMMERSIVE"] .preview-meta,.preview-frame[data-template="IMMERSIVE"] .preview-ticket small{color:#d2d0eb}.preview-frame[data-template="IMMERSIVE"] .preview-ticket{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}.preview-frame[data-template="IMMERSIVE"] .preview-highlight{background:rgba(255,255,255,.10);border-color:#a78bfa}@media(max-width:1150px){.studio-board{grid-template-columns:220px 1fr}.inspector-panel{grid-column:1/-1}.inspector-form{grid-template-columns:repeat(3,1fr)}.template-card-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.studio-hero{display:block}.studio-board{grid-template-columns:1fr}.inspector-panel{grid-column:auto}.inspector-form{grid-template-columns:1fr}.template-card-grid{grid-template-columns:1fr}.preview-frame[data-template="CARD_GRID"] .preview-body{display:block}.template-samples{grid-template-columns:1fr 1fr}}
+    </style>
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <div class="brand"><span class="logo">🎨</span><div><strong>Connectify</strong><small>Diseñador</small></div></div>
-    <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Solicitudes</a>
-        <a class="btn secondary" th:href="@{/events}">Vista pública</a>
-        <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
-    </nav>
+    <a class="brand brand-link" th:href="@{/dashboard/designer}"><span class="logo">🎨</span><div><strong>Connectify</strong><small>Diseñador</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Solicitudes</a><a class="btn secondary" th:href="@{/events}">Marketplace</a><form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form></nav>
 </header>
 
 <main class="dashboard-page">
-    <section class="dashboard-hero">
-        <p class="badge">Diseño y apoyo visual</p>
-        <h1 th:text="${title}">Panel Diseñador</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">diseñador</strong>. Atiende solicitudes visuales relacionadas con eventos.</p>
+    <section class="studio-hero"><div><p class="badge">Estudio visual</p><h1 th:text="${title}">Estudio de presentación</h1><p class="muted">Diseña cómo se presentará un evento antes de que Administración lo publique. Sesión: <strong th:text="${email}">diseñador</strong>.</p></div><a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Abrir solicitudes</a></section>
+    <div th:if="${param.saved != null}" class="alert success">Propuesta visual guardada. La plantilla elegida ya queda asociada al evento y registrada en su trazabilidad.</div>
+    <div th:if="${param.locked != null}" class="alert error">No se puede editar la propuesta: el evento fue aprobado o publicado y está bloqueado.</div>
+
+    <section class="studio-board" th:if="${selectedEvent != null}">
+        <aside class="studio-panel">
+            <div class="studio-panel-head"><h2>Eventos con solicitud visual</h2><p>Selecciona una propuesta para trabajarla.</p></div>
+            <div class="request-list">
+                <a th:each="event : ${designEvents}" class="request-item" th:classappend="${selectedEvent.id == event.id} ? ' selected' : ''" th:href="@{/dashboard/designer(eventId=${event.id})}">
+                    <strong th:text="${event.title}">Evento</strong><small th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMM yyyy') : 'Sin fecha'}">Fecha</small><span class="request-chip" th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span>
+                </a>
+            </div>
+        </aside>
+
+        <section class="studio-panel">
+            <div class="studio-panel-head"><h2>Vista previa de Marketplace</h2><p>La compra permanece desactivada: esta es una composición interna para revisión.</p></div>
+            <div class="canvas-wrap">
+                <div class="canvas-toolbar"><span id="previewModeLabel">Vista escritorio</span><button class="btn secondary compact" id="mobilePreview" type="button">Modo móvil</button></div>
+                <article id="marketPreview" class="preview-frame" th:attr="data-template=${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.name() : 'CLASSIC'}">
+                    <div class="preview-cover">
+                        <img th:if="${selectedEvent.imageUrl != null && !selectedEvent.imageUrl.isBlank()}" th:src="${selectedEvent.imageUrl}" alt="Portada del evento">
+                        <div th:unless="${selectedEvent.imageUrl != null && !selectedEvent.imageUrl.isBlank()}" style="font-size:4rem;color:white;z-index:1">✦</div>
+                        <div class="preview-label"><span id="previewTemplateName" th:text="${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.label : 'Clásico'}">Clásico</span><h2 th:text="${selectedEvent.title}">Evento</h2></div>
+                    </div>
+                    <div class="preview-body">
+                        <div>
+                            <div class="preview-meta"><span th:text="${selectedEvent.eventDate != null ? #temporals.format(selectedEvent.eventDate, 'dd MMM yyyy · HH:mm') : 'Fecha por definir'}">Fecha</span><span th:text="${selectedEvent.city != null ? selectedEvent.city : 'Ciudad'}">Ciudad</span><span th:text="${selectedEvent.category != null ? selectedEvent.category.name : 'Categoría'}">Categoría</span></div>
+                            <p th:text="${selectedEvent.description}">Descripción</p>
+                            <div id="previewHighlight" class="preview-highlight">Una experiencia diseñada para conectar con tu público.</div>
+                            <div id="previewOrganizer" class="muted small">Organiza: <strong th:text="${selectedEvent.organizerName != null ? selectedEvent.organizerName : 'Organizador'}">Organizador</strong></div>
+                        </div>
+                        <div id="previewTickets" class="preview-tickets"><div class="preview-ticket"><b>Entrada General</b><small th:text="${'Desde S/ ' + selectedEvent.price}">Desde S/ 0</small></div><div class="preview-ticket"><b>Disponible</b><small th:text="${selectedEvent.capacity != null ? selectedEvent.capacity + ' cupos' : 'Cupos por definir'}">Cupos</small></div></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <form class="studio-panel inspector-panel" th:action="@{/dashboard/designer/events/{id}/presentation(id=${selectedEvent.id})}" method="post">
+            <div class="studio-panel-head"><h2>Panel de control</h2><p>Elige el estilo y ajusta la propuesta.</p></div>
+            <div class="template-card-grid">
+                <label class="template-choice" th:each="template : ${templates}"><input type="radio" name="designTemplate" th:value="${template.name()}" th:checked="${selectedEvent.designTemplate == template}" th:data-label="${template.label}"><strong th:text="${template.label}">Clásico</strong><small th:text="${template.description}">Descripción</small></label>
+            </div>
+            <div class="inspector-form">
+                <div class="color-row"><label>Color principal<div class="color-control"><input id="primaryColor" name="primaryColor" type="color" value="#4f46e5"><span id="primaryValue">#4f46e5</span></div></label><label>Color de acento<div class="color-control"><input id="accentColor" name="accentColor" type="color" value="#8b5cf6"><span id="accentValue">#8b5cf6</span></div></label></div>
+                <label>Texto destacado<input id="highlightText" class="search-input" name="highlightText" type="text" placeholder="Ej. Reserva tu entrada y vive la experiencia."></label>
+                <label class="toggle-line"><input id="showGallery" name="showGallery" value="true" type="checkbox" checked><span>Mostrar tarjetas de entradas / galería</span></label>
+                <label class="toggle-line"><input id="showOrganizer" name="showOrganizer" value="true" type="checkbox" checked><span>Mostrar bloque del organizador</span></label>
+                <div class="tool-actions"><button class="btn secondary compact" id="resetPreview" type="button">Restablecer</button><button class="btn primary compact" type="submit">Guardar propuesta</button></div>
+                <p class="muted small">La plantilla se guarda para la presentación del evento. Los demás ajustes quedan registrados como parte de la propuesta visual en la bitácora.</p>
+            </div>
+        </form>
     </section>
 
-    <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/communications(role='DESIGNER')}">
-            <span>📥</span><h3>Solicitudes recibidas</h3><p>Ver solicitudes de diseño enviadas por organizadores o administración.</p>
-        </a>
-        <a class="module-card" th:href="@{/events}">
-            <span>👁️</span><h3>Revisar vista pública</h3><p>Visualizar cómo se presentan los eventos publicados en marketplace.</p>
-        </a>
-        <div class="module-card">
-            <span>🔵</span><h3>En proceso</h3><p>Marca solicitudes como en proceso cuando empieces a trabajarlas.</p>
-        </div>
-        <div class="module-card">
-            <span>🟢</span><h3>Aprobado / Resuelto</h3><p>Marca solicitudes como aprobadas cuando la propuesta visual esté lista.</p>
-        </div>
+    <section class="studio-panel empty-studio" th:if="${selectedEvent == null}">
+        <p class="badge">Biblioteca visual</p><h2>No hay solicitudes visuales activas</h2><p class="muted">El Organizador puede marcar “Solicitar propuesta visual al Diseñador” al crear un evento. La solicitud aparecerá aquí para elegir una plantilla y preparar su presentación.</p>
+        <div class="template-samples"><article class="template-sample" th:each="template : ${templates}"><b th:text="${template.label}">Clásico</b><small th:text="${template.description}">Descripción</small></article></div>
     </section>
 </main>
+<script>
+    const preview = document.getElementById('marketPreview');
+    if (preview) {
+        const root = document.documentElement;
+        const primary = document.getElementById('primaryColor');
+        const accent = document.getElementById('accentColor');
+        const primaryValue = document.getElementById('primaryValue');
+        const accentValue = document.getElementById('accentValue');
+        const highlight = document.getElementById('highlightText');
+        const highlightPreview = document.getElementById('previewHighlight');
+        const showGallery = document.getElementById('showGallery');
+        const showOrganizer = document.getElementById('showOrganizer');
+        const ticketPreview = document.getElementById('previewTickets');
+        const organizerPreview = document.getElementById('previewOrganizer');
+        const templateName = document.getElementById('previewTemplateName');
+        const mobilePreview = document.getElementById('mobilePreview');
+        const previewModeLabel = document.getElementById('previewModeLabel');
+
+        function setColor(input, valueNode, variable) { root.style.setProperty(variable, input.value); valueNode.textContent = input.value; }
+        primary.addEventListener('input', () => setColor(primary, primaryValue, '--design-primary'));
+        accent.addEventListener('input', () => setColor(accent, accentValue, '--design-accent'));
+        highlight.addEventListener('input', () => { highlightPreview.textContent = highlight.value || 'Una experiencia diseñada para conectar con tu público.'; });
+        showGallery.addEventListener('change', () => { ticketPreview.style.display = showGallery.checked ? 'grid' : 'none'; });
+        showOrganizer.addEventListener('change', () => { organizerPreview.style.display = showOrganizer.checked ? 'block' : 'none'; });
+        document.querySelectorAll('input[name="designTemplate"]').forEach(input => input.addEventListener('change', () => { preview.dataset.template = input.value; templateName.textContent = input.dataset.label; }));
+        mobilePreview.addEventListener('click', () => { preview.classList.toggle('mobile'); const active = preview.classList.contains('mobile'); mobilePreview.textContent = active ? 'Modo escritorio' : 'Modo móvil'; previewModeLabel.textContent = active ? 'Vista móvil' : 'Vista escritorio'; });
+        document.getElementById('resetPreview').addEventListener('click', () => { primary.value='#4f46e5'; accent.value='#8b5cf6'; highlight.value=''; showGallery.checked=true; showOrganizer.checked=true; setColor(primary, primaryValue, '--design-primary'); setColor(accent, accentValue, '--design-accent'); highlightPreview.textContent='Una experiencia diseñada para conectar con tu público.'; ticketPreview.style.display='grid'; organizerPreview.style.display='block'; });
+    }
+</script>
 </body>
 </html>
