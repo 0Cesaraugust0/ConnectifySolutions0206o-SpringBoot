@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventos - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-presentation.css}">
 </head>
 <body>
 <header class="navbar marketplace-nav">
@@ -60,16 +61,18 @@
         <div>
             <p class="badge">Explorar</p>
             <h2>Eventos disponibles</h2>
-            <p class="muted">Datos leídos desde MySQL/MariaDB mediante Spring Data JPA.</p>
+            <p class="muted">Cada propuesta publicada puede conservar la identidad visual definida en el Estudio de Diseño.</p>
         </div>
         <a th:if="${q != null || city != null || category != null}" th:href="@{/events}" class="btn secondary">Limpiar filtros</a>
     </section>
 
     <section class="event-grid" th:if="${!events.isEmpty()}">
-        <a class="event-card" th:each="event : ${events}" th:href="@{/events/{id}(id=${event.id})}">
+        <a class="event-card" th:each="event : ${events}" th:with="presentation=${presentationByEventId[event.id]}" th:href="@{/events/{id}(id=${event.id})}">
             <div class="event-cover">
+                <img class="event-cover-image" th:if="${presentation != null && ((presentation.thumbnailImageUrl != null && !presentation.thumbnailImageUrl.isBlank()) || (presentation.coverImageUrl != null && !presentation.coverImageUrl.isBlank()))}" th:src="${presentation.thumbnailImageUrl != null && !presentation.thumbnailImageUrl.isBlank() ? presentation.thumbnailImageUrl : presentation.coverImageUrl}" alt="Miniatura del evento">
                 <span class="event-icon" th:text="${event.category != null ? event.category.icon : '🎫'}">🎫</span>
                 <span class="event-status" th:text="${event.featured ? 'Destacado' : 'Disponible'}">Disponible</span>
+                <span class="event-thumbnail-template" th:if="${presentation != null}" th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span>
             </div>
 
             <div class="event-body">
