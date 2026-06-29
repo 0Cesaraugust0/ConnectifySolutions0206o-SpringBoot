@@ -76,10 +76,28 @@ public class EventController {
         model.addAttribute("presentation", presentation);
         model.addAttribute("coverImageUrl", firstText(presentation == null ? null : presentation.getCoverImageUrl(), event.getImageUrl()));
         model.addAttribute("thumbnailImageUrl", firstText(presentation == null ? null : presentation.getThumbnailImageUrl(), event.getImageUrl()));
+        model.addAttribute("presentationStyle", styleFor(presentation));
     }
 
     private String firstText(String preferred, String fallback) {
         if (preferred != null && !preferred.isBlank()) return preferred;
         return fallback == null ? "" : fallback;
+    }
+
+    private String styleFor(EventPresentationSettings presentation) {
+        if (presentation == null) return "";
+        return "--market-primary:" + safeColor(presentation.getPrimaryColor(), "#4338ca") + ";"
+                + "--market-accent:" + safeColor(presentation.getAccentColor(), "#7c3aed") + ";"
+                + "--market-cover-position:" + coverPosition(presentation.getCoverFocus()) + ";";
+    }
+
+    private String safeColor(String color, String fallback) {
+        return color != null && color.matches("#[0-9a-fA-F]{6}") ? color : fallback;
+    }
+
+    private String coverPosition(String value) {
+        if ("TOP".equals(value)) return "50% 18%";
+        if ("BOTTOM".equals(value)) return "50% 82%";
+        return "50% 50%";
     }
 }
