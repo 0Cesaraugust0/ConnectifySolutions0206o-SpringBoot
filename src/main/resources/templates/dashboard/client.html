@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Cliente - Connectify Solutions</title>
+    <title>Mi cuenta Cliente - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <div class="brand"><span class="logo">🎟️</span><div><strong>Connectify</strong><small>Cliente / Asistente</small></div></div>
+    <a class="brand brand-link" th:href="@{/dashboard/client}"><span class="logo">🎟️</span><div><strong>Connectify</strong><small>Cuenta Cliente</small></div></a>
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/events}">Explorar eventos</a>
-        <a class="btn secondary" th:href="@{/cart}">Carrito</a>
+        <a class="btn secondary" th:href="@{/cart}">Mi carrito</a>
         <a class="btn primary compact" th:href="@{/dashboard/client/tickets}">Mis tickets QR</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
@@ -20,24 +20,16 @@
 
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge">Compra de entradas</p>
-        <h1 th:text="${title}">Panel Cliente</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">cliente</strong>. Explora eventos publicados, elige tipos de entrada y revisa tus QR generados.</p>
+        <p class="badge">Cuenta personal de compras</p>
+        <h1 th:text="${title}">Mi cuenta Cliente</h1>
+        <p class="muted">Sesión activa: <strong th:text="${email}">cliente</strong>. Esta cuenta puede explorar eventos, usar su carrito, completar compras y consultar únicamente sus propios tickets QR.</p>
     </section>
 
     <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/events}">
-            <span>🛍️</span><h3>Explorar eventos</h3><p>Ver eventos publicados en marketplace y elegir entradas disponibles.</p>
-        </a>
-        <a class="module-card" th:href="@{/cart}">
-            <span>🛒</span><h3>Carrito</h3><p>Revisar entradas seleccionadas antes del checkout.</p>
-        </a>
-        <a class="module-card" th:href="@{/dashboard/client/tickets}">
-            <span>🎫</span><h3>Mis tickets QR</h3><p>Repositorio personal de tickets generados después de cada compra confirmada.</p>
-        </a>
-        <a class="module-card" th:href="@{/tickets/validate}">
-            <span>🔎</span><h3>Consultar ticket</h3><p>Validar estado de un ticket con su código, si corresponde.</p>
-        </a>
+        <a class="module-card" th:href="@{/events}"><span>🛍️</span><h3>Explorar eventos</h3><p>Ver eventos publicados en Marketplace y elegir entradas disponibles.</p></a>
+        <a class="module-card" th:href="@{/cart}"><span>🛒</span><h3>Mi carrito</h3><p>Revisar entradas seleccionadas antes del checkout asociado a tu cuenta.</p></a>
+        <a class="module-card" th:href="@{/dashboard/client/tickets}"><span>🎫</span><h3>Mis tickets QR</h3><p>Consulta tus entradas, códigos QR y estado de acceso sin validarlas ni consumirlas.</p></a>
+        <a class="module-card" th:href="@{/communications}"><span>💬</span><h3>Soporte</h3><p>Envía consultas sobre compras, tickets o incidencias desde tu sesión autenticada.</p></a>
     </section>
 </main>
 </body>
