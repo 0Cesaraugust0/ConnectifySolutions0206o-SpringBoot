@@ -61,7 +61,7 @@ public class DesignerPresentationController {
         }
         presentation.setPrimaryColor(safeColor(primaryColor, "#4f46e5"));
         presentation.setAccentColor(safeColor(accentColor, "#8b5cf6"));
-        presentation.setHighlightText(clean(highlightText));
+        presentation.setHighlightText(optionalText(highlightText));
         presentation.setShowGallery(showGallery);
         presentation.setShowOrganizer(showOrganizer);
         presentationSettingsRepository.save(presentation);
@@ -89,6 +89,10 @@ public class DesignerPresentationController {
 
     private String clean(String value) {
         return value == null || value.isBlank() ? "Sin texto adicional" : value.trim();
+    }
+
+    private String optionalText(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 
     private String safeColor(String value, String fallback) {
