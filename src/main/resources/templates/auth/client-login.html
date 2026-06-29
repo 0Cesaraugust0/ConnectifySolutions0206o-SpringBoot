@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/auth-client.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo">🎫</span><div><strong>Connectify</strong><small>Acceso seguro</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Marketplace</a><a class="btn primary compact" th:href="@{/register}">Crear cuenta</a></nav>
+</header>
+<main class="auth-client-page">
+    <section class="auth-client-layout">
+        <aside class="auth-client-pitch">
+            <p class="badge glow">Acceso por cuenta</p>
+            <h1>Tu cuenta define el espacio al que accedes.</h1>
+            <p>Cliente compra y consulta sus QR. Developer trabaja solo en funciones técnicas. Los roles operativos no se crean desde este registro público.</p>
+            <div class="auth-benefits">
+                <div><span>🛍️</span><strong>Cliente</strong><small>Marketplace, carrito, checkout y tickets personales.</small></div>
+                <div><span>🧰</span><strong>Developer</strong><small>Panel técnico; no compra ni usa el carrito.</small></div>
+                <div><span>🛡️</span><strong>Roles operativos</strong><small>Accesos delimitados para cada función del proyecto.</small></div>
+            </div>
+        </aside>
+        <section class="auth-client-card">
+            <p class="badge">Inicio de sesión</p>
+            <h2>Bienvenido de nuevo</h2>
+            <p class="muted small">Ingresa con el correo y contraseña de tu cuenta.</p>
+            <div th:if="${param.error}" class="alert error">Correo o contraseña incorrectos. Revisa tus datos e inténtalo nuevamente.</div>
+            <div th:if="${param.logout}" class="alert success">Sesión cerrada correctamente.</div>
+            <div th:if="${param.registered}" class="alert success">Tu cuenta Cliente fue creada. Ya puedes iniciar sesión.</div>
+            <div th:if="${param.setupSuccess}" class="alert success">La cuenta técnica inicial fue creada. Inicia sesión para continuar.</div>
+            <div th:if="${param.setupExists}" class="alert error">La cuenta técnica inicial ya fue configurada.</div>
+            <form class="auth-client-form" th:action="@{/login}" method="post">
+                <label>Correo electrónico<input name="email" type="email" autocomplete="email" placeholder="tu@email.com" required autofocus></label>
+                <label>Contraseña<input name="password" type="password" autocomplete="current-password" placeholder="Tu contraseña" required></label>
+                <button class="btn primary full" type="submit">Ingresar a mi cuenta</button>
+            </form>
+            <p class="auth-client-foot">¿Vienes a comprar entradas? <a th:href="@{/register}">Crea una cuenta Cliente</a></p>
+            <div class="demo-box"><h3>Acceso técnico inicial</h3><p class="muted small">En una instalación nueva, configura la única cuenta Developer desde <a th:href="@{/setup}">/setup</a>. El registro público nunca crea roles técnicos.</p></div>
+        </section>
+    </section>
+</main>
+</body>
+</html>
