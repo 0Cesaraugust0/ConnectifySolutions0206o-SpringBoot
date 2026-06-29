@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${event.title} + ' - Connectify'">Evento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-presentation.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-account.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-purchase.css}">
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo">🎫</span><div><strong>Connectify</strong><small>Marketplace</small></div></a>
+    <nav class="top-actions">
+        <a class="nav-link" th:href="@{/events}">Eventos</a>
+        <a class="nav-link" th:href="@{/events} + '#featured'">Destacados</a>
+        <div class="market-account-cluster" th:if="${clientAccount}">
+            <a class="account-name-control" th:href="@{/dashboard/client}"><span class="windows-person-icon"></span><strong th:text="${accountFirstName}">Cliente</strong></a>
+            <a class="market-icon-control" th:href="@{/cart}">🛒</a>
+            <a class="market-icon-control heart-control" th:href="@{/dashboard/client/favorites}">♡<span class="market-icon-badge" th:if="${favoriteCount > 0}" th:text="${favoriteCount}">0</span></a>
+        </div>
+        <a class="btn secondary compact" th:if="${signedIn && !clientAccount}" th:href="@{/dashboard}">Mi panel</a>
+        <a class="btn secondary compact" th:unless="${signedIn}" th:href="@{/login}">Iniciar sesión</a>
+        <a class="btn primary compact" th:unless="${signedIn}" th:href="@{/register}">Crear cuenta</a>
+    </nav>
+</header>
+
+<main class="dashboard-page market-stage">
+    <section class="market-layout" th:attr="data-template=${event.designTemplate != null ? event.designTemplate.name() : 'CLASSIC'},data-focus=${presentation != null ? presentation.contentFocus : 'BALANCED'},data-info-position=${presentation != null ? presentation.infoPosition : 'STANDARD'}" th:style="${presentationStyle}">
+        <div class="market-cover">
+            <img th:if="${coverImageUrl != null && !coverImageUrl.isBlank()}" th:src="${coverImageUrl}" alt="Portada del evento">
+            <div class="market-cover-empty" th:unless="${coverImageUrl != null && !coverImageUrl.isBlank()}">✦</div>
+            <div class="market-cover-title">
+                <span class="badge template-badge" th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span>
+                <h1 th:text="${event.title}">Evento</h1>
+                <p th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p>
+                <div class="market-cover-actions">
+                    <a class="btn primary" th:if="${clientAccount && ticketTypes != null && !ticketTypes.isEmpty()}" href="#ticketTypes">Comprar entradas</a>
+                    <a class="btn primary" th:unless="${signedIn}" th:href="@{/login}">Inicia sesión para comprar</a>
+                    <a class="btn secondary" th:if="${signedIn && !clientAccount}" th:href="@{/dashboard}">Compra disponible con cuenta Cliente</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="market-content">
+            <div>
+                <p class="market-intro" th:text="${event.description}">Descripción del evento.</p>
+                <p class="market-highlight" th:if="${presentation != null && presentation.highlightText != null && !presentation.highlightText.isBlank()}" th:text="${presentation.highlightText}">Texto destacado</p>
+                <div class="market-meta">
+                    <div><strong>Fecha</strong><span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</span></div>
+                    <div><strong>Ubicación</strong><span th:text="${(event.location != null ? event.location : 'Por definir') + ' · ' + (event.city != null ? event.city : '')}">Ubicación</span></div>
+                    <div><strong>Organiza</strong><span th:text="${event.organizerName != null ? event.organizerName : 'Organizador'}">Organizador</span></div>
+                    <div><strong>Precio desde</strong><span th:text="${event.price != null ? 'S/ ' + event.price : 'Gratis'}">S/ 0.00</span></div>
+                    <div><strong>Capacidad</strong><span th:text="${event.capacity != null ? event.capacity : 0}">0</span></div>
+                    <div><strong>Disponibles</strong><span th:text="${event.availableTickets}">0</span></div>
+                </div>
+            </div>
+
+            <section id="ticketTypes" class="market-tickets table-card ticket-anchor" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}">
+                <h2 style="padding:20px 20px 0;margin:0">Tipos de entrada</h2>
+                <p class="muted small" style="padding:0 20px">Elige una variante y agrégala a tu carrito personal.</p>
+                <table class="table-modern">
+                    <thead><tr><th>Entrada</th><th>Precio</th><th>Disponibles</th><th>Acción</th></tr></thead>
+                    <tbody>
+                    <tr th:each="type : ${ticketTypes}">
+                        <td><strong th:text="${type.name}">General</strong><br><span class="muted small" th:text="${type.description}">Descripción</span></td>
+                        <td th:text="${'S/ ' + type.price}">S/ 0.00</td>
+                        <td th:text="${type.remaining}">0</td>
+                        <td>
+                            <a class="btn primary compact" th:if="${clientAccount}" th:href="@{/cart/add/{id}(id=${event.id},ticketTypeId=${type.id})}">Agregar 1 al carrito</a>
+                            <a class="btn secondary compact" th:if="${!signedIn}" th:href="@{/login}">Iniciar sesión</a>
+                            <span class="muted small" th:if="${signedIn && !clientAccount}">Solo cuenta Cliente</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+        <div class="market-actions" style="padding:0 30px 30px"><a class="btn secondary" th:href="@{/events}">Seguir explorando</a><a class="btn primary" th:if="${clientAccount}" th:href="@{/cart}">Ver mi carrito</a></div>
+    </section>
+</main>
+</body>
+</html>
