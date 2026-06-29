@@ -1,28 +1,198 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Estudio Visual - Connectify</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}"><link rel="stylesheet" th:href="@{/css/ui.css}">
-  <style>
-    :root{--studio-main:#4f46e5;--studio-accent:#8b5cf6}.studio-head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:22px}.studio-head h1{margin:4px 0}.studio-grid{display:grid;grid-template-columns:240px minmax(360px,1fr) 310px;gap:18px}.studio-card{background:#fff;border:1px solid #e6e9f2;border-radius:20px;box-shadow:0 14px 34px rgba(15,23,42,.06);overflow:hidden}.studio-card h2{font-size:1rem;margin:0}.card-head{padding:17px;border-bottom:1px solid #edf0f6}.card-head p{font-size:.82rem;color:#667085;margin:5px 0 0}.event-list{padding:10px;max-height:680px;overflow:auto}.event-link{display:block;padding:12px;text-decoration:none;color:#17214d;border-radius:13px;margin-bottom:6px}.event-link:hover,.event-link.active{background:#f1efff}.event-link strong{display:block;font-size:.9rem}.event-link small{display:block;color:#667085;margin-top:4px}.event-link span{display:inline-block;margin-top:7px;padding:4px 8px;border-radius:999px;background:#e9f8f0;color:#15803d;font-weight:800;font-size:.72rem}.canvas{padding:16px}.canvas-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.market-preview{border-radius:18px;border:1px solid #e0e5f0;overflow:hidden;box-shadow:0 14px 30px rgba(15,23,42,.10);background:#fff;transition:.2s}.market-preview.mobile{max-width:390px;margin:auto}.cover{height:245px;display:grid;place-items:center;background:linear-gradient(135deg,var(--studio-main),var(--studio-accent));position:relative;overflow:hidden}.cover img{width:100%;height:100%;object-fit:cover}.cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(12,14,36,.60))}.cover-text{position:absolute;z-index:1;left:20px;bottom:18px;color:#fff}.cover-text span{padding:5px 9px;background:rgba(255,255,255,.18);border-radius:999px;font-size:.75rem;font-weight:800}.cover-text h2{font-size:1.8rem;margin:9px 0 0}.preview-body{padding:18px}.preview-body p{line-height:1.55}.meta{display:flex;gap:8px;flex-wrap:wrap;color:#667085;font-size:.8rem}.highlight{margin:15px 0;padding:12px;border-left:4px solid var(--studio-main);background:#f5f4ff;border-radius:0 10px 10px 0}.tickets-preview{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ticket-preview{padding:12px;border:1px solid #e5e8f1;border-radius:12px}.ticket-preview small{color:#667085}.control-body{padding:14px;display:grid;gap:14px}.templates{display:grid;gap:9px}.template{display:block;padding:11px;border:1px solid #e4e7f1;border-radius:13px;cursor:pointer}.template input{margin-right:7px}.template.active{border-color:#a9a3ff;background:#fafaff}.template strong{display:block;margin-left:25px;font-size:.9rem}.template small{display:block;margin:4px 0 0 25px;color:#667085}.color-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.color-box{padding:9px;border:1px solid #e4e7f1;border-radius:12px}.color-box input{width:100%;height:32px;border:0;background:transparent}.control-body label{font-size:.82rem;font-weight:800;color:#3d4663}.tool-section{display:grid;gap:9px;padding:12px;border:1px solid #e9ebf3;border-radius:14px;background:#fbfcff}.tool-section-title{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#69748a;font-weight:900}.toggle{display:flex;gap:9px;align-items:center;padding:10px;border:1px solid #e4e7f1;border-radius:12px;background:#fafbff}.actions{display:flex;gap:8px}.actions .btn{flex:1}.organizer-base{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 8px;border-radius:999px;background:#f1efff;color:#5146e5;font-size:.74rem;font-weight:850}.empty{padding:38px;text-align:center}.sample-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}.sample{padding:14px;border-radius:13px;border:1px solid #e5e8f1}.sample b{color:#4338ca;display:block}@media(max-width:1100px){.studio-grid{grid-template-columns:220px 1fr}.controls{grid-column:1/-1}.control-body{grid-template-columns:repeat(3,1fr)}.templates{grid-column:1/-1;grid-template-columns:repeat(2,1fr);display:grid}}@media(max-width:700px){.studio-head{display:block}.studio-grid{grid-template-columns:1fr}.controls{grid-column:auto}.control-body,.color-grid,.tickets-preview,.sample-grid{grid-template-columns:1fr}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudio Visual - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/designer-studio-pro.css}">
 </head>
 <body>
-<header class="navbar dashboard-nav"><a class="brand brand-link" th:href="@{/dashboard/designer}"><span class="logo">🎨</span><div><strong>Connectify</strong><small>Diseñador</small></div></a><nav class="top-actions"><a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Solicitudes</a><a class="btn secondary" th:href="@{/events}">Marketplace</a></nav></header>
-<main class="dashboard-page">
-  <section class="studio-head"><div><p class="badge">Estudio visual</p><h1>Plantillas de Marketplace</h1><p class="muted">Crea la presentación del evento antes de su publicación. Los ajustes quedan guardados y entran a la bitácora.</p></div><a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Abrir solicitudes</a></section>
-  <div class="alert success" th:if="${param.saved != null}">La propuesta visual se guardó correctamente.</div><div class="alert error" th:if="${param.locked != null}">Este evento ya fue aprobado o publicado; el diseño quedó bloqueado.</div>
-  <section class="studio-grid" th:if="${selectedEvent != null}">
-    <aside class="studio-card"><div class="card-head"><h2>Propuestas asignadas</h2><p>Elige un evento para diseñar.</p></div><div class="event-list"><a class="event-link" th:each="event : ${designEvents}" th:classappend="${selectedEvent.id == event.id} ? ' active' : ''" th:href="@{/dashboard/designer(eventId=${event.id})}"><strong th:text="${event.title}">Evento</strong><small th:text="${event.eventDate != null ? #temporals.format(event.eventDate,'dd MMM yyyy') : 'Sin fecha'}">Fecha</small><span th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span></a></div></aside>
-    <section class="studio-card"><div class="card-head"><h2>Vista previa interna</h2><p>Simulación del Marketplace. La compra está desactivada.</p></div><div class="canvas"><div class="canvas-top"><strong id="modeLabel">Vista escritorio</strong><button class="btn secondary compact" id="modeButton" type="button">Modo móvil</button></div><article class="market-preview" id="preview" th:attr="data-template=${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.name() : 'CLASSIC'}"><div class="cover"><img th:if="${selectedEvent.imageUrl != null && !selectedEvent.imageUrl.isBlank()}" th:src="${selectedEvent.imageUrl}" alt="Portada"><div th:unless="${selectedEvent.imageUrl != null && !selectedEvent.imageUrl.isBlank()}" style="font-size:4rem;color:#fff;z-index:1">✦</div><div class="cover-text"><span id="templateLabel" th:text="${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.label : 'Clásico'}">Clásico</span><h2 th:text="${selectedEvent.title}">Evento</h2></div></div><div class="preview-body"><div class="meta"><span th:text="${selectedEvent.eventDate != null ? #temporals.format(selectedEvent.eventDate,'dd MMM yyyy · HH:mm') : 'Fecha por definir'}">Fecha</span><span th:text="${selectedEvent.city != null ? selectedEvent.city : 'Ciudad'}">Ciudad</span><span th:text="${selectedEvent.category != null ? selectedEvent.category.name : 'Categoría'}">Categoría</span></div><p th:text="${selectedEvent.description}">Descripción</p><div id="highlight" class="highlight" th:text="${presentation != null && presentation.highlightText != null ? presentation.highlightText : 'Una experiencia diseñada para conectar con tu público.'}">Una experiencia diseñada para conectar con tu público.</div><p id="organizer" class="muted small" th:style="${presentation != null && !presentation.showOrganizer} ? 'display:none' : ''">Organiza: <strong th:text="${selectedEvent.organizerName != null ? selectedEvent.organizerName : 'Organizador'}">Organizador</strong></p><div id="tickets" class="tickets-preview" th:style="${presentation != null && !presentation.showGallery} ? 'display:none' : ''"><div class="ticket-preview"><b>Entrada General</b><small th:text="${'Desde S/ ' + selectedEvent.price}">S/ 0</small></div><div class="ticket-preview"><b>Capacidad</b><small th:text="${selectedEvent.capacity != null ? selectedEvent.capacity + ' cupos' : 'Por definir'}">Cupos</small></div></div></div></article></div></section>
-    <form class="studio-card controls" th:action="@{/dashboard/designer/events/{id}/presentation(id=${selectedEvent.id})}" method="post"><div class="card-head"><h2>Panel de control</h2><p>Refina la base elegida por el Organizador y guarda los cambios para revisión.</p><span class="organizer-base">Base del Organizador: <b th:text="${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.label : 'Clásico'}">Clásico</b></span></div><div class="control-body"><div class="tool-section"><span class="tool-section-title">Plantilla</span><div class="templates"><label class="template" th:each="template : ${templates}"><input type="radio" name="designTemplate" th:value="${template.name()}" th:checked="${selectedEvent.designTemplate == template}" th:data-label="${template.label}"><strong th:text="${template.label}">Clásico</strong><small th:text="${template.description}">Descripción</small></label></div></div><div class="tool-section"><span class="tool-section-title">Paleta</span><div class="color-grid"><label class="color-box">Color principal<input id="primary" type="color" name="primaryColor" th:value="${presentation != null ? presentation.primaryColor : '#4f46e5'}"></label><label class="color-box">Color acento<input id="accent" type="color" name="accentColor" th:value="${presentation != null ? presentation.accentColor : '#8b5cf6'}"></label></div></div><div class="tool-section"><span class="tool-section-title">Mensaje y bloques</span><label>Texto destacado<input id="highlightInput" class="search-input" type="text" name="highlightText" th:value="${presentation != null && presentation.highlightText != null ? presentation.highlightText : ''}" placeholder="Reserva tu entrada y vive la experiencia."></label><label class="toggle"><input id="gallery" type="checkbox" name="showGallery" value="true" th:checked="${presentation == null || presentation.showGallery}"><span>Mostrar tarjetas de entradas</span></label><label class="toggle"><input id="organizerToggle" type="checkbox" name="showOrganizer" value="true" th:checked="${presentation == null || presentation.showOrganizer}"><span>Mostrar bloque del organizador</span></label></div><div class="actions"><button class="btn secondary compact" id="reset" type="button">Restablecer</button><button class="btn primary compact" type="submit">Guardar propuesta</button></div><p class="muted small">Herramientas reales: plantilla, paleta, texto, visibilidad de bloques y vista móvil.</p></div></form>
-  </section>
-  <section class="studio-card empty" th:if="${selectedEvent == null}"><p class="badge">Biblioteca visual</p><h2>No hay solicitudes de diseño activas</h2><p class="muted">El Organizador debe marcar “Solicitar apoyo del Diseñador” después de elegir su plantilla inicial.</p><div class="sample-grid"><article class="sample" th:each="template : ${templates}"><b th:text="${template.label}">Clásico</b><small th:text="${template.description}">Descripción</small></article></div></section>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/designer}"><span class="logo">🎨</span><div><strong>Connectify</strong><small>Diseñador</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Solicitudes</a><a class="btn secondary" th:href="@{/events}">Marketplace</a></nav>
+</header>
+
+<main class="dashboard-page designer-studio-page">
+    <section class="studio-head">
+        <div>
+            <span class="studio-kicker">✦ Estudio de presentación</span>
+            <h1>Diseño de Marketplace</h1>
+            <p class="muted">Trabaja sobre la plantilla elegida por el Organizador y conviértela en una presentación lista para revisión.</p>
+        </div>
+        <a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Abrir solicitudes</a>
+    </section>
+
+    <div th:if="${param.saved != null}" class="alert success">Propuesta visual guardada. Los ajustes ya forman parte de la presentación del evento.</div>
+    <div th:if="${param.sent != null}" class="alert success">Actualización visual enviada al Organizador.</div>
+    <div th:if="${param.locked != null}" class="alert error">Este evento ya fue aprobado o publicado; el diseño quedó bloqueado.</div>
+
+    <section class="studio-layout" th:if="${selectedEvent != null}">
+        <aside class="studio-panel">
+            <div class="studio-panel-head"><h2>Propuestas asignadas</h2><p>Selecciona una construcción visual pendiente.</p></div>
+            <div class="assignment-list">
+                <a class="assignment-link" th:each="event : ${designEvents}" th:classappend="${selectedEvent.id == event.id} ? ' active' : ''" th:href="@{/dashboard/designer(eventId=${event.id})}">
+                    <strong th:text="${event.title}">Evento</strong>
+                    <small th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMM yyyy') : 'Sin fecha'}">Fecha</small>
+                    <span class="assignment-chip" th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span>
+                </a>
+            </div>
+        </aside>
+
+        <section class="studio-panel studio-canvas-panel">
+            <div class="studio-panel-head"><h2>Vista paralela de Marketplace</h2><p>Vista interna: no genera compras, tickets ni publicación.</p></div>
+            <div class="studio-canvas-tools"><strong id="previewModeLabel">Vista escritorio</strong><div class="canvas-tool-actions"><button class="btn secondary compact" id="previewModeButton" type="button">Modo móvil</button></div></div>
+            <div class="market-preview-shell">
+                <article id="marketPreview" class="market-preview"
+                         th:attr="data-template=${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.name() : 'CLASSIC'},data-focus=${presentation != null ? presentation.contentFocus : 'BALANCED'},data-info-position=${presentation != null ? presentation.infoPosition : 'STANDARD'}">
+                    <div class="preview-hero">
+                        <img id="previewCoverImage"
+                             th:attr="data-event-image=${selectedEvent.imageUrl}"
+                             th:src="${presentation != null && presentation.coverImageUrl != null && !presentation.coverImageUrl.isBlank() ? presentation.coverImageUrl : selectedEvent.imageUrl}"
+                             alt="Portada de la propuesta">
+                        <div id="previewFallback" class="preview-fallback">✦</div>
+                        <div class="preview-title"><span id="previewTemplateLabel" class="preview-template-tag" th:text="${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.label : 'Clásico'}">Clásico</span><h2 th:text="${selectedEvent.title}">Evento</h2><p th:text="${selectedEvent.category != null ? selectedEvent.category.name : 'Categoría'}">Categoría</p></div>
+                    </div>
+                    <div class="preview-body">
+                        <div>
+                            <div class="preview-meta"><span th:text="${selectedEvent.eventDate != null ? #temporals.format(selectedEvent.eventDate, 'dd MMM yyyy · HH:mm') : 'Fecha por definir'}">Fecha</span><span th:text="${selectedEvent.city != null ? selectedEvent.city : 'Ciudad'}">Ciudad</span></div>
+                            <p class="preview-description" th:text="${selectedEvent.description}">Descripción del evento.</p>
+                            <div id="previewHighlight" class="preview-highlight" th:text="${presentation != null && presentation.highlightText != null ? presentation.highlightText : 'Una experiencia diseñada para conectar con tu público.'}">Una experiencia diseñada para conectar con tu público.</div>
+                            <div id="previewOrganizer" class="preview-block" th:style="${presentation != null && !presentation.showOrganizer} ? 'display:none' : ''"><b>Organiza</b><p th:text="${selectedEvent.organizerName != null ? selectedEvent.organizerName : 'Organizador'}">Organizador</p></div>
+                            <div id="previewAgenda" class="preview-block" th:style="${presentation != null && presentation.showAgenda} ? '' : 'display:none'\"><b>Agenda</b><p th:text="${presentation != null && presentation.agendaText != null ? presentation.agendaText : 'Agenda por confirmar.'}">Agenda</p></div>
+                            <div id="previewBenefits" class="preview-block" th:style="${presentation != null && presentation.showBenefits} ? '' : 'display:none'\"><b>Beneficios</b><p th:text="${presentation != null && presentation.benefitsText != null ? presentation.benefitsText : 'Beneficios incluidos.'}">Beneficios</p></div>
+                            <div id="previewSponsors" class="preview-block" th:style="${presentation != null && presentation.showSponsors} ? '' : 'display:none'\"><b>Sponsors y aliados</b><p th:text="${presentation != null && presentation.sponsorsText != null ? presentation.sponsorsText : 'Aliados por confirmar.'}">Sponsors</p></div>
+                            <div id="previewGallery" class="preview-gallery" th:style="${presentation != null && presentation.showGallery} ? '' : 'display:none'">
+                                <img id="previewGalleryCover" th:src="${presentation != null && presentation.coverImageUrl != null && !presentation.coverImageUrl.isBlank() ? presentation.coverImageUrl : selectedEvent.imageUrl}" alt="Imagen principal">
+                                <img id="previewGalleryThumb" th:src="${presentation != null && presentation.thumbnailImageUrl != null && !presentation.thumbnailImageUrl.isBlank() ? presentation.thumbnailImageUrl : selectedEvent.imageUrl}" alt="Miniatura">
+                            </div>
+                        </div>
+                        <div class="preview-info-grid"><article class="preview-data-card"><b>Entrada general</b><small th:text="${'Desde S/ ' + selectedEvent.price}">S/ 0</small></article><article class="preview-data-card"><b>Capacidad</b><small th:text="${selectedEvent.capacity != null ? selectedEvent.capacity + ' cupos' : 'Por definir'}">Cupos</small></article></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <aside class="studio-panel inspector-panel">
+            <form th:action="@{/dashboard/designer/events/{id}/presentation(id=${selectedEvent.id})}" method="post">
+                <div class="studio-panel-head"><h2>Panel de control</h2><p>Herramientas de composición, contenido y visualización.</p></div>
+                <div class="inspector-scroll">
+                    <section class="inspector-section">
+                        <span class="inspector-label">Punto de partida</span>
+                        <div class="organizer-base">✦ El Organizador eligió <strong th:text="${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.label : 'Clásico'}">Clásico</strong>. Puedes conservarlo o mejorarlo.</div>
+                    </section>
+                    <section class="inspector-section">
+                        <span class="inspector-label">Plantilla</span>
+                        <div class="template-options">
+                            <label class="template-option" th:each="template : ${templates}"><input type="radio" name="designTemplate" th:value="${template.name()}" th:checked="${selectedEvent.designTemplate == template}" th:data-label="${template.label}"><strong th:text="${template.label}">Clásico</strong><small th:text="${template.description}">Descripción</small></label>
+                        </div>
+                    </section>
+                    <section class="inspector-section">
+                        <span class="inspector-label">Portada y miniatura</span>
+                        <label class="control-label">URL de portada<input id="coverImageUrl" type="url" name="coverImageUrl" th:value="${presentation != null && presentation.coverImageUrl != null ? presentation.coverImageUrl : selectedEvent.imageUrl}" placeholder="https://.../portada.jpg"></label>
+                        <label class="control-label">URL de miniatura<input id="thumbnailImageUrl" type="url" name="thumbnailImageUrl" th:value="${presentation != null && presentation.thumbnailImageUrl != null ? presentation.thumbnailImageUrl : ''}" placeholder="https://.../miniatura.jpg"></label>
+                        <label class="control-label">Encuadre de portada<select id="coverFocus" name="coverFocus"><option value="TOP" th:selected="${presentation != null && presentation.coverFocus == 'TOP'}">Foco arriba</option><option value="CENTER" th:selected="${presentation == null || presentation.coverFocus == 'CENTER'}">Foco centrado</option><option value="BOTTOM" th:selected="${presentation != null && presentation.coverFocus == 'BOTTOM'}">Foco abajo</option></select></label>
+                    </section>
+                    <section class="inspector-section">
+                        <span class="inspector-label">Paleta y composición</span>
+                        <div class="two-cols"><label class="control-label">Color principal<div class="color-field"><input id="primaryColor" type="color" name="primaryColor" th:value="${presentation != null ? presentation.primaryColor : '#4f46e5'}"><span id="primaryValue">#4f46e5</span></div></label><label class="control-label">Color de acento<div class="color-field"><input id="accentColor" type="color" name="accentColor" th:value="${presentation != null ? presentation.accentColor : '#8b5cf6'}"><span id="accentValue">#8b5cf6</span></div></label></div>
+                        <label class="control-label">Posición del bloque informativo<select id="infoPosition" name="infoPosition"><option value="STANDARD" th:selected="${presentation == null || presentation.infoPosition == 'STANDARD'}">Después de la portada</option><option value="SIDEBAR" th:selected="${presentation != null && presentation.infoPosition == 'SIDEBAR'}">Al lado de las entradas</option></select></label>
+                        <div class="focus-options"><label class="focus-choice"><input type="radio" name="contentFocus" value="BALANCED" th:checked="${presentation == null || presentation.contentFocus == 'BALANCED'}">Equilibrado</label><label class="focus-choice"><input type="radio" name="contentFocus" value="SALES" th:checked="${presentation != null && presentation.contentFocus == 'SALES'}">Foco venta</label><label class="focus-choice"><input type="radio" name="contentFocus" value="INFORMATION" th:checked="${presentation != null && presentation.contentFocus == 'INFORMATION'}">Foco información</label></div>
+                    </section>
+                    <section class="inspector-section">
+                        <span class="inspector-label">Bloques visibles</span>
+                        <label class="control-label">Texto destacado<input id="highlightText" type="text" name="highlightText" th:value="${presentation != null && presentation.highlightText != null ? presentation.highlightText : ''}" placeholder="Reserva tu entrada y vive la experiencia."></label>
+                        <label class="toggle-row"><input id="showGallery" type="checkbox" name="showGallery" value="true" th:checked="${presentation == null || presentation.showGallery}"><span>Mostrar galería visual</span></label>
+                        <label class="toggle-row"><input id="showOrganizer" type="checkbox" name="showOrganizer" value="true" th:checked="${presentation == null || presentation.showOrganizer}"><span>Mostrar bloque del organizador</span></label>
+                        <label class="toggle-row"><input id="showAgenda" type="checkbox" name="showAgenda" value="true" th:checked="${presentation != null && presentation.showAgenda}"><span>Activar agenda</span></label>
+                        <label id="agendaField" class="control-label conditional-field">Agenda<textarea id="agendaText" name="agendaText" rows="3" placeholder="18:00 Apertura&#10;20:00 Presentación principal" th:text="${presentation != null && presentation.agendaText != null ? presentation.agendaText : ''}"></textarea></label>
+                        <label class="toggle-row"><input id="showBenefits" type="checkbox" name="showBenefits" value="true" th:checked="${presentation != null && presentation.showBenefits}"><span>Activar beneficios</span></label>
+                        <label id="benefitsField" class="control-label conditional-field">Beneficios<textarea id="benefitsText" name="benefitsText" rows="3" placeholder="Acceso preferente, zona especial, bebida de cortesía..." th:text="${presentation != null && presentation.benefitsText != null ? presentation.benefitsText : ''}"></textarea></label>
+                        <label class="toggle-row"><input id="showSponsors" type="checkbox" name="showSponsors" value="true" th:checked="${presentation != null && presentation.showSponsors}"><span>Activar sponsors / aliados</span></label>
+                        <label id="sponsorsField" class="control-label conditional-field">Sponsors y aliados<textarea id="sponsorsText" name="sponsorsText" rows="3" placeholder="Marca A · Aliado B · Institución C" th:text="${presentation != null && presentation.sponsorsText != null ? presentation.sponsorsText : ''}"></textarea></label>
+                    </section>
+                    <section class="inspector-section"><div class="save-actions"><button id="resetPreview" class="btn secondary compact" type="button">Restablecer</button><button class="btn primary compact" type="submit">Guardar propuesta</button></div><p class="muted small">Los cambios se guardan con el evento y quedan disponibles para Administración y Marketplace.</p></section>
+                </div>
+            </form>
+            <form class="feedback-panel" th:action="@{/dashboard/designer/events/{id}/send-to-organizer(id=${selectedEvent.id})}" method="post"><h3>Enviar al Organizador</h3><p>Responde una observación o comunícale que la propuesta visual ya está lista.</p><textarea name="note" placeholder="Ej. Ya ajusté la portada, los colores y la agenda según la observación."></textarea><button class="btn secondary compact" type="submit">Enviar actualización</button></form>
+        </aside>
+    </section>
+
+    <section class="studio-panel studio-empty" th:if="${selectedEvent == null}"><span class="studio-kicker">Biblioteca visual</span><h2>No hay solicitudes de diseño activas</h2><p class="muted">El Organizador elige una plantilla inicial y marca “Solicitar apoyo del Diseñador” para que la propuesta aparezca aquí.</p><div class="template-library-samples"><article class="template-library-sample" th:each="template : ${templates}"><b th:text="${template.label}">Clásico</b><small th:text="${template.description}">Descripción</small></article></div></section>
 </main>
 <script>
-  const preview=document.getElementById('preview');
-  if(preview){const root=document.documentElement,primary=document.getElementById('primary'),accent=document.getElementById('accent'),highlightInput=document.getElementById('highlightInput'),highlight=document.getElementById('highlight'),gallery=document.getElementById('gallery'),tickets=document.getElementById('tickets'),organizerToggle=document.getElementById('organizerToggle'),organizer=document.getElementById('organizer'),templateLabel=document.getElementById('templateLabel'),modeButton=document.getElementById('modeButton'),modeLabel=document.getElementById('modeLabel');const paint=()=>{root.style.setProperty('--studio-main',primary.value);root.style.setProperty('--studio-accent',accent.value)};primary.addEventListener('input',paint);accent.addEventListener('input',paint);highlightInput.addEventListener('input',()=>highlight.textContent=highlightInput.value||'Una experiencia diseñada para conectar con tu público.');gallery.addEventListener('change',()=>tickets.style.display=gallery.checked?'grid':'none');organizerToggle.addEventListener('change',()=>organizer.style.display=organizerToggle.checked?'block':'none');document.querySelectorAll('input[name="designTemplate"]').forEach(input=>input.addEventListener('change',()=>{preview.dataset.template=input.value;templateLabel.textContent=input.dataset.label}));modeButton.addEventListener('click',()=>{preview.classList.toggle('mobile');const mobile=preview.classList.contains('mobile');modeButton.textContent=mobile?'Modo escritorio':'Modo móvil';modeLabel.textContent=mobile?'Vista móvil':'Vista escritorio'});document.getElementById('reset').addEventListener('click',()=>{primary.value='#4f46e5';accent.value='#8b5cf6';highlightInput.value='';gallery.checked=true;organizerToggle.checked=true;paint();highlight.textContent='Una experiencia diseñada para conectar con tu público.';tickets.style.display='grid';organizer.style.display='block'});paint()}
+    const preview = document.getElementById('marketPreview');
+    if (preview) {
+        const primary = document.getElementById('primaryColor');
+        const accent = document.getElementById('accentColor');
+        const primaryValue = document.getElementById('primaryValue');
+        const accentValue = document.getElementById('accentValue');
+        const coverImage = document.getElementById('previewCoverImage');
+        const coverFallback = document.getElementById('previewFallback');
+        const galleryCover = document.getElementById('previewGalleryCover');
+        const galleryThumb = document.getElementById('previewGalleryThumb');
+        const templateLabel = document.getElementById('previewTemplateLabel');
+        const previewModeButton = document.getElementById('previewModeButton');
+        const previewModeLabel = document.getElementById('previewModeLabel');
+        const highlightInput = document.getElementById('highlightText');
+        const previewHighlight = document.getElementById('previewHighlight');
+        const coverImageUrl = document.getElementById('coverImageUrl');
+        const thumbnailImageUrl = document.getElementById('thumbnailImageUrl');
+        const coverFocus = document.getElementById('coverFocus');
+        const infoPosition = document.getElementById('infoPosition');
+        const showGallery = document.getElementById('showGallery');
+        const showOrganizer = document.getElementById('showOrganizer');
+        const showAgenda = document.getElementById('showAgenda');
+        const showBenefits = document.getElementById('showBenefits');
+        const showSponsors = document.getElementById('showSponsors');
+        const previewGallery = document.getElementById('previewGallery');
+        const previewOrganizer = document.getElementById('previewOrganizer');
+        const previewAgenda = document.getElementById('previewAgenda');
+        const previewBenefits = document.getElementById('previewBenefits');
+        const previewSponsors = document.getElementById('previewSponsors');
+        const agendaField = document.getElementById('agendaField');
+        const benefitsField = document.getElementById('benefitsField');
+        const sponsorsField = document.getElementById('sponsorsField');
+        const agendaText = document.getElementById('agendaText');
+        const benefitsText = document.getElementById('benefitsText');
+        const sponsorsText = document.getElementById('sponsorsText');
+        const focusPositions = { TOP: '50% 18%', CENTER: '50% 50%', BOTTOM: '50% 82%' };
+
+        function textOr(value, fallback) { return value && value.trim() ? value.trim() : fallback; }
+        function setPreviewImage() {
+            const url = textOr(coverImageUrl.value, coverImage.dataset.eventImage || '');
+            if (url) { coverImage.src = url; coverImage.style.display = 'block'; coverFallback.style.display = 'none'; galleryCover.src = url; }
+            else { coverImage.removeAttribute('src'); coverImage.style.display = 'none'; coverFallback.style.display = 'block'; }
+            const thumb = textOr(thumbnailImageUrl.value, url);
+            if (thumb) { galleryThumb.src = thumb; galleryThumb.style.display = 'block'; }
+            else { galleryThumb.removeAttribute('src'); galleryThumb.style.display = 'none'; }
+        }
+        function setColors() { preview.style.setProperty('--studio-primary', primary.value); preview.style.setProperty('--studio-accent', accent.value); primaryValue.textContent = primary.value; accentValue.textContent = accent.value; }
+        function setBlock(toggle, field, block, textInput, fallback) { field.classList.toggle('active', toggle.checked); block.style.display = toggle.checked ? 'block' : 'none'; block.querySelector('p').textContent = textOr(textInput.value, fallback); }
+        function setGallery() { previewGallery.style.display = showGallery.checked ? 'grid' : 'none'; }
+        function refreshComposition() { preview.dataset.infoPosition = infoPosition.value; const selectedFocus = document.querySelector('input[name="contentFocus"]:checked'); preview.dataset.focus = selectedFocus ? selectedFocus.value : 'BALANCED'; }
+
+        primary.addEventListener('input', setColors); accent.addEventListener('input', setColors);
+        coverImageUrl.addEventListener('input', setPreviewImage); thumbnailImageUrl.addEventListener('input', setPreviewImage);
+        coverFocus.addEventListener('change', () => preview.style.setProperty('--cover-position', focusPositions[coverFocus.value] || focusPositions.CENTER));
+        highlightInput.addEventListener('input', () => previewHighlight.textContent = textOr(highlightInput.value, 'Una experiencia diseñada para conectar con tu público.'));
+        showGallery.addEventListener('change', setGallery);
+        showOrganizer.addEventListener('change', () => previewOrganizer.style.display = showOrganizer.checked ? 'block' : 'none');
+        showAgenda.addEventListener('change', () => setBlock(showAgenda, agendaField, previewAgenda, agendaText, 'Agenda por confirmar.'));
+        showBenefits.addEventListener('change', () => setBlock(showBenefits, benefitsField, previewBenefits, benefitsText, 'Beneficios incluidos.'));
+        showSponsors.addEventListener('change', () => setBlock(showSponsors, sponsorsField, previewSponsors, sponsorsText, 'Aliados por confirmar.'));
+        agendaText.addEventListener('input', () => previewAgenda.querySelector('p').textContent = textOr(agendaText.value, 'Agenda por confirmar.'));
+        benefitsText.addEventListener('input', () => previewBenefits.querySelector('p').textContent = textOr(benefitsText.value, 'Beneficios incluidos.'));
+        sponsorsText.addEventListener('input', () => previewSponsors.querySelector('p').textContent = textOr(sponsorsText.value, 'Aliados por confirmar.'));
+        infoPosition.addEventListener('change', refreshComposition);
+        document.querySelectorAll('input[name="contentFocus"]').forEach(input => input.addEventListener('change', refreshComposition));
+        document.querySelectorAll('input[name="designTemplate"]').forEach(input => input.addEventListener('change', () => { preview.dataset.template = input.value; templateLabel.textContent = input.dataset.label; }));
+        previewModeButton.addEventListener('click', () => { preview.classList.toggle('mobile'); const mobile = preview.classList.contains('mobile'); previewModeButton.textContent = mobile ? 'Modo escritorio' : 'Modo móvil'; previewModeLabel.textContent = mobile ? 'Vista móvil' : 'Vista escritorio'; });
+        document.getElementById('resetPreview').addEventListener('click', () => { primary.value='#4f46e5'; accent.value='#8b5cf6'; coverFocus.value='CENTER'; infoPosition.value='STANDARD'; highlightInput.value=''; showGallery.checked=true; showOrganizer.checked=true; showAgenda.checked=false; showBenefits.checked=false; showSponsors.checked=false; agendaText.value=''; benefitsText.value=''; sponsorsText.value=''; document.querySelector('input[name="contentFocus"][value="BALANCED"]').checked=true; setColors(); setPreviewImage(); preview.style.setProperty('--cover-position',focusPositions.CENTER); previewHighlight.textContent='Una experiencia diseñada para conectar con tu público.'; previewGallery.style.display='grid'; previewOrganizer.style.display='block'; setBlock(showAgenda,agendaField,previewAgenda,agendaText,'Agenda por confirmar.'); setBlock(showBenefits,benefitsField,previewBenefits,benefitsText,'Beneficios incluidos.'); setBlock(showSponsors,sponsorsField,previewSponsors,sponsorsText,'Aliados por confirmar.'); refreshComposition(); });
+        coverImage.addEventListener('error', () => { coverImage.style.display='none'; coverFallback.style.display='block'; });
+        setColors(); setPreviewImage(); preview.style.setProperty('--cover-position', focusPositions[coverFocus.value] || focusPositions.CENTER); setGallery(); previewOrganizer.style.display = showOrganizer.checked ? 'block' : 'none'; setBlock(showAgenda,agendaField,previewAgenda,agendaText,'Agenda por confirmar.'); setBlock(showBenefits,benefitsField,previewBenefits,benefitsText,'Beneficios incluidos.'); setBlock(showSponsors,sponsorsField,previewSponsors,sponsorsText,'Aliados por confirmar.'); refreshComposition();
+    }
 </script>
 </body>
 </html>
