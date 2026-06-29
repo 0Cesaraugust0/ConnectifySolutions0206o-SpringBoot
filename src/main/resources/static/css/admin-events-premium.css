@@ -1,9 +1,12 @@
 /* Gestión de Eventos — capa visual ejecutiva. */
+.dashboard-page.admin-events-page {
+    width: min(1580px, calc(100% - 48px));
+}
 .admin-events-page .admin-workspace {
     background: #fff;
     border: 1px solid #e8eaf2;
     border-radius: 28px;
-    padding: 28px;
+    padding: 32px;
     box-shadow: 0 22px 52px rgba(15, 23, 42, .07);
 }
 .admin-events-page .admin-hero { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; }
@@ -31,10 +34,10 @@
 .admin-events-page .content-heading { display:flex; justify-content:space-between; align-items:end; gap:16px; margin:0 0 15px; }
 .admin-events-page .content-heading h2 { margin:0; color:#1c2750; font-size:1.18rem; }
 .admin-events-page .content-heading p { margin:5px 0 0; }
-.admin-events-page .list-shell { border:1px solid #e8ebf2; border-radius:18px; overflow:auto; }
-.admin-events-page .table-modern { min-width:940px; }
+.admin-events-page .list-shell { width:100%; border:1px solid #e8ebf2; border-radius:18px; overflow:auto; }
+.admin-events-page .table-modern { width:100%; min-width:1120px; }
 .admin-events-page .table-modern th { padding:15px 18px; background:#f8f9fc; color:#59637a; font-size:.72rem; letter-spacing:.05em; }
-.admin-events-page .table-modern td { padding:14px 18px; vertical-align:middle; }
+.admin-events-page .table-modern td { padding:16px 18px; vertical-align:middle; }
 .admin-events-page .table-modern tbody tr { transition:.16s ease; }
 .admin-events-page .table-modern tbody tr:hover { background:#fafbff; }
 .admin-events-page .event-cell { display:flex; align-items:center; gap:11px; min-width:210px; }
@@ -53,8 +56,9 @@
 .admin-events-page .kanban-heading { margin:0 0 16px; }
 .admin-events-page .kanban-heading h2 { margin:0; color:#1c2750; font-size:1.18rem; }
 .admin-events-page .kanban-heading p { margin:5px 0 0; }
-.admin-events-page .kanban-board { display:grid; grid-template-columns:repeat(4,minmax(230px,1fr)); gap:14px; overflow:auto; padding-bottom:2px; }
-.admin-events-page .kanban-column { min-height:430px; min-width:230px; padding:14px; border:1px solid #e6e9f1; border-radius:18px; background:#fafbfe; }
+/* Las columnas no se comprimen: cambian de cantidad según el ancho real. */
+.admin-events-page .kanban-board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; overflow:visible; }
+.admin-events-page .kanban-column { min-height:430px; min-width:0; padding:16px; border:1px solid #e6e9f1; border-radius:18px; background:#fafbfe; }
 .admin-events-page .kanban-column.pending { background:#fffaf0; border-color:#f8dfa0; }
 .admin-events-page .kanban-column.observed { background:#fff7f1; border-color:#ffd5b8; }
 .admin-events-page .kanban-column.approved { background:#f2fff7; border-color:#bdeed5; }
@@ -63,15 +67,30 @@
 .admin-events-page .kanban-column-head h3 { margin:0; font-size:.93rem; color:#25305a; }
 .admin-events-page .kanban-count { display:grid; place-items:center; min-width:27px; height:27px; padding:0 7px; border-radius:9px; background:rgba(255,255,255,.78); color:#4d5770; font-size:.78rem; font-weight:900; }
 .admin-events-page .kanban-stack { display:grid; gap:10px; }
-.admin-events-page .kanban-card { padding:12px; background:#fff; border:1px solid #e2e6ef; border-radius:15px; box-shadow:0 8px 18px rgba(17,24,39,.04); }
+.admin-events-page .kanban-card { padding:13px; background:#fff; border:1px solid #e2e6ef; border-radius:15px; box-shadow:0 8px 18px rgba(17,24,39,.04); }
 .admin-events-page .kanban-card-top { display:flex; align-items:center; gap:9px; }
-.admin-events-page .kanban-cover { width:38px; height:38px; display:grid; place-items:center; overflow:hidden; border-radius:10px; background:#eef0ff; color:#5146e5; flex:0 0 auto; }
+.admin-events-page .kanban-cover { width:40px; height:40px; display:grid; place-items:center; overflow:hidden; border-radius:10px; background:#eef0ff; color:#5146e5; flex:0 0 auto; }
 .admin-events-page .kanban-cover img { width:100%; height:100%; object-fit:cover; }
-.admin-events-page .kanban-card h4 { margin:0; color:#1d2852; font-size:.88rem; line-height:1.25; }
-.admin-events-page .kanban-card p { margin:3px 0 0; color:#758097; font-size:.75rem; }
-.admin-events-page .kanban-meta { display:flex; flex-wrap:wrap; gap:8px; margin:11px 0; color:#68758e; font-size:.74rem; }
+.admin-events-page .kanban-card h4 { margin:0; color:#1d2852; font-size:.9rem; line-height:1.25; }
+.admin-events-page .kanban-card p { margin:3px 0 0; color:#758097; font-size:.77rem; }
+.admin-events-page .kanban-meta { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; color:#68758e; font-size:.75rem; }
 .admin-events-page .kanban-footer { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-.admin-events-page .kanban-footer a { color:#5146e5; font-size:.77rem; font-weight:900; text-decoration:none; }
+.admin-events-page .kanban-footer a { color:#5146e5; font-size:.78rem; font-weight:900; text-decoration:none; }
 .admin-events-page .kanban-empty { display:grid; min-height:240px; place-items:center; text-align:center; color:#8b94a7; font-size:.84rem; }
-@media (max-width:1100px) { .admin-events-page .metric-grid { grid-template-columns:repeat(3,1fr); } }
-@media (max-width:760px) { .admin-events-page .admin-workspace { padding:18px; } .admin-events-page .admin-hero { display:block; } .admin-events-page .admin-tools { margin-top:15px; } .admin-events-page .metric-grid { grid-template-columns:1fr 1fr; } .admin-events-page .kanban-board { grid-template-columns:1fr; } .admin-events-page .kanban-column { min-width:0; min-height:auto; } }
+@media (max-width:1480px) {
+    .dashboard-page.admin-events-page { width:min(1360px, calc(100% - 40px)); }
+    .admin-events-page .kanban-board { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:1100px) {
+    .admin-events-page .metric-grid { grid-template-columns:repeat(3,1fr); }
+    .admin-events-page .kanban-board { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:760px) {
+    .dashboard-page.admin-events-page { width:calc(100% - 28px); }
+    .admin-events-page .admin-workspace { padding:18px; }
+    .admin-events-page .admin-hero { display:block; }
+    .admin-events-page .admin-tools { margin-top:15px; }
+    .admin-events-page .metric-grid { grid-template-columns:1fr 1fr; }
+    .admin-events-page .kanban-board { grid-template-columns:1fr; }
+    .admin-events-page .kanban-column { min-height:auto; }
+}
