@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface EventPresentationSettingsRepository extends JpaRepository<EventPresentationSettings, Long> {
     Optional<EventPresentationSettings> findByEventId(Long eventId);
-    List<EventPresentationSettings> findByEventIdIn(Collection<Long> eventIds);
+    List<EventPresentationSettings> findByEvent_IdIn(Collection<Long> eventIds);
 }
