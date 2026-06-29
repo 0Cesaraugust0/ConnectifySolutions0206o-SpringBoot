@@ -18,6 +18,7 @@ public class DemoReferenceAccountsConfig {
     CommandLineRunner referenceAccounts(UserAccountRepository accounts) {
         return args -> {
             seed(accounts, "Valeria Torres", "73918425", "organizador.demo@connectify.local", "$2a$10$Pyb/pkXGtnNgw8UO1Isy6O/6IswXMIk5p4FiIwMjUHMn9IjloPg5.", Role.ORGANIZER);
+            seed(accounts, "Valeria Torres", "73918425", "organizador.altura@connectify.local", "$2a$10$Pyb/pkXGtnNgw8UO1Isy6O/6IswXMIk5p4FiIwMjUHMn9IjloPg5.", Role.ORGANIZER);
             seed(accounts, "Camila Rojas", "70451286", "admin.demo@connectify.local", "$2a$10$9TazJtJfKT6U161IYw6yPOTTsuOwDOtAF22O7C2QokQjVsIZN34ai", Role.ADMIN);
             seed(accounts, "Andrea Salazar", "75610394", "cliente.demo@connectify.local", "$2a$10$5V40br1jHqY8Ev8ofwtuzOwYaH.l7GeI3dfP5jznmDW2LCDj4zCqy", Role.CLIENT);
             seed(accounts, "Diego Morales", "78152643", "disenador.demo@connectify.local", "$2a$10$qLIiK8GjnglwXThRBn3y9uxfkIBhfsnyqlqzIwvQvFVkxOQ5QOf1G", Role.DESIGNER);
