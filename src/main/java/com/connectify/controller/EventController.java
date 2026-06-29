@@ -2,6 +2,7 @@ package com.connectify.controller;
 
 import com.connectify.entity.Event;
 import com.connectify.entity.EventStatus;
+import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.TicketTypeRepository;
 import com.connectify.service.EventService;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,14 @@ public class EventController {
 
     private final EventService eventService;
     private final TicketTypeRepository ticketTypeRepository;
+    private final EventPresentationSettingsRepository presentationSettingsRepository;
 
-    public EventController(EventService eventService, TicketTypeRepository ticketTypeRepository) {
+    public EventController(EventService eventService,
+                           TicketTypeRepository ticketTypeRepository,
+                           EventPresentationSettingsRepository presentationSettingsRepository) {
         this.eventService = eventService;
         this.ticketTypeRepository = ticketTypeRepository;
+        this.presentationSettingsRepository = presentationSettingsRepository;
     }
 
     @GetMapping
@@ -46,6 +51,7 @@ public class EventController {
         }
         model.addAttribute("event", event);
         model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id));
+        model.addAttribute("presentation", presentationSettingsRepository.findByEventId(id).orElse(null));
         model.addAttribute("previewMode", false);
         return "events/detail";
     }
