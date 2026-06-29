@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear cuenta cliente - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/auth-client.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo">🎫</span><div><strong>Connectify</strong><small>Cuenta Cliente</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Explorar eventos</a><a class="btn secondary" th:href="@{/login}">Iniciar sesión</a></nav>
+</header>
+
+<main class="auth-client-page">
+    <section class="auth-client-layout">
+        <aside class="auth-client-pitch">
+            <p class="badge glow">Cuenta personal</p>
+            <h1>Compra, consulta y conserva tus tickets.</h1>
+            <p>Esta cuenta es exclusivamente para asistentes y clientes del Marketplace. Tendrás acceso a tu carrito, checkout y tickets QR.</p>
+            <div class="auth-benefits">
+                <div><span>🛒</span><strong>Carrito personal</strong><small>Compra desde tu propia sesión.</small></div>
+                <div><span>🎫</span><strong>Tickets QR</strong><small>Consulta tus códigos y su estado.</small></div>
+                <div><span>🔒</span><strong>Rol separado</strong><small>Developer, Organizador y Admin no compran desde esta cuenta.</small></div>
+            </div>
+        </aside>
+
+        <section class="auth-client-card">
+            <p class="badge">Registro de cliente</p>
+            <h2>Crea tu cuenta</h2>
+            <p class="muted small">No puedes elegir un rol operativo desde aquí. Las cuentas públicas se registran solamente como Cliente.</p>
+            <div class="alert error" th:if="${error != null}" th:text="${error}">Error</div>
+            <form class="auth-client-form" th:action="@{/register}" method="post">
+                <label>Nombre completo<input name="fullName" type="text" th:value="${fullName}" autocomplete="name" placeholder="Andrea Salazar" required></label>
+                <label>Correo electrónico<input name="email" type="email" th:value="${email}" autocomplete="email" placeholder="tu@email.com" required></label>
+                <label>Teléfono <span class="optional">Opcional</span><input name="phone" type="tel" th:value="${phone}" autocomplete="tel" placeholder="987 654 321"></label>
+                <div class="auth-client-two-cols">
+                    <label>Contraseña<input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required></label>
+                    <label>Confirmar contraseña<input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Repite tu contraseña" required></label>
+                </div>
+                <button class="btn primary full" type="submit">Crear cuenta Cliente</button>
+            </form>
+            <p class="auth-client-foot">¿Ya tienes cuenta? <a th:href="@{/login}">Inicia sesión</a></p>
+        </section>
+    </section>
+</main>
+</body>
+</html>
