@@ -18,8 +18,8 @@
         <a class="nav-link" th:href="@{/events} + '#featured'">Destacados</a>
         <div class="market-account-cluster" th:if="${clientAccount}">
             <a class="account-name-control" th:href="@{/dashboard/client}"><span class="windows-person-icon"></span><strong th:text="${accountFirstName}">Cliente</strong></a>
-            <a class="market-icon-control" th:href="@{/cart}">🛒</a>
-            <a class="market-icon-control heart-control" th:href="@{/dashboard/client/favorites}">♡<span class="market-icon-badge" th:if="${favoriteCount > 0}" th:text="${favoriteCount}">0</span></a>
+            <a class="market-icon-control" th:href="@{/cart}" aria-label="Mi carrito" title="Mi carrito">🛒</a>
+            <a class="market-icon-control heart-control" th:href="@{/dashboard/client/favorites}" aria-label="Eventos seleccionados" title="Eventos seleccionados">♡<span class="market-icon-badge" th:if="${favoriteCount > 0}" th:text="${favoriteCount}">0</span></a>
         </div>
         <a class="btn secondary compact" th:if="${signedIn && !clientAccount}" th:href="@{/dashboard}">Mi panel</a>
         <a class="btn secondary compact" th:unless="${signedIn}" th:href="@{/login}">Iniciar sesión</a>
@@ -36,10 +36,6 @@
                 <span class="badge template-badge" th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span>
                 <h1 th:text="${event.title}">Evento</h1>
                 <p th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p>
-                <div class="market-cover-actions">
-                    <a class="btn primary" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}" href="#ticketTypes">Comprar entradas</a>
-                    <a class="btn secondary" th:if="${ticketTypes == null || ticketTypes.isEmpty()}" th:href="@{/events}">Entradas próximamente</a>
-                </div>
             </div>
         </div>
 
@@ -58,9 +54,8 @@
             </div>
 
             <section id="ticketTypes" class="market-tickets table-card ticket-anchor" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 20px 0">
-                    <div><h2 style="margin:0">Tipos de entrada</h2><p class="muted small" style="margin:6px 0 0">Elige una variante y agrégala a tu carrito personal.</p></div>
-                    <a class="btn primary compact" href="#ticketTypes">Comprar ahora</a>
+                <div class="ticket-section-heading">
+                    <div><h2>Tipos de entrada</h2><p class="muted small">Selecciona la cantidad de cada variante y agrégala a tu carrito.</p></div>
                 </div>
                 <table class="table-modern">
                     <thead><tr><th>Entrada</th><th>Precio</th><th>Disponibles</th><th>Acción</th></tr></thead>
@@ -70,7 +65,16 @@
                         <td th:text="${'S/ ' + type.price}">S/ 0.00</td>
                         <td th:text="${type.remaining}">0</td>
                         <td>
-                            <a class="btn primary compact" th:if="${clientAccount}" th:href="@{/cart/add/{id}(id=${event.id},ticketTypeId=${type.id})}">Agregar 1 al carrito</a>
+                            <form class="ticket-cart-form" th:if="${clientAccount && type.remaining > 0}" th:action="@{/cart/add/{id}(id=${event.id})}" method="post">
+                                <input type="hidden" name="ticketTypeId" th:value="${type.id}">
+                                <div class="quantity-stepper" th:attr="data-max=${type.remaining}">
+                                    <button type="button" class="quantity-plus" aria-label="Aumentar cantidad">+</button>
+                                    <input name="quantity" type="number" min="1" th:max="${type.remaining}" value="1" aria-label="Cantidad de entradas">
+                                    <button type="button" class="quantity-minus" aria-label="Reducir cantidad">−</button>
+                                </div>
+                                <button class="btn primary compact" type="submit">Agregar al carrito</button>
+                            </form>
+                            <span class="ticket-sold-out" th:if="${clientAccount && type.remaining <= 0}">Agotado</span>
                             <a class="btn secondary compact" th:if="${!signedIn}" th:href="@{/login}">Iniciar sesión</a>
                             <span class="muted small" th:if="${signedIn && !clientAccount}">Solo cuenta Cliente</span>
                         </td>
@@ -78,9 +82,33 @@
                     </tbody>
                 </table>
             </section>
+            <section class="ticket-empty-state" th:if="${ticketTypes == null || ticketTypes.isEmpty()}">
+                <strong>Entradas próximamente</strong>
+                <span>El Organizador aún no ha publicado variantes de entrada para este evento.</span>
+            </section>
         </div>
-        <div class="market-actions" style="padding:0 30px 30px"><a class="btn secondary" th:href="@{/events}">Seguir explorando</a><a class="btn primary" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}" href="#ticketTypes">Comprar entradas</a><a class="btn primary" th:if="${clientAccount}" th:href="@{/cart}">Ver mi carrito</a></div>
+        <div class="market-actions" style="padding:0 30px 30px"><a class="btn secondary" th:href="@{/events}">Seguir explorando</a><a class="btn primary" th:if="${clientAccount}" th:href="@{/cart}">Ver mi carrito</a></div>
     </section>
 </main>
+<script>
+    document.querySelectorAll('.quantity-stepper').forEach(function (stepper) {
+        var input = stepper.querySelector('input');
+        var plus = stepper.querySelector('.quantity-plus');
+        var minus = stepper.querySelector('.quantity-minus');
+        var min = 1;
+        var max = Number(stepper.dataset.max || input.max || 1);
+        function normalize() {
+            var value = Number(input.value || min);
+            value = Math.max(min, Math.min(max, value));
+            input.value = value;
+            plus.disabled = value >= max;
+            minus.disabled = value <= min;
+        }
+        plus.addEventListener('click', function () { input.value = Number(input.value || min) + 1; normalize(); });
+        minus.addEventListener('click', function () { input.value = Number(input.value || min) - 1; normalize(); });
+        input.addEventListener('input', normalize);
+        normalize();
+    });
+</script>
 </body>
 </html>
