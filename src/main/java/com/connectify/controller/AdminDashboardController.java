@@ -7,6 +7,7 @@ import com.connectify.entity.EventStatus;
 import com.connectify.entity.MessagePriority;
 import com.connectify.entity.MessageType;
 import com.connectify.entity.Role;
+import com.connectify.entity.TicketType;
 import com.connectify.repository.EventAdminRecordRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -42,11 +44,11 @@ public class AdminDashboardController {
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
-        List<EventAdminRecord> records = recordRepository.findByEventIdOrderByCreatedAtDesc(id);
+        List<EventAdminRecord> records = safeRecords(id);
         model.addAttribute("event", event);
-        model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdOrderByPriceAsc(id));
+        model.addAttribute("ticketTypes", safeTicketTypes(id));
         model.addAttribute("records", records);
-        model.addAttribute("changeRecords", records.stream().filter(record -> record.getType() == EventAdminRecordType.UPDATED || record.getType() == EventAdminRecordType.TICKET_TYPE_CREATED || record.getType() == EventAdminRecordType.TICKET_TYPE_UPDATED).toList());
+        model.addAttribute("changeRecords", records.stream().filter(this::isChangeRecord).toList());
         return "dashboard/admin/event-detail";
     }
 
@@ -54,7 +56,7 @@ public class AdminDashboardController {
     public String preview(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
         model.addAttribute("event", event);
-        model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id));
+        model.addAttribute("ticketTypes", safeActiveTicketTypes(id));
         model.addAttribute("previewMode", true);
         model.addAttribute("adminReturnUrl", "/dashboard/admin/events/" + id);
         return "events/detail";
@@ -127,6 +129,38 @@ public class AdminDashboardController {
         eventRepository.save(event);
         record(event, "Despublicado. El evento queda aprobado y bloqueado.");
         return "redirect:/dashboard/admin/events/" + id + "?unpublished=true";
+    }
+
+    private List<EventAdminRecord> safeRecords(Long id) {
+        try {
+            return recordRepository.findByEventIdOrderByCreatedAtDesc(id);
+        } catch (RuntimeException ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    private List<TicketType> safeTicketTypes(Long id) {
+        try {
+            return ticketTypeRepository.findByEventIdOrderByPriceAsc(id);
+        } catch (RuntimeException ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    private List<TicketType> safeActiveTicketTypes(Long id) {
+        try {
+            return ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id);
+        } catch (RuntimeException ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    private boolean isChangeRecord(EventAdminRecord record) {
+        return record != null && record.getType() != null && (
+                record.getType() == EventAdminRecordType.UPDATED ||
+                record.getType() == EventAdminRecordType.TICKET_TYPE_CREATED ||
+                record.getType() == EventAdminRecordType.TICKET_TYPE_UPDATED
+        );
     }
 
     private boolean reviewable(Event event) { return event.getStatus() == EventStatus.PENDING_REVIEW || event.getStatus() == EventStatus.OBSERVED; }
