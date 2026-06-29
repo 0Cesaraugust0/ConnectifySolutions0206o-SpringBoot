@@ -1,12 +1,26 @@
 package com.connectify.controller;
 
+import com.connectify.entity.Event;
+import com.connectify.entity.EventDesignTemplate;
+import com.connectify.entity.EventStatus;
+import com.connectify.repository.EventRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Comparator;
+import java.util.List;
 
 @Controller
 public class DashboardController {
+
+    private final EventRepository eventRepository;
+
+    public DashboardController(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication) {
@@ -56,9 +70,23 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard/designer")
-    public String designer(Model model, Authentication authentication) {
-        model.addAttribute("title", "Panel Diseñador Web");
+    public String designer(@RequestParam(required = false) Long eventId, Model model, Authentication authentication) {
+        List<Event> designEvents = eventRepository.findAll().stream()
+                .filter(Event::isDesignEnabled)
+                .filter(event -> event.getStatus() != EventStatus.APPROVED && event.getStatus() != EventStatus.PUBLISHED)
+                .sorted(Comparator.comparing(Event::getUpdatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
+
+        Event selectedEvent = designEvents.stream()
+                .filter(event -> eventId != null && eventId.equals(event.getId()))
+                .findFirst()
+                .orElse(designEvents.isEmpty() ? null : designEvents.get(0));
+
+        model.addAttribute("title", "Estudio de Presentación");
         model.addAttribute("email", authentication.getName());
+        model.addAttribute("designEvents", designEvents);
+        model.addAttribute("selectedEvent", selectedEvent);
+        model.addAttribute("templates", EventDesignTemplate.values());
         return "dashboard/designer";
     }
 
