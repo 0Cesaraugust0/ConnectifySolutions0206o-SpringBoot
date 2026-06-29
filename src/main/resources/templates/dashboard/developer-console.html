@@ -16,11 +16,10 @@
     <section class="dashboard-hero">
         <p class="badge">Acceso técnico</p>
         <h1 th:text="${title}">Panel Developer</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Este rol es técnico: consulta el sistema, administra accesos operativos y valida prototipos; no opera ventas, carrito ni tickets de Cliente.</p>
+        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Este rol administra cuentas operativas y valida la aplicación; no opera ventas, carrito ni tickets de Cliente.</p>
     </section>
     <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/dashboard/developer/accounts}"><span>👥</span><h3>Gestión de cuentas</h3><p>Crear o eliminar accesos de Administrador, Organizador, Diseñador y Auxiliar de Puerta.</p><strong>Administrar cuentas →</strong></a>
-        <a class="module-card" th:href="@{/dashboard/developer/accounts/organizer}"><span>🎯</span><h3>Crear Organizador</h3><p>Alta rápida de una cuenta separada para crear eventos, entradas y solicitudes de diseño.</p><strong>Crear referencia →</strong></a>
+        <a class="module-card" th:href="@{/dashboard/developer/accounts}"><span>👥</span><h3>Gestión de cuentas</h3><p>Crear o eliminar accesos operativos, incluido el Organizador de referencia.</p><strong>Administrar cuentas →</strong></a>
         <a class="module-card" th:href="@{/events}"><span>🔍</span><h3>Ver Marketplace</h3><p>Consultar la experiencia pública sin iniciar compras.</p></a>
         <a class="module-card" th:href="@{/prototype}"><span>🧪</span><h3>Prototipos</h3><p>Revisar pantallas de referencia y validar interfaz.</p></a>
         <a class="module-card" th:href="@{/communications}"><span>💬</span><h3>Comunicaciones</h3><p>Revisar mensajes internos como apoyo técnico.</p></a>
