@@ -66,7 +66,11 @@ public class DesignerPresentationController {
                                    @RequestParam(required = false, defaultValue = "false") boolean showSponsors,
                                    @RequestParam(required = false) String sponsorsText,
                                    Authentication authentication) {
-        Event event = findEditableEvent(id);
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        if (event.getStatus() == EventStatus.APPROVED || event.getStatus() == EventStatus.PUBLISHED) {
+            return "redirect:/dashboard/designer?eventId=" + id + "&locked=true";
+        }
 
         event.setDesignTemplate(designTemplate);
         event.setDesignEnabled(true);
@@ -103,7 +107,7 @@ public class DesignerPresentationController {
                 + "Paleta: " + presentation.getPrimaryColor() + " / " + presentation.getAccentColor() + "\n"
                 + "Portada visual: " + valueOr(presentation.getCoverImageUrl(), "imagen del evento") + "\n"
                 + "Encuadre: " + presentation.getCoverFocus() + " | Enfoque: " + presentation.getContentFocus() + "\n"
-                + "Bloques: entradas visuales=" + yesNo(showGallery)
+                + "Bloques: galería=" + yesNo(showGallery)
                 + ", organizador=" + yesNo(showOrganizer)
                 + ", agenda=" + yesNo(showAgenda)
                 + ", beneficios=" + yesNo(showBenefits)
@@ -138,15 +142,6 @@ public class DesignerPresentationController {
         recordRepository.save(record);
 
         return "redirect:/dashboard/designer?eventId=" + id + "&sent=true";
-    }
-
-    private Event findEditableEvent(Long id) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
-        if (event.getStatus() == EventStatus.APPROVED || event.getStatus() == EventStatus.PUBLISHED) {
-            throw new IllegalStateException("El evento ya fue aprobado o publicado y no admite cambios visuales");
-        }
-        return event;
     }
 
     private String safeName(Authentication authentication) {
