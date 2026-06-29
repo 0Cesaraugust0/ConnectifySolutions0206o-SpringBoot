@@ -16,9 +16,10 @@
     <section class="dashboard-hero">
         <p class="badge">Acceso técnico</p>
         <h1 th:text="${title}">Panel Developer</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Este rol es técnico: consulta el sistema y sus prototipos, pero no opera ventas, carrito, tickets ni procesos de otros equipos.</p>
+        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Este rol es técnico: consulta el sistema, administra accesos operativos y valida prototipos; no opera ventas, carrito ni tickets de Cliente.</p>
     </section>
     <section class="dashboard-grid">
+        <a class="module-card" th:href="@{/dashboard/developer/accounts}"><span>👥</span><h3>Gestión de cuentas</h3><p>Crear o eliminar accesos de Administrador, Diseñador y Auxiliar de Puerta.</p><strong>Administrar cuentas →</strong></a>
         <a class="module-card" th:href="@{/events}"><span>🔍</span><h3>Ver Marketplace</h3><p>Consultar la experiencia pública sin iniciar compras.</p></a>
         <a class="module-card" th:href="@{/prototype}"><span>🧪</span><h3>Prototipos</h3><p>Revisar pantallas de referencia y validar interfaz.</p></a>
         <a class="module-card" th:href="@{/communications}"><span>💬</span><h3>Comunicaciones</h3><p>Revisar mensajes internos como apoyo técnico.</p></a>
