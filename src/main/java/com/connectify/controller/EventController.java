@@ -45,7 +45,7 @@ public class EventController {
         List<Long> eventIds = events.stream().map(Event::getId).toList();
         Map<Long, EventPresentationSettings> presentationByEventId = eventIds.isEmpty()
                 ? Map.of()
-                : presentationSettingsRepository.findByEventIdIn(eventIds).stream()
+                : presentationSettingsRepository.findByEvent_IdIn(eventIds).stream()
                 .filter(setting -> setting.getEvent() != null && setting.getEvent().getId() != null)
                 .collect(Collectors.toMap(setting -> setting.getEvent().getId(), Function.identity(), (first, ignored) -> first));
 
