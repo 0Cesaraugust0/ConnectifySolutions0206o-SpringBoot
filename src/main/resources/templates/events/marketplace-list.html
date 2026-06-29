@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - Connectify Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-presentation.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-account.css}">
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}">
+        <span class="logo">🎫</span>
+        <div><strong>Connectify</strong><small>Marketplace</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="nav-link" th:href="@{/events}">Eventos</a>
+        <a class="nav-link" href="#featured">Destacados</a>
+
+        <div class="market-account-cluster" th:if="${clientAccount}">
+            <a class="account-name-control" th:href="@{/dashboard/client}" title="Mi cuenta Cliente">
+                <span class="windows-person-icon" aria-hidden="true"></span>
+                <strong th:text="${accountFirstName}">Cliente</strong>
+            </a>
+            <a class="market-icon-control" th:href="@{/cart}" aria-label="Mi carrito" title="Mi carrito">🛒</a>
+            <a class="market-icon-control heart-control" th:href="@{/dashboard/client/favorites}" aria-label="Eventos seleccionados" title="Eventos seleccionados">♡<span class="market-icon-badge" th:if="${favoriteCount > 0}" th:text="${favoriteCount}">0</span></a>
+        </div>
+
+        <a class="btn secondary compact" th:if="${signedIn && !clientAccount}" th:href="@{/dashboard}">Mi panel</a>
+        <form th:if="${signedIn && !clientAccount}" th:action="@{/logout}" method="post"><button class="btn secondary compact" type="submit">Salir</button></form>
+        <a class="btn secondary compact" th:unless="${signedIn}" th:href="@{/login}">Iniciar sesión</a>
+        <a class="btn primary compact" th:unless="${signedIn}" th:href="@{/register}">Crear cuenta</a>
+    </nav>
+</header>
+
+<main class="marketplace-page">
+    <section class="marketplace-hero">
+        <div class="hero-copy">
+            <p class="badge glow">Marketplace de eventos</p>
+            <h1>Encuentra experiencias memorables en Perú</h1>
+            <p class="muted hero-text">Conciertos, conferencias, gastronomía, deporte y cultura en una plataforma preparada para tickets QR, checkout e IZIPay.</p>
+
+            <form class="search-panel" th:action="@{/events}" method="get">
+                <input class="search-input" type="text" name="q" th:value="${q}" placeholder="🔎 Buscar evento: rock, tech, feria...">
+                <input class="search-input" type="text" name="city" th:value="${city}" placeholder="📍 Ciudad: Lima, Callao...">
+                <select class="search-input" name="category">
+                    <option value="">Todas las categorías</option>
+                    <option value="Música" th:selected="${category == 'Música'}">🎵 Música</option>
+                    <option value="Tecnología" th:selected="${category == 'Tecnología'}">💻 Tecnología</option>
+                    <option value="Gastronomía" th:selected="${category == 'Gastronomía'}">🍽️ Gastronomía</option>
+                    <option value="Deporte" th:selected="${category == 'Deporte'}">⚽ Deporte</option>
+                </select>
+                <button class="btn primary" type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <div class="hero-stats">
+            <div><strong th:text="${events.size()}">0</strong><span>resultados</span></div>
+            <div><strong>4</strong><span>categorías base</span></div>
+            <div><strong>QR</strong><span>tickets preparados</span></div>
+        </div>
+    </section>
+
+    <section id="categories" class="category-strip">
+        <a th:href="@{/events}" class="category-chip">🌐 Todos</a>
+        <a th:href="@{/events(category='Música')}" class="category-chip">🎵 Música</a>
+        <a th:href="@{/events(category='Tecnología')}" class="category-chip">💻 Tecnología</a>
+        <a th:href="@{/events(category='Gastronomía')}" class="category-chip">🍽️ Gastronomía</a>
+        <a th:href="@{/events(category='Deporte')}" class="category-chip">⚽ Deporte</a>
+    </section>
+
+    <section id="featured" class="section-heading">
+        <div>
+            <p class="badge">Explorar</p>
+            <h2>Eventos disponibles</h2>
+            <p class="muted">Cada propuesta publicada puede conservar la identidad visual definida en el Estudio de Diseño.</p>
+        </div>
+        <a th:if="${q != null || city != null || category != null}" th:href="@{/events}" class="btn secondary">Limpiar filtros</a>
+    </section>
+
+    <section class="event-grid" th:if="${!events.isEmpty()}">
+        <article class="event-card" th:each="event : ${events}" th:with="presentation=${presentationByEventId[event.id]}">
+            <form class="favorite-card-form" th:if="${clientAccount}" th:action="@{/dashboard/client/favorites/toggle/{id}(id=${event.id})}" method="post">
+                <input type="hidden" name="redirectTo" value="/events">
+                <button class="favorite-card-button" th:classappend="${favoriteEventIds.contains(event.id)} ? ' saved' : ''" type="submit" th:title="${favoriteEventIds.contains(event.id)} ? 'Quitar de seleccionados' : 'Guardar en seleccionados'" th:aria-label="${favoriteEventIds.contains(event.id)} ? 'Quitar de seleccionados' : 'Guardar en seleccionados'" th:text="${favoriteEventIds.contains(event.id)} ? '♥' : '♡'">♡</button>
+            </form>
+            <a class="event-card-link" th:href="@{/events/{id}(id=${event.id})}">
+                <div class="event-cover">
+                    <img class="event-cover-image" th:if="${presentation != null && ((presentation.thumbnailImageUrl != null && !presentation.thumbnailImageUrl.isBlank()) || (presentation.coverImageUrl != null && !presentation.coverImageUrl.isBlank()))}" th:src="${presentation.thumbnailImageUrl != null && !presentation.thumbnailImageUrl.isBlank() ? presentation.thumbnailImageUrl : presentation.coverImageUrl}" alt="Miniatura del evento">
+                    <span class="event-icon" th:text="${event.category != null ? event.category.icon : '🎫'}">🎫</span>
+                    <span class="event-status" th:text="${event.featured ? 'Destacado' : 'Disponible'}">Disponible</span>
+                    <span class="event-thumbnail-template" th:if="${presentation != null}" th:text="${event.designTemplate != null ? event.designTemplate.label : 'Clásico'}">Clásico</span>
+                </div>
+                <div class="event-body">
+                    <div class="event-category" th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</div>
+                    <h3 th:text="${event.title}">Nombre del evento</h3>
+                    <p class="event-description" th:text="${event.description}">Descripción del evento</p>
+                    <div class="event-info">
+                        <span>📍 <b th:text="${event.city != null ? event.city : 'Lima'}">Lima</b></span>
+                        <span>📅 <b th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</b></span>
+                    </div>
+                    <div class="availability">
+                        <div class="availability-bar"><span th:style="${'width:' + (event.capacity != null && event.capacity > 0 ? (event.availableTickets * 100 / event.capacity) : 30) + '%'}"></span></div>
+                        <small th:text="${event.availableTickets != null ? event.availableTickets + ' entradas disponibles' : 'Disponibilidad por confirmar'}">Entradas disponibles</small>
+                    </div>
+                    <div class="event-footer"><strong th:text="${event.price != null ? 'S/ ' + event.price : 'Gratis / por definir'}">S/ 0.00</strong><span class="card-action">Ver detalle →</span></div>
+                </div>
+            </a>
+        </article>
+    </section>
+
+    <section class="empty-state" th:if="${events.isEmpty()}">
+        <h2>No encontramos eventos con esos filtros</h2>
+        <p class="muted">Prueba con otra búsqueda, ciudad o categoría.</p>
+        <a th:href="@{/events}" class="btn primary">Ver todos los eventos</a>
+    </section>
+</main>
+</body>
+</html>
