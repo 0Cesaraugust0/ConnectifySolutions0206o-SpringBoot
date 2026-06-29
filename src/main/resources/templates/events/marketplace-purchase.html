@@ -37,9 +37,8 @@
                 <h1 th:text="${event.title}">Evento</h1>
                 <p th:text="${event.category != null ? event.category.name : 'Evento'}">Categoría</p>
                 <div class="market-cover-actions">
-                    <a class="btn primary" th:if="${clientAccount && ticketTypes != null && !ticketTypes.isEmpty()}" href="#ticketTypes">Comprar entradas</a>
-                    <a class="btn primary" th:unless="${signedIn}" th:href="@{/login}">Inicia sesión para comprar</a>
-                    <a class="btn secondary" th:if="${signedIn && !clientAccount}" th:href="@{/dashboard}">Compra disponible con cuenta Cliente</a>
+                    <a class="btn primary" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}" href="#ticketTypes">Comprar entradas</a>
+                    <a class="btn secondary" th:if="${ticketTypes == null || ticketTypes.isEmpty()}" th:href="@{/events}">Entradas próximamente</a>
                 </div>
             </div>
         </div>
@@ -59,8 +58,10 @@
             </div>
 
             <section id="ticketTypes" class="market-tickets table-card ticket-anchor" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}">
-                <h2 style="padding:20px 20px 0;margin:0">Tipos de entrada</h2>
-                <p class="muted small" style="padding:0 20px">Elige una variante y agrégala a tu carrito personal.</p>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 20px 0">
+                    <div><h2 style="margin:0">Tipos de entrada</h2><p class="muted small" style="margin:6px 0 0">Elige una variante y agrégala a tu carrito personal.</p></div>
+                    <a class="btn primary compact" href="#ticketTypes">Comprar ahora</a>
+                </div>
                 <table class="table-modern">
                     <thead><tr><th>Entrada</th><th>Precio</th><th>Disponibles</th><th>Acción</th></tr></thead>
                     <tbody>
@@ -78,7 +79,7 @@
                 </table>
             </section>
         </div>
-        <div class="market-actions" style="padding:0 30px 30px"><a class="btn secondary" th:href="@{/events}">Seguir explorando</a><a class="btn primary" th:if="${clientAccount}" th:href="@{/cart}">Ver mi carrito</a></div>
+        <div class="market-actions" style="padding:0 30px 30px"><a class="btn secondary" th:href="@{/events}">Seguir explorando</a><a class="btn primary" th:if="${ticketTypes != null && !ticketTypes.isEmpty()}" href="#ticketTypes">Comprar entradas</a><a class="btn primary" th:if="${clientAccount}" th:href="@{/cart}">Ver mi carrito</a></div>
     </section>
 </main>
 </body>
