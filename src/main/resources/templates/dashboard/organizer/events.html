@@ -8,80 +8,36 @@
     <link rel="stylesheet" th:href="@{/css/ui.css}">
     <link rel="stylesheet" th:href="@{/css/organizer.css}">
     <style>
-        .event-list { display:grid; gap:16px; }
-        .event-row-card { display:grid; grid-template-columns:150px 1fr auto; gap:18px; align-items:center; padding:16px; border:1px solid #e6e8f0; border-radius:16px; background:#fff; box-shadow:0 8px 20px rgba(19,25,55,.05); }
-        .event-row-card img { width:150px; height:112px; object-fit:cover; border-radius:12px; background:#f0f2f8; }
-        .event-row-card h3 { margin:0 0 7px; }
-        .event-meta { display:flex; flex-wrap:wrap; gap:14px; color:#667085; font-size:.9rem; margin:8px 0; }
-        .event-kpis { display:grid; grid-template-columns:repeat(3,minmax(90px,1fr)); gap:10px; border-top:1px solid #edf0f5; padding-top:10px; }
-        .event-kpi small { display:block; color:#768099; }
-        .event-kpi strong { display:block; margin-top:2px; }
-        .event-actions { display:flex; flex-direction:column; align-items:stretch; gap:9px; min-width:132px; }
-        .event-empty { padding:34px; text-align:center; border:1px dashed #d9dfeb; border-radius:14px; }
-        @media (max-width:800px) { .event-row-card { grid-template-columns:1fr; } .event-row-card img { width:100%; height:180px; } .event-actions { flex-direction:row; } .event-kpis { grid-template-columns:1fr 1fr; } }
+        .events-title-row{display:flex;justify-content:space-between;align-items:end;gap:18px;margin:20px 0}.events-title-row h2{margin:0}.event-count{font-size:.9rem;color:#68708a}.event-list{display:grid;gap:16px}.event-row-card{display:grid;grid-template-columns:128px minmax(0,1fr) 170px;gap:18px;align-items:stretch;padding:15px;border:1px solid #e6e8f0;border-radius:20px;background:#fff;box-shadow:0 12px 28px rgba(19,25,55,.06);transition:transform .18s ease,box-shadow .18s ease}.event-row-card:hover{transform:translateY(-2px);box-shadow:0 20px 40px rgba(19,25,55,.10)}.event-cover{width:128px;height:100%;min-height:132px;object-fit:cover;border-radius:14px;background:#edf0f7}.event-main{min-width:0}.event-topline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.event-title{margin:10px 0 3px;font-size:1.12rem}.event-summary{margin:0;color:#68708a;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.event-meta{display:flex;flex-wrap:wrap;gap:14px;color:#667085;font-size:.85rem;margin:12px 0}.event-meta span:before{content:'•';color:#6d5dfc;margin-right:6px}.event-kpis{display:grid;grid-template-columns:repeat(3,minmax(100px,1fr));gap:10px;border-top:1px solid #edf0f5;padding-top:12px}.event-kpi{padding-right:8px}.event-kpi small{display:block;color:#768099;font-size:.76rem}.event-kpi strong{display:block;margin-top:3px;color:#18224b}.event-actions{display:flex;flex-direction:column;justify-content:center;gap:9px;border-left:1px solid #edf0f5;padding-left:16px}.event-actions .btn{text-align:center}.event-empty{padding:42px;text-align:center;border:1px dashed #cfd5e4;border-radius:18px;background:#fff}.status-pending{background:#fff7e6;color:#b45309}.status-observed{background:#fff1e7;color:#c2410c}.status-approved{background:#eef2ff;color:#4338ca}.status-published{background:#ecfdf5;color:#047857}.status-rejected{background:#fef2f2;color:#b91c1c}.quick-note{padding:14px 16px;border-radius:14px;background:#f7f7ff;color:#565f7a;font-size:.87rem;border:1px solid #e3e0ff}@media(max-width:860px){.event-row-card{grid-template-columns:1fr}.event-cover{width:100%;height:190px}.event-actions{border-left:0;border-top:1px solid #edf0f5;padding:14px 0 0;display:grid;grid-template-columns:repeat(2,1fr)}.event-kpis{grid-template-columns:1fr 1fr}}@media(max-width:560px){.events-title-row{display:block}.event-kpis{grid-template-columns:1fr}.event-actions{grid-template-columns:1fr}.toolbar{align-items:stretch}.toolbar .btn{width:100%;text-align:center}}
     </style>
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/dashboard/organizer}">
-        <span class="logo">🎯</span>
-        <div><strong>Connectify</strong><small>Organizador</small></div>
-    </a>
-    <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a>
-        <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a>
-        <a class="btn primary compact" th:href="@{/dashboard/organizer/events/new}">Crear evento</a>
-    </nav>
+    <a class="brand brand-link" th:href="@{/dashboard/organizer}"><span class="logo">🎯</span><div><strong>Connectify</strong><small>Organizador</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a><a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a><a class="btn primary compact" th:href="@{/dashboard/organizer/events/new}">+ Crear evento</a></nav>
 </header>
 
 <main class="dashboard-page">
-    <section class="organizer-hero">
-        <p class="badge">Panel organizador</p>
-        <h1>Mis eventos</h1>
-        <p class="hero-text">Gestiona los eventos creados desde un listado visual. Entra al detalle para editar, eliminar, revisar entradas y solicitar apoyo al administrador o diseñador.</p>
-    </section>
+    <section class="organizer-hero"><p class="badge">Panel organizador</p><h1>Mis eventos</h1><p class="hero-text">Cada evento concentra su construcción, entradas, solicitudes y trazabilidad. Los cambios finales pasan por revisión administrativa.</p></section>
+    <section class="toolbar"><a class="btn primary" th:href="@{/dashboard/organizer/events/new}">+ Crear nueva propuesta</a><a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Ver métricas</a><a class="btn secondary" th:href="@{/events}">Explorar Marketplace</a></section>
+    <div th:if="${param.deleted != null}" class="alert success">Evento eliminado dentro de la ventana permitida. Se conservó la trazabilidad administrativa.</div>
 
-    <section class="toolbar">
-        <a class="btn primary" th:href="@{/dashboard/organizer/events/new}">Crear nuevo evento</a>
-        <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Ver métricas</a>
-        <a class="btn secondary" th:href="@{/events}">Previsualizar marketplace</a>
-    </section>
-
-    <div th:if="${param.deleted}" class="alert success">Evento eliminado dentro de la ventana permitida. Se conservó la trazabilidad administrativa.</div>
+    <div class="events-title-row"><div><h2>Listado de eventos</h2><p class="event-count" th:text="${events != null ? events.size() + ' evento(s) registrados' : '0 eventos registrados'}">0 eventos registrados</p></div><div class="quick-note">Crea entradas desde el detalle; no necesitas rehacer el evento para agregar nuevas variantes.</div></div>
 
     <section class="event-list" th:if="${events != null && !events.isEmpty()}">
         <article class="event-row-card" th:each="event : ${events}">
-            <img th:src="${event.imageUrl != null && !event.imageUrl.isBlank() ? event.imageUrl : '/images/event-placeholder.jpg'}" alt="Imagen del evento">
-            <div>
-                <div class="organizer-action-row">
-                    <span class="status-pill status-open" th:text="${event.status}">PENDING_REVIEW</span>
-                    <span class="badge" th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</span>
-                </div>
-                <h3 th:text="${event.title}">Nombre del evento</h3>
-                <div class="event-meta">
-                    <span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd/MM/yyyy HH:mm') : 'Fecha por definir'}">Fecha</span>
-                    <span th:text="${event.location + ' · ' + event.city}">Lugar</span>
-                </div>
-                <div class="event-kpis">
-                    <div class="event-kpi"><small>Entradas vendidas</small><strong th:text="${event.sold + ' / ' + event.capacity}">0 / 0</strong></div>
-                    <div class="event-kpi"><small>Ingreso estimado</small><strong th:text="${'S/ ' + (event.sold * event.price)}">S/ 0</strong></div>
-                    <div class="event-kpi"><small>Estado de revisión</small><strong th:text="${event.status}">PENDING_REVIEW</strong></div>
-                </div>
+            <img class="event-cover" th:src="${event.imageUrl != null && !event.imageUrl.isBlank() ? event.imageUrl : '/images/event-placeholder.jpg'}" alt="Imagen del evento">
+            <div class="event-main">
+                <div class="event-topline"><span class="status-pill" th:classappend="${event.status != null ? ' status-' + #strings.toLowerCase(event.status.name()) : ''}" th:text="${event.status != null ? event.status : 'SIN_ESTADO'}">PENDING_REVIEW</span><span class="badge" th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</span></div>
+                <h3 class="event-title" th:text="${event.title}">Nombre del evento</h3><p class="event-summary" th:text="${event.description}">Descripción del evento.</p>
+                <div class="event-meta"><span th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMM yyyy · HH:mm') : 'Fecha por definir'}">Fecha</span><span th:text="${(event.location != null ? event.location : 'Lugar por definir') + ' · ' + (event.city != null ? event.city : 'Ciudad')}">Lugar</span></div>
+                <div class="event-kpis"><div class="event-kpi"><small>Entradas vendidas</small><strong th:text="${(event.sold != null ? event.sold : 0) + ' / ' + (event.capacity != null ? event.capacity : 0)}">0 / 0</strong></div><div class="event-kpi"><small>Ingreso estimado</small><strong th:text="${'S/ ' + ((event.sold != null ? event.sold : 0) * (event.price != null ? event.price : 0))}">S/ 0</strong></div><div class="event-kpi"><small>Estado de revisión</small><strong th:text="${event.status != null ? event.status : 'SIN_ESTADO'}">PENDING_REVIEW</strong></div></div>
             </div>
-            <div class="event-actions">
-                <a class="btn primary compact" th:href="@{/dashboard/organizer/events/{id}(id=${event.id})}">Ver detalle</a>
-                <a class="btn secondary compact" th:href="@{/events/{id}(id=${event.id})}">Vista pública</a>
-            </div>
+            <div class="event-actions"><a class="btn primary compact" th:href="@{/dashboard/organizer/events/{id}(id=${event.id})}">Ver detalle</a><a class="btn secondary compact" th:href="@{/dashboard/organizer/events/{id}/ticket-types(id=${event.id})}">Gestionar entradas</a><a class="btn secondary compact" th:if="${event.status != null && event.status.name() == 'PUBLISHED'}" th:href="@{/events/{id}(id=${event.id})}">Ver en Marketplace</a></div>
         </article>
     </section>
 
-    <section class="event-empty" th:if="${events == null || events.isEmpty()}">
-        <h2>Aún no tienes eventos creados</h2>
-        <p class="muted">Crea tu primer evento para administrar fechas, entradas y solicitudes relacionadas.</p>
-        <a class="btn primary" th:href="@{/dashboard/organizer/events/new}">Crear evento</a>
-    </section>
-
-    <p class="cancel-note">El detalle de cada evento concentra las acciones operativas: editar, eliminar dentro de las 24 horas permitidas, gestionar entradas y crear solicitudes de apoyo.</p>
+    <section class="event-empty" th:if="${events == null || events.isEmpty()}"><h2>Aún no tienes eventos creados</h2><p class="muted">Crea tu primer evento, define sus variantes de entradas y envíalo a revisión.</p><a class="btn primary" th:href="@{/dashboard/organizer/events/new}">Crear evento</a></section>
 </main>
 </body>
 </html>
