@@ -33,12 +33,12 @@
         <a class="btn secondary" th:href="@{/dashboard/admin/events}">Volver</a>
     </section>
 
-    <div th:if="${param.observed}" class="alert success">Observación enviada.</div>
-    <div th:if="${param.approved}" class="alert success">Evento aprobado y bloqueado para nuevas ediciones.</div>
-    <div th:if="${param.rejected}" class="alert error">Propuesta rechazada.</div>
-    <div th:if="${param.published}" class="alert success">Evento publicado en marketplace.</div>
-    <div th:if="${param.unpublished}" class="alert success">Evento despublicado y mantenido como aprobado.</div>
-    <div th:if="${param.publishDenied || param.unpublishDenied || param.decisionDenied}" class="alert error">La acción no corresponde al estado actual.</div>
+    <div th:if="${param.observed != null}" class="alert success">Observación enviada.</div>
+    <div th:if="${param.approved != null}" class="alert success">Evento aprobado y bloqueado para nuevas ediciones.</div>
+    <div th:if="${param.rejected != null}" class="alert error">Propuesta rechazada.</div>
+    <div th:if="${param.published != null}" class="alert success">Evento publicado en marketplace.</div>
+    <div th:if="${param.unpublished != null}" class="alert success">Evento despublicado y mantenido como aprobado.</div>
+    <div th:if="${param.publishDenied != null || param.unpublishDenied != null || param.decisionDenied != null}" class="alert error">La acción no corresponde al estado actual.</div>
 
     <section class="checkout-layout">
         <section class="summary-card">
