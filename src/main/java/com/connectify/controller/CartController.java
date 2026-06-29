@@ -54,23 +54,18 @@ public class CartController {
                       @RequestParam(defaultValue = "1") int quantity,
                       @RequestParam(required = false) Long ticketTypeId,
                       HttpSession session) {
-        Event event = eventService.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
-        if (event.getStatus() != EventStatus.PUBLISHED) {
-            return "redirect:/events";
-        }
+        return addToCart(eventId, quantity, ticketTypeId, session);
+    }
 
-        TicketType ticketType = null;
-        if (ticketTypeId != null) {
-            ticketType = ticketTypeRepository.findById(ticketTypeId)
-                    .orElseThrow(() -> new IllegalArgumentException("Tipo de entrada no encontrado"));
-            if (!ticketType.isActive() || ticketType.getEvent() == null || !eventId.equals(ticketType.getEvent().getId())) {
-                return "redirect:/events/" + eventId;
-            }
-        }
-
-        cartService.addEvent(session, event, ticketType, quantity);
-        return "redirect:/cart";
+    /**
+     * Atajo de Marketplace para el prototipo: agrega una unidad de la variante elegida
+     * y lleva al carrito. El checkout sigue siendo la confirmación final de compra.
+     */
+    @GetMapping("/quick-add/{eventId}")
+    public String quickAdd(@PathVariable Long eventId,
+                           @RequestParam Long ticketTypeId,
+                           HttpSession session) {
+        return addToCart(eventId, 1, ticketTypeId, session);
     }
 
     @PostMapping("/remove/{eventId}")
@@ -131,6 +126,25 @@ public class CartController {
         }
         model.addAttribute("purchase", purchase);
         return "cart/confirmation";
+    }
+
+    private String addToCart(Long eventId, int quantity, Long ticketTypeId, HttpSession session) {
+        Event event = eventService.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            return "redirect:/events";
+        }
+
+        TicketType ticketType = null;
+        if (ticketTypeId != null) {
+            ticketType = ticketTypeRepository.findById(ticketTypeId)
+                    .orElseThrow(() -> new IllegalArgumentException("Tipo de entrada no encontrado"));
+            if (!ticketType.isActive() || ticketType.getEvent() == null || !eventId.equals(ticketType.getEvent().getId())) {
+                return "redirect:/events/" + eventId;
+            }
+        }
+        cartService.addEvent(session, event, ticketType, Math.max(1, quantity));
+        return "redirect:/cart";
     }
 
     private UserAccount currentAccount(Authentication authentication) {
