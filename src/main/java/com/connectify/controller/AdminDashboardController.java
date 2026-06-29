@@ -20,13 +20,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/dashboard/admin/events")
 public class AdminDashboardController {
+
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final EventRepository eventRepository;
     private final TicketTypeRepository ticketTypeRepository;
@@ -45,10 +49,24 @@ public class AdminDashboardController {
     public String detail(@PathVariable Long id, Model model) {
         Event event = findEvent(id);
         List<EventAdminRecord> records = safeRecords(id);
-        model.addAttribute("event", event);
-        model.addAttribute("ticketTypes", safeTicketTypes(id));
-        model.addAttribute("records", records);
-        model.addAttribute("changeRecords", records.stream().filter(this::isChangeRecord).toList());
+        model.addAttribute("eventId", event.getId());
+        model.addAttribute("eventTitle", text(event.getTitle(), "Evento sin título"));
+        model.addAttribute("eventDescription", text(event.getDescription(), "Sin descripción registrada."));
+        model.addAttribute("eventStatus", event.getStatus() == null ? "SIN_ESTADO" : event.getStatus().name());
+        model.addAttribute("eventCategory", safeCategory(event));
+        model.addAttribute("eventDate", formatDate(event.getEventDate()));
+        model.addAttribute("eventLocation", text(event.getLocation(), "Sin ubicación"));
+        model.addAttribute("eventCity", text(event.getCity(), "Sin ciudad"));
+        model.addAttribute("eventCapacity", number(event.getCapacity()));
+        model.addAttribute("organizerName", text(event.getOrganizerName(), "Organizador registrado"));
+        model.addAttribute("organizerEmail", text(event.getOrganizerEmail(), "Cuenta no registrada"));
+        model.addAttribute("ticketLines", ticketLines(id));
+        model.addAttribute("recordLines", recordLines(records));
+        model.addAttribute("changeLines", changeLines(records));
+        model.addAttribute("isReviewable", reviewable(event));
+        model.addAttribute("isApproved", event.getStatus() == EventStatus.APPROVED);
+        model.addAttribute("isPublished", event.getStatus() == EventStatus.PUBLISHED);
+        model.addAttribute("isRejected", event.getStatus() == EventStatus.REJECTED);
         return "dashboard/admin/event-detail";
     }
 
@@ -132,27 +150,46 @@ public class AdminDashboardController {
     }
 
     private List<EventAdminRecord> safeRecords(Long id) {
-        try {
-            return recordRepository.findByEventIdOrderByCreatedAtDesc(id);
-        } catch (RuntimeException ex) {
-            return new ArrayList<>();
-        }
+        try { return recordRepository.findByEventIdOrderByCreatedAtDesc(id); }
+        catch (RuntimeException ex) { return new ArrayList<>(); }
     }
 
     private List<TicketType> safeTicketTypes(Long id) {
-        try {
-            return ticketTypeRepository.findByEventIdOrderByPriceAsc(id);
-        } catch (RuntimeException ex) {
-            return new ArrayList<>();
-        }
+        try { return ticketTypeRepository.findByEventIdOrderByPriceAsc(id); }
+        catch (RuntimeException ex) { return new ArrayList<>(); }
     }
 
     private List<TicketType> safeActiveTicketTypes(Long id) {
-        try {
-            return ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id);
-        } catch (RuntimeException ex) {
-            return new ArrayList<>();
+        try { return ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id); }
+        catch (RuntimeException ex) { return new ArrayList<>(); }
+    }
+
+    private List<String> ticketLines(Long id) {
+        List<String> lines = new ArrayList<>();
+        for (TicketType ticket : safeTicketTypes(id)) {
+            if (ticket == null) continue;
+            lines.add(text(ticket.getName(), "Entrada") + " | S/ " + money(ticket.getPrice()) + " | Cantidad: " + number(ticket.getQuantityAvailable()) + " | Vendidas: " + number(ticket.getQuantitySold()) + " | Disponibles: " + number(ticket.getRemaining()));
         }
+        return lines;
+    }
+
+    private List<String> recordLines(List<EventAdminRecord> records) {
+        List<String> lines = new ArrayList<>();
+        for (EventAdminRecord record : records) {
+            if (record == null) continue;
+            lines.add(formatDate(record.getCreatedAt()) + " — " + text(record.getDescription(), "Registro sin descripción"));
+        }
+        return lines;
+    }
+
+    private List<String> changeLines(List<EventAdminRecord> records) {
+        List<String> lines = new ArrayList<>();
+        for (EventAdminRecord record : records) {
+            if (isChangeRecord(record)) {
+                lines.add(formatDate(record.getCreatedAt()) + " — " + text(record.getDescription(), "Cambio sin descripción"));
+            }
+        }
+        return lines;
     }
 
     private boolean isChangeRecord(EventAdminRecord record) {
@@ -163,6 +200,15 @@ public class AdminDashboardController {
         );
     }
 
+    private String safeCategory(Event event) {
+        try { return event.getCategory() == null ? "Sin categoría" : text(event.getCategory().getName(), "Sin categoría"); }
+        catch (RuntimeException ex) { return "Sin categoría"; }
+    }
+
+    private String formatDate(LocalDateTime date) { return date == null ? "Sin fecha" : DATE_FORMAT.format(date); }
+    private String text(String value, String fallback) { return value == null || value.isBlank() ? fallback : value; }
+    private String number(Integer value) { return String.valueOf(value == null ? 0 : value); }
+    private String money(BigDecimal value) { return value == null ? "0.00" : value.toPlainString(); }
     private boolean reviewable(Event event) { return event.getStatus() == EventStatus.PENDING_REVIEW || event.getStatus() == EventStatus.OBSERVED; }
     private String denied(Long id) { return "redirect:/dashboard/admin/events/" + id + "?decisionDenied=true"; }
     private Event findEvent(Long id) { return eventRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Evento no encontrado")); }
