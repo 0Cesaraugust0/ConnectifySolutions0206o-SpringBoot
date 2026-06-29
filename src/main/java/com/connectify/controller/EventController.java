@@ -1,6 +1,7 @@
 package com.connectify.controller;
 
 import com.connectify.entity.Event;
+import com.connectify.entity.EventPresentationSettings;
 import com.connectify.entity.EventStatus;
 import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.TicketTypeRepository;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/events")
@@ -35,7 +41,16 @@ public class EventController {
                        @RequestParam(required = false) String city,
                        @RequestParam(required = false) String category,
                        Model model) {
-        model.addAttribute("events", eventService.findPublished(q, city, category));
+        List<Event> events = eventService.findPublished(q, city, category);
+        List<Long> eventIds = events.stream().map(Event::getId).toList();
+        Map<Long, EventPresentationSettings> presentationByEventId = eventIds.isEmpty()
+                ? Map.of()
+                : presentationSettingsRepository.findByEventIdIn(eventIds).stream()
+                .filter(setting -> setting.getEvent() != null && setting.getEvent().getId() != null)
+                .collect(Collectors.toMap(setting -> setting.getEvent().getId(), Function.identity(), (first, ignored) -> first));
+
+        model.addAttribute("events", events);
+        model.addAttribute("presentationByEventId", presentationByEventId);
         model.addAttribute("q", q);
         model.addAttribute("city", city);
         model.addAttribute("category", category);
@@ -49,10 +64,22 @@ public class EventController {
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no disponible en marketplace");
         }
-        model.addAttribute("event", event);
-        model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(id));
-        model.addAttribute("presentation", presentationSettingsRepository.findByEventId(id).orElse(null));
+        EventPresentationSettings presentation = presentationSettingsRepository.findByEventId(id).orElse(null);
+        addDetailModel(event, presentation, model);
         model.addAttribute("previewMode", false);
         return "events/detail";
+    }
+
+    private void addDetailModel(Event event, EventPresentationSettings presentation, Model model) {
+        model.addAttribute("event", event);
+        model.addAttribute("ticketTypes", ticketTypeRepository.findByEventIdAndActiveTrueOrderByPriceAsc(event.getId()));
+        model.addAttribute("presentation", presentation);
+        model.addAttribute("coverImageUrl", firstText(presentation == null ? null : presentation.getCoverImageUrl(), event.getImageUrl()));
+        model.addAttribute("thumbnailImageUrl", firstText(presentation == null ? null : presentation.getThumbnailImageUrl(), event.getImageUrl()));
+    }
+
+    private String firstText(String preferred, String fallback) {
+        if (preferred != null && !preferred.isBlank()) return preferred;
+        return fallback == null ? "" : fallback;
     }
 }
