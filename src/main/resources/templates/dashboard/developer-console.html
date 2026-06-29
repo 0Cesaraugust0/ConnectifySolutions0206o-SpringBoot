@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Developer - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/developer}"><span class="logo">🧰</span><div><strong>Connectify</strong><small>Developer</small></div></a>
+    <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
+</header>
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Acceso técnico</p>
+        <h1 th:text="${title}">Panel Developer</h1>
+        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Este rol es técnico: consulta el sistema y sus prototipos, pero no opera ventas, carrito, tickets ni procesos de otros equipos.</p>
+    </section>
+    <section class="dashboard-grid">
+        <a class="module-card" th:href="@{/events}"><span>🔍</span><h3>Ver Marketplace</h3><p>Consultar la experiencia pública sin iniciar compras.</p></a>
+        <a class="module-card" th:href="@{/prototype}"><span>🧪</span><h3>Prototipos</h3><p>Revisar pantallas de referencia y validar interfaz.</p></a>
+        <a class="module-card" th:href="@{/communications}"><span>💬</span><h3>Comunicaciones</h3><p>Revisar mensajes internos como apoyo técnico.</p></a>
+        <div class="module-card"><span>🔐</span><h3>Separación de roles</h3><p>Cliente, Admin, Organizador, Diseñador y Puerta usan sus propias cuentas y permisos.</p></div>
+    </section>
+</main>
+</body>
+</html>
