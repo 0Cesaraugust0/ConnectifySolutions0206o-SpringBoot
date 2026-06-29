@@ -23,7 +23,7 @@ import java.util.Set;
 @RequestMapping("/dashboard/developer/accounts")
 public class DeveloperAccountController {
 
-    private static final Set<Role> MANAGED_ROLES = Set.of(Role.ADMIN, Role.DESIGNER, Role.GATE_AGENT);
+    private static final Set<Role> MANAGED_ROLES = Set.of(Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.GATE_AGENT);
 
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
@@ -83,7 +83,7 @@ public class DeveloperAccountController {
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada."));
 
         if (!MANAGED_ROLES.contains(account.getRole())) {
-            throw new AccessDeniedException("Solo se pueden eliminar cuentas de Administrador, Diseñador o Auxiliar.");
+            throw new AccessDeniedException("Solo se pueden eliminar cuentas operativas.");
         }
         if (authentication != null && account.getEmail().equalsIgnoreCase(authentication.getName())) {
             throw new AccessDeniedException("No puedes eliminar la cuenta con la que iniciaste sesión.");
@@ -123,7 +123,7 @@ public class DeveloperAccountController {
         if (!dni.matches("\\d{8}")) return "El DNI debe contener exactamente 8 dígitos.";
         if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) return "Ingresa un correo válido.";
         if (password == null || password.length() < 8) return "La contraseña debe tener al menos 8 caracteres.";
-        if (role == null || !MANAGED_ROLES.contains(role)) return "Selecciona Administrador, Diseñador o Auxiliar de Puerta.";
+        if (role == null || !MANAGED_ROLES.contains(role)) return "Selecciona un rol operativo válido.";
         return null;
     }
 
