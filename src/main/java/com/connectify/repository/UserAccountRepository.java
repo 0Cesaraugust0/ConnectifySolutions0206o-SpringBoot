@@ -1,5 +1,6 @@
 package com.connectify.repository;
 
+import com.connectify.entity.Role;
 import com.connectify.entity.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,5 +10,11 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     Optional<UserAccount> findByEmail(String email);
 
+    Optional<UserAccount> findByEmailIgnoreCase(String email);
+
     boolean existsByEmail(String email);
+
+    boolean existsByEmailIgnoreCase(String email);
+
+    boolean existsByRole(Role role);
 }
