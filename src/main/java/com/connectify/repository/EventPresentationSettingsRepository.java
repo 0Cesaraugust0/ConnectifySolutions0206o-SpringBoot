@@ -1,0 +1,10 @@
+package com.connectify.repository;
+
+import com.connectify.entity.EventPresentationSettings;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface EventPresentationSettingsRepository extends JpaRepository<EventPresentationSettings, Long> {
+    Optional<EventPresentationSettings> findByEventId(Long eventId);
+}
