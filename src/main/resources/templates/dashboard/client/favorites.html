@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos seleccionados - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-account.css}">
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo">🎫</span><div><strong>Connectify</strong><small>Marketplace</small></div></a>
+    <nav class="top-actions">
+        <a class="nav-link" th:href="@{/events}">Eventos</a>
+        <a class="nav-link" th:href="@{/events} + '#featured'">Destacados</a>
+        <div class="market-account-cluster">
+            <a class="account-name-control" th:href="@{/dashboard/client}" title="Mi cuenta Cliente"><span class="windows-person-icon" aria-hidden="true"></span><strong th:text="${firstName}">Cliente</strong></a>
+            <a class="market-icon-control" th:href="@{/cart}" aria-label="Mi carrito" title="Mi carrito">🛒</a>
+            <a class="market-icon-control heart-control" th:href="@{/dashboard/client/favorites}" aria-label="Eventos seleccionados" title="Eventos seleccionados">♥<span class="market-icon-badge" th:if="${favoriteCount > 0}" th:text="${favoriteCount}">0</span></a>
+        </div>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Mi lista personal</p>
+        <h1>Eventos seleccionados</h1>
+        <p class="muted">Guarda los eventos que te interesan para revisarlos más tarde desde tu cuenta <strong th:text="${email}">cliente</strong>.</p>
+    </section>
+
+    <section class="favorites-page-grid" th:if="${favorites != null && !favorites.isEmpty()}">
+        <article class="favorite-event-card" th:each="favorite : ${favorites}">
+            <p class="badge" th:text="${favorite.event.category != null ? favorite.event.category.name : 'Evento'}">Evento</p>
+            <h3 th:text="${favorite.event.title}">Evento</h3>
+            <p th:text="${favorite.event.eventDate != null ? #temporals.format(favorite.event.eventDate, 'dd/MM/yyyy HH:mm') : 'Fecha por definir'}">Fecha</p>
+            <p th:text="${favorite.event.city != null ? favorite.event.city : 'Ciudad por definir'}">Ciudad</p>
+            <div class="favorite-event-actions">
+                <a class="btn primary compact" th:href="@{/events/{id}(id=${favorite.event.id})}">Ver evento</a>
+                <form th:action="@{/dashboard/client/favorites/toggle/{id}(id=${favorite.event.id})}" method="post"><input type="hidden" name="redirectTo" value="/dashboard/client/favorites"><button class="btn secondary compact" type="submit">Quitar</button></form>
+            </div>
+        </article>
+    </section>
+
+    <section class="empty-state" th:if="${favorites == null || favorites.isEmpty()}">
+        <h2>Aún no has seleccionado eventos</h2>
+        <p class="muted">Usa el corazón en una tarjeta o en el detalle de un evento para guardarlo aquí.</p>
+        <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
+    </section>
+</main>
+</body>
+</html>
