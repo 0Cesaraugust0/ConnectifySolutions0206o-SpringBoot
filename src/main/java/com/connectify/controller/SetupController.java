@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Locale;
+
 @Controller
 public class SetupController {
 
@@ -23,7 +25,7 @@ public class SetupController {
 
     @GetMapping("/setup")
     public String setup() {
-        if (userAccountRepository.count() > 0) {
+        if (userAccountRepository.existsByRole(Role.DEVELOPER)) {
             return "redirect:/login?setupExists";
         }
         return "setup/index";
@@ -34,22 +36,35 @@ public class SetupController {
                                     @RequestParam String email,
                                     @RequestParam String password,
                                     Model model) {
-        if (userAccountRepository.count() > 0) {
+        if (userAccountRepository.existsByRole(Role.DEVELOPER)) {
             return "redirect:/login?setupExists";
         }
 
-        if (password == null || password.length() < 6) {
-            model.addAttribute("error", "La contraseña debe tener al menos 6 caracteres.");
+        String normalizedName = fullName == null ? "" : fullName.trim();
+        String normalizedEmail = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
+        if (normalizedName.length() < 3) {
+            model.addAttribute("error", "Escribe el nombre de la cuenta técnica.");
+            return "setup/index";
+        }
+        if (!normalizedEmail.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            model.addAttribute("error", "Ingresa un correo válido.");
+            return "setup/index";
+        }
+        if (password == null || password.length() < 8) {
+            model.addAttribute("error", "La contraseña debe tener al menos 8 caracteres.");
+            return "setup/index";
+        }
+        if (userAccountRepository.existsByEmailIgnoreCase(normalizedEmail)) {
+            model.addAttribute("error", "Ese correo ya está asociado a una cuenta.");
             return "setup/index";
         }
 
         UserAccount account = new UserAccount();
-        account.setFullName(fullName);
-        account.setEmail(email);
+        account.setFullName(normalizedName);
+        account.setEmail(normalizedEmail);
         account.setCredentialHash(passwordEncoder.encode(password));
         account.setRole(Role.DEVELOPER);
         account.setActive(true);
-
         userAccountRepository.save(account);
 
         return "redirect:/login?setupSuccess";
