@@ -7,6 +7,7 @@ import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.TicketTypeRepository;
 import com.connectify.service.EventService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +41,8 @@ public class EventController {
     public String list(@RequestParam(required = false) String q,
                        @RequestParam(required = false) String city,
                        @RequestParam(required = false) String category,
-                       Model model) {
+                       Model model,
+                       Authentication authentication) {
         List<Event> events = eventService.findPublished(q, city, category);
         List<Long> eventIds = events.stream().map(Event::getId).toList();
         Map<Long, EventPresentationSettings> presentationByEventId = eventIds.isEmpty()
@@ -54,11 +56,12 @@ public class EventController {
         model.addAttribute("q", q);
         model.addAttribute("city", city);
         model.addAttribute("category", category);
+        addAccountNavigation(model, authentication);
         return "events/list";
     }
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
+    public String detail(@PathVariable Long id, Model model, Authentication authentication) {
         Event event = eventService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado"));
         if (event.getStatus() != EventStatus.PUBLISHED) {
@@ -67,6 +70,7 @@ public class EventController {
         EventPresentationSettings presentation = presentationSettingsRepository.findByEventId(id).orElse(null);
         addDetailModel(event, presentation, model);
         model.addAttribute("previewMode", false);
+        addAccountNavigation(model, authentication);
         return "events/detail";
     }
 
@@ -77,6 +81,16 @@ public class EventController {
         model.addAttribute("coverImageUrl", firstText(presentation == null ? null : presentation.getCoverImageUrl(), event.getImageUrl()));
         model.addAttribute("thumbnailImageUrl", firstText(presentation == null ? null : presentation.getThumbnailImageUrl(), event.getImageUrl()));
         model.addAttribute("presentationStyle", styleFor(presentation));
+    }
+
+    private void addAccountNavigation(Model model, Authentication authentication) {
+        boolean signedIn = authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName());
+        boolean clientAccount = signedIn && authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_CLIENT".equals(authority.getAuthority()));
+        model.addAttribute("signedIn", signedIn);
+        model.addAttribute("clientAccount", clientAccount);
+        model.addAttribute("accountEmail", signedIn ? authentication.getName() : "");
     }
 
     private String firstText(String preferred, String fallback) {
