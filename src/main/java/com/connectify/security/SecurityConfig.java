@@ -14,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,31 +32,34 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public DaoAuthenticationProvider databaseAuthenticationProvider(DatabaseUserDetailsService userDetailsService,
+                                                                     PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   DaoAuthenticationProvider databaseAuthenticationProvider) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .authenticationProvider(databaseAuthenticationProvider)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/login", "/setup", "/prototype",
-                                "/events",
-                                "/cart", "/cart/checkout",
-                                "/tickets/validate", "/tickets/validate/open", "/tickets/validate/consult", "/tickets/gate",
-                                "/communications", "/communications/new", "/communications/sent",
+                                "/", "/login", "/register", "/setup", "/prototype",
+                                "/events", "/events/**",
                                 "/css/**", "/js/**", "/images/**"
                         ).permitAll()
-                        .requestMatchers("/prototype/*").permitAll()
-                        .requestMatchers("/prototype/organizer/events", "/prototype/organizer/events/new", "/prototype/organizer/events/metrics").permitAll()
-                        .requestMatchers("/prototype/organizer/events/*/ticket-types", "/prototype/organizer/events/*/cancel").permitAll()
-                        .requestMatchers("/events/*").permitAll()
-                        .requestMatchers("/cart/add/*", "/cart/remove/*", "/cart/clear", "/cart/confirmation/*").permitAll()
-                        .requestMatchers("/communications/*", "/communications/*/status").permitAll()
-                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "DEVELOPER")
+                        .requestMatchers("/prototype/**").permitAll()
                         .requestMatchers("/dashboard/developer/**").hasRole("DEVELOPER")
-                        .requestMatchers("/dashboard/admin/**").hasAnyRole("ADMIN", "DEVELOPER")
-                        .requestMatchers("/dashboard/organizer/**").hasAnyRole("ORGANIZER", "DEVELOPER")
-                        .requestMatchers("/dashboard/client/**").hasAnyRole("CLIENT", "DEVELOPER")
-                        .requestMatchers("/dashboard/designer/**").hasAnyRole("DESIGNER", "DEVELOPER")
-                        .requestMatchers("/dashboard/gate-agent/**").hasAnyRole("GATE_AGENT", "ORGANIZER", "ADMIN", "DEVELOPER")
+                        .requestMatchers("/dashboard/admin/**", "/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/dashboard/organizer/**").hasRole("ORGANIZER")
+                        .requestMatchers("/dashboard/client/**", "/cart/**").hasRole("CLIENT")
+                        .requestMatchers("/dashboard/designer/**").hasRole("DESIGNER")
+                        .requestMatchers("/dashboard/gate-agent/**", "/tickets/validate/**", "/tickets/gate").hasRole("GATE_AGENT")
+                        .requestMatchers("/communications/**").authenticated()
                         .requestMatchers("/dashboard/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -63,7 +67,7 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/dashboard", true)
+                        .defaultSuccessUrl("/dashboard", false)
                         .failureUrl("/login?error")
                         .permitAll()
                 )
