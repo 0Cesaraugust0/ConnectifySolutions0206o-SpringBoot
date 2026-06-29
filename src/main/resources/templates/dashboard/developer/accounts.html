@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de cuentas - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/developer-accounts.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/developer}"><span class="logo">🧰</span><div><strong>Connectify</strong><small>Developer</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/dashboard/developer}">Volver al panel</a><form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form></nav>
+</header>
+
+<main class="dashboard-page developer-accounts-page">
+    <section class="accounts-hero">
+        <div>
+            <p class="badge">Provisionamiento técnico</p>
+            <h1>Gestión de cuentas operativas</h1>
+            <p class="muted">Crea y elimina accesos para Administración, Diseño y Auxiliar de Puerta. Las cuentas Cliente y Developer no se administran desde este módulo.</p>
+        </div>
+        <div class="developer-identity"><span>🧰</span><span>Sesión Developer:</span><strong th:text="${developerEmail}">developer@connectify.local</strong></div>
+    </section>
+
+    <div th:if="${param.created != null}" class="alert success">Cuenta operativa creada correctamente.</div>
+    <div th:if="${param.deleted != null}" class="alert success">Cuenta operativa eliminada correctamente.</div>
+    <div th:if="${error != null}" class="alert error" th:text="${error}">Error</div>
+
+    <section class="accounts-console-layout">
+        <section class="accounts-panel">
+            <div class="accounts-panel-head"><div><h2>Crear cuenta</h2><p>Los permisos se asignan desde el selector. La contraseña se guarda cifrada.</p></div><span class="accounts-panel-icon">＋</span></div>
+            <form class="account-form" th:action="@{/dashboard/developer/accounts}" method="post">
+                <div class="account-form-grid">
+                    <label>Nombres<input name="firstName" type="text" th:value="${firstName}" autocomplete="given-name" placeholder="María Elena" required></label>
+                    <label>Apellidos<input name="lastName" type="text" th:value="${lastName}" autocomplete="family-name" placeholder="García Flores" required></label>
+                </div>
+                <label>DNI<input name="dni" type="text" inputmode="numeric" pattern="\d{8}" maxlength="8" th:value="${dni}" placeholder="12345678" required></label>
+                <label>Correo institucional<input name="email" type="email" th:value="${email}" autocomplete="email" placeholder="persona@connectify.local" required></label>
+                <label>Contraseña temporal<input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required></label>
+                <div class="role-selector">
+                    <label>Permiso operativo
+                        <select name="role" required>
+                            <option value="ADMIN" th:selected="${selectedRole.name() == 'ADMIN'}">Administrador — revisión, aprobación y publicación</option>
+                            <option value="DESIGNER" th:selected="${selectedRole.name() == 'DESIGNER'}">Diseñador — estudio visual y propuesta de Marketplace</option>
+                            <option value="GATE_AGENT" th:selected="${selectedRole.name() == 'GATE_AGENT'}">Auxiliar de Puerta — validación de tickets QR</option>
+                        </select>
+                    </label>
+                </div>
+                <p class="account-form-note">No se habilitan permisos de Developer, Cliente u Organizador desde aquí. Así se conserva la separación entre acceso técnico, cuentas públicas y roles operativos.</p>
+                <button class="btn primary full" type="submit">Crear cuenta operativa</button>
+            </form>
+        </section>
+
+        <section class="accounts-panel">
+            <div class="accounts-panel-head">
+                <div><h2>Cuentas creadas</h2><p>Accesos administrables desde el rol Developer.</p></div>
+                <div class="accounts-list-tools"><span class="accounts-count" th:text="${accountCount}">0</span></div>
+            </div>
+            <div class="accounts-table-wrap" th:if="${accounts != null && !accounts.isEmpty()}">
+                <table class="accounts-table">
+                    <thead><tr><th>Cuenta</th><th>DNI</th><th>Permiso</th><th>Estado</th><th>Acción</th></tr></thead>
+                    <tbody>
+                    <tr th:each="account : ${accounts}">
+                        <td>
+                            <div class="account-person"><span class="account-avatar" th:text="${#strings.substring(account.fullName, 0, 1)}">A</span><div><strong th:text="${account.fullName}">Nombre</strong><small th:text="${account.email}">correo</small></div></div>
+                        </td>
+                        <td th:text="${account.dni}">12345678</td>
+                        <td>
+                            <span class="role-badge" th:attr="data-role=${account.role.name()}" th:switch="${account.role.name()}">
+                                <span th:case="'ADMIN'">Administrador</span><span th:case="'DESIGNER'">Diseñador</span><span th:case="'GATE_AGENT'">Auxiliar de Puerta</span><span th:case="*" th:text="${account.role}">Rol</span>
+                            </span>
+                        </td>
+                        <td th:text="${account.active} ? 'Activa' : 'Inactiva'">Activa</td>
+                        <td><form th:action="@{/dashboard/developer/accounts/{id}/delete(id=${account.id})}" method="post" onsubmit="return confirm('¿Eliminar esta cuenta operativa? Esta acción no se puede deshacer.');"><button class="danger-delete" type="submit">Eliminar</button></form></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="accounts-empty" th:if="${accounts == null || accounts.isEmpty()}"><strong>Aún no hay cuentas operativas.</strong><p>Usa el formulario para crear Administradores, Diseñadores o Auxiliares de Puerta.</p></div>
+        </section>
+    </section>
+
+    <section class="accounts-policy">
+        <article><span>🛡️</span><strong>Administrador</strong><small>Revisa propuestas, observa, aprueba y publica eventos en Marketplace.</small></article>
+        <article><span>🎨</span><strong>Diseñador</strong><small>Trabaja plantillas, colores, portada y composición de la propuesta visual.</small></article>
+        <article><span>📲</span><strong>Auxiliar de Puerta</strong><small>Valida tickets QR en el acceso, sin modificar compras ni contenido del evento.</small></article>
+    </section>
+</main>
+</body>
+</html>
