@@ -19,7 +19,7 @@
         <div>
             <p class="badge">Provisionamiento técnico</p>
             <h1>Gestión de cuentas operativas</h1>
-            <p class="muted">Crea y elimina accesos para Administración, Diseño y Auxiliar de Puerta. Las cuentas Cliente y Developer no se administran desde este módulo.</p>
+            <p class="muted">Crea y administra accesos para Administrador, Organizador, Diseñador y Auxiliar de Puerta. Las cuentas Cliente se registran desde el flujo público y las cuentas Developer se mantienen separadas.</p>
         </div>
         <div class="developer-identity"><span>🧰</span><span>Sesión Developer:</span><strong th:text="${developerEmail}">developer@connectify.local</strong></div>
     </section>
@@ -43,12 +43,13 @@
                     <label>Permiso operativo
                         <select name="role" required>
                             <option value="ADMIN" th:selected="${selectedRole.name() == 'ADMIN'}">Administrador — revisión, aprobación y publicación</option>
+                            <option value="ORGANIZER" th:selected="${selectedRole.name() == 'ORGANIZER'}">Organizador — creación de eventos y entradas</option>
                             <option value="DESIGNER" th:selected="${selectedRole.name() == 'DESIGNER'}">Diseñador — estudio visual y propuesta de Marketplace</option>
                             <option value="GATE_AGENT" th:selected="${selectedRole.name() == 'GATE_AGENT'}">Auxiliar de Puerta — validación de tickets QR</option>
                         </select>
                     </label>
                 </div>
-                <p class="account-form-note">No se habilitan permisos de Developer, Cliente u Organizador desde aquí. Así se conserva la separación entre acceso técnico, cuentas públicas y roles operativos.</p>
+                <p class="account-form-note">El Developer administra accesos operativos. Cliente mantiene su registro público y Developer no se crea desde este formulario.</p>
                 <button class="btn primary full" type="submit">Crear cuenta operativa</button>
             </form>
         </section>
@@ -69,7 +70,7 @@
                         <td th:text="${account.dni}">12345678</td>
                         <td>
                             <span class="role-badge" th:attr="data-role=${account.role.name()}" th:switch="${account.role.name()}">
-                                <span th:case="'ADMIN'">Administrador</span><span th:case="'DESIGNER'">Diseñador</span><span th:case="'GATE_AGENT'">Auxiliar de Puerta</span><span th:case="*" th:text="${account.role}">Rol</span>
+                                <span th:case="'ADMIN'">Administrador</span><span th:case="'ORGANIZER'">Organizador</span><span th:case="'DESIGNER'">Diseñador</span><span th:case="'GATE_AGENT'">Auxiliar de Puerta</span><span th:case="*" th:text="${account.role}">Rol</span>
                             </span>
                         </td>
                         <td th:text="${account.active} ? 'Activa' : 'Inactiva'">Activa</td>
@@ -78,12 +79,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="accounts-empty" th:if="${accounts == null || accounts.isEmpty()}"><strong>Aún no hay cuentas operativas.</strong><p>Usa el formulario para crear Administradores, Diseñadores o Auxiliares de Puerta.</p></div>
+            <div class="accounts-empty" th:if="${accounts == null || accounts.isEmpty()}"><strong>Aún no hay cuentas operativas.</strong><p>Usa el formulario para crear Administradores, Organizadores, Diseñadores o Auxiliares de Puerta.</p></div>
         </section>
     </section>
 
     <section class="accounts-policy">
         <article><span>🛡️</span><strong>Administrador</strong><small>Revisa propuestas, observa, aprueba y publica eventos en Marketplace.</small></article>
+        <article><span>🎯</span><strong>Organizador</strong><small>Crea eventos, define entradas y consulta la operación de sus publicaciones.</small></article>
         <article><span>🎨</span><strong>Diseñador</strong><small>Trabaja plantillas, colores, portada y composición de la propuesta visual.</small></article>
         <article><span>📲</span><strong>Auxiliar de Puerta</strong><small>Valida tickets QR en el acceso, sin modificar compras ni contenido del evento.</small></article>
     </section>
