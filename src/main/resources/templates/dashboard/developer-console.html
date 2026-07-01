@@ -14,16 +14,16 @@
 </header>
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge">Acceso técnico</p>
+        <p class="badge">Gobierno técnico</p>
         <h1 th:text="${title}">Panel Developer</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Este rol administra cuentas operativas y valida la aplicación; no opera ventas, carrito ni tickets de Cliente.</p>
+        <p class="muted">Sesión activa: <strong th:text="${email}">developer</strong>. Este perfil administra accesos, permisos y validación técnica; no opera ventas, carrito ni buzones de otros roles.</p>
     </section>
     <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/dashboard/developer/accounts}"><span>👥</span><h3>Gestión de cuentas</h3><p>Crear o eliminar accesos operativos, incluido el Organizador de referencia.</p><strong>Administrar cuentas →</strong></a>
-        <a class="module-card" th:href="@{/events}"><span>🔍</span><h3>Ver Marketplace</h3><p>Consultar la experiencia pública sin iniciar compras.</p></a>
-        <a class="module-card" th:href="@{/prototype}"><span>🧪</span><h3>Prototipos</h3><p>Revisar pantallas de referencia y validar interfaz.</p></a>
-        <a class="module-card" th:href="@{/communications}"><span>💬</span><h3>Comunicaciones</h3><p>Revisar mensajes internos como apoyo técnico.</p></a>
-        <div class="module-card"><span>🔐</span><h3>Separación de roles</h3><p>Cliente, Admin, Organizador, Diseñador y Puerta usan sus propias cuentas y permisos.</p></div>
+        <a class="module-card" th:href="@{/dashboard/developer/accounts}"><span>👥</span><h3>Cuentas y permisos</h3><p>Crear y administrar accesos operativos: Administrador, Organizador, Diseñador y Auxiliar de Puerta.</p><strong>Administrar cuentas →</strong></a>
+        <a class="module-card" th:href="@{/events}"><span>🧭</span><h3>Vista pública del Marketplace</h3><p>Revisar cómo ven los clientes los eventos publicados, sin simular compras ni intervenir el checkout.</p><strong>Ver eventos →</strong></a>
+        <a class="module-card" th:href="@{/prototype}"><span>🧪</span><h3>Prototipos e interfaz</h3><p>Comparar pantallas de referencia, validar diseño visual y apoyar mejoras de experiencia.</p><strong>Revisar prototipos →</strong></a>
+        <div class="module-card"><span>🔐</span><h3>Separación de roles</h3><p>Cliente, Organizador, Administrador, Diseñador y Puerta trabajan desde cuentas propias y permisos aislados.</p></div>
+        <div class="module-card"><span>🧩</span><h3>Mapa operativo simple</h3><p>Flujo base: crear evento, revisar, publicar, vender entradas y validar QR en puerta.</p></div>
     </section>
 </main>
 </body>
