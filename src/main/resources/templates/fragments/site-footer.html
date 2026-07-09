@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="publicFooter" class="site-footer">
+    <div class="site-footer-inner">
+        <section class="footer-brand-block">
+            <a class="footer-brand" th:href="@{/events}">
+                <span class="brand-mark footer-logo">C</span>
+                <strong>Connectify</strong>
+            </a>
+            <p>Marketplace de eventos en Perú para publicar, comprar y validar entradas digitales con roles separados.</p>
+        </section>
+
+        <section>
+            <h2>Eventos</h2>
+            <a th:href="@{/events(category='Música')}">Conciertos</a>
+            <a th:href="@{/events(category='Deporte')}">Actividades deportivas</a>
+            <a th:href="@{/events(category='Tecnología')}">Charlas y talleres</a>
+            <a th:href="@{/events}">Todos los eventos</a>
+        </section>
+
+        <section>
+            <h2>Ayuda</h2>
+            <a th:href="@{/help}">Centro de ayuda</a>
+            <a th:href="@{/help#comprar}">Cómo comprar</a>
+            <a th:href="@{/help#tickets}">Tickets QR</a>
+            <a th:href="@{/communications}">Contactar soporte</a>
+        </section>
+
+        <section>
+            <h2>Legal</h2>
+            <a th:href="@{/terms}">Términos y condiciones</a>
+            <a th:href="@{/privacy}">Política de privacidad</a>
+            <a th:href="@{/cookies}">Política de cookies</a>
+        </section>
+    </div>
+    <div class="site-footer-bottom">
+        <span>© 2026 Connectify Solutions. Todos los derechos reservados.</span>
+        <span>Proyecto académico de marketplace de eventos.</span>
+    </div>
+</footer>
+
+<aside th:fragment="cookieNotice" id="cookieNotice" class="cookie-notice" hidden>
+    <div>
+        <strong>Uso de cookies</strong>
+        <p>Usamos cookies esenciales para mantener la sesión, proteger el acceso y recordar preferencias básicas. Puedes revisar la política completa.</p>
+    </div>
+    <div class="cookie-actions">
+        <a class="btn secondary compact" th:href="@{/cookies}">Ver política</a>
+        <button class="btn primary compact" type="button" id="acceptCookies">Aceptar</button>
+    </div>
+    <script>
+        (function () {
+            const key = 'connectify.cookies.accepted';
+            const notice = document.getElementById('cookieNotice');
+            const button = document.getElementById('acceptCookies');
+            if (!notice || !button) return;
+            if (localStorage.getItem(key) !== 'true') notice.hidden = false;
+            button.addEventListener('click', function () {
+                localStorage.setItem(key, 'true');
+                notice.hidden = true;
+            });
+        })();
+    </script>
+</aside>
+</body>
+</html>

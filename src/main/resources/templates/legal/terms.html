@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y condiciones - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Documento legal</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Marketplace</a><a class="btn secondary" th:href="@{/help}">Ayuda</a></nav>
+</header>
+
+<main class="legal-page">
+    <section class="legal-hero">
+        <p class="badge">Marco de uso</p>
+        <h1>Términos y condiciones</h1>
+        <p>Condiciones generales para clientes, organizadores y usuarios que utilizan Connectify para publicar eventos, comprar entradas y validar tickets digitales.</p>
+        <span>Última actualización: julio de 2026</span>
+    </section>
+
+    <section class="legal-layout">
+        <aside class="legal-index">
+            <a href="#servicio">Servicio</a>
+            <a href="#roles">Roles</a>
+            <a href="#compras">Compras</a>
+            <a href="#organizador">Organizadores</a>
+            <a href="#acceso">Control de acceso</a>
+            <a href="#responsabilidad">Responsabilidad</a>
+        </aside>
+
+        <article class="legal-document">
+            <section id="servicio">
+                <h2>1. Servicio de Connectify</h2>
+                <p>Connectify es un marketplace de eventos. La plataforma permite que un Organizador registre eventos, que un Administrador revise y publique propuestas, que un Cliente compre entradas y que un Agente de acceso valide tickets QR en la puerta.</p>
+                <p>El uso de la plataforma implica aceptar estas condiciones, junto con las políticas de privacidad y cookies publicadas en el sitio.</p>
+            </section>
+
+            <section id="roles">
+                <h2>2. Roles y cuentas</h2>
+                <p>Las cuentas se separan por función: Cliente, Organizador, Administrador, Diseñador, Agente de acceso y Developer. Cada rol debe usar únicamente las funciones asignadas a su perfil.</p>
+                <ul>
+                    <li>El Cliente explora eventos, compra entradas, consulta tickets QR y escribe a soporte.</li>
+                    <li>El Organizador crea eventos, registra entradas y consulta métricas de sus publicaciones.</li>
+                    <li>El Administrador revisa, aprueba, observa, rechaza o publica eventos.</li>
+                    <li>El Agente de acceso valida tickets QR o códigos de control de puerta.</li>
+                </ul>
+            </section>
+
+            <section id="compras">
+                <h2>3. Compra de entradas</h2>
+                <p>La compra queda asociada a la cuenta Cliente autenticada. Las entradas digitales se generan con información del evento, tipo de entrada, titular y estado de validación.</p>
+                <p>El Cliente debe revisar fecha, ubicación, precio, cantidad y restricciones del evento antes de confirmar la compra. La disponibilidad puede cambiar según ventas registradas y capacidad configurada por el Organizador.</p>
+            </section>
+
+            <section id="organizador">
+                <h2>4. Obligaciones del Organizador</h2>
+                <p>El Organizador declara que la información enviada es veraz, que cuenta con autorización para realizar el evento y que respetará las condiciones publicadas para los asistentes.</p>
+                <p>Los cambios relevantes de fecha, aforo, ubicación, precio o tipos de entrada pueden requerir nueva revisión administrativa antes de volver a publicarse.</p>
+            </section>
+
+            <section id="acceso">
+                <h2>5. Tickets QR y validación</h2>
+                <p>El ticket QR es personal para efectos de control de acceso. El sistema puede marcar una entrada como usada después de una validación correcta. El Cliente debe cuidar su ticket digital y evitar compartirlo en canales públicos.</p>
+            </section>
+
+            <section id="responsabilidad">
+                <h2>6. Responsabilidad y soporte</h2>
+                <p>Connectify facilita la operación digital del marketplace. La realización material del evento, condiciones de ingreso, horarios y cumplimiento operativo corresponden al Organizador, sin perjuicio de la revisión administrativa realizada en la plataforma.</p>
+                <p>Para incidencias de compra, tickets o acceso, el Cliente puede escribir desde el buzón de soporte disponible en su cuenta.</p>
+            </section>
+        </article>
+    </section>
+</main>
+
+<div th:replace="~{fragments/site-footer :: publicFooter}"></div>
+<div th:replace="~{fragments/site-footer :: cookieNotice}"></div>
+</body>
+</html>

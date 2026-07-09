@@ -12,6 +12,7 @@ import com.connectify.entity.Role;
 import com.connectify.repository.EventAdminRecordRepository;
 import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.EventRepository;
+import com.connectify.service.ImageStorageService;
 import com.connectify.service.InternalMessageService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -29,21 +31,24 @@ public class DesignerPresentationController {
 
     private static final Set<String> COVER_FOCUS = Set.of("TOP", "CENTER", "BOTTOM");
     private static final Set<String> CONTENT_FOCUS = Set.of("BALANCED", "SALES", "INFORMATION");
-    private static final Set<String> INFO_POSITION = Set.of("STANDARD", "SIDEBAR");
+    private static final Set<String> INFO_POSITION = Set.of("STANDARD", "SIDEBAR", "FLOATING");
 
     private final EventRepository eventRepository;
     private final EventAdminRecordRepository recordRepository;
     private final EventPresentationSettingsRepository presentationSettingsRepository;
     private final InternalMessageService messageService;
+    private final ImageStorageService imageStorageService;
 
     public DesignerPresentationController(EventRepository eventRepository,
                                           EventAdminRecordRepository recordRepository,
                                           EventPresentationSettingsRepository presentationSettingsRepository,
-                                          InternalMessageService messageService) {
+                                          InternalMessageService messageService,
+                                          ImageStorageService imageStorageService) {
         this.eventRepository = eventRepository;
         this.recordRepository = recordRepository;
         this.presentationSettingsRepository = presentationSettingsRepository;
         this.messageService = messageService;
+        this.imageStorageService = imageStorageService;
     }
 
     @PostMapping("/events/{id}/presentation")
@@ -53,6 +58,13 @@ public class DesignerPresentationController {
                                    @RequestParam(defaultValue = "#8b5cf6") String accentColor,
                                    @RequestParam(required = false) String coverImageUrl,
                                    @RequestParam(required = false) String thumbnailImageUrl,
+                                   @RequestParam(required = false) MultipartFile coverImageFile,
+                                   @RequestParam(required = false) MultipartFile thumbnailImageFile,
+                                   @RequestParam(required = false) String backgroundImageUrl,
+                                   @RequestParam(required = false) MultipartFile backgroundImageFile,
+                                   @RequestParam(required = false) String organizerBrandName,
+                                   @RequestParam(required = false) String organizerLogoUrl,
+                                   @RequestParam(required = false) MultipartFile organizerLogoFile,
                                    @RequestParam(defaultValue = "CENTER") String coverFocus,
                                    @RequestParam(defaultValue = "BALANCED") String contentFocus,
                                    @RequestParam(defaultValue = "STANDARD") String infoPosition,
@@ -65,6 +77,16 @@ public class DesignerPresentationController {
                                    @RequestParam(required = false) String benefitsText,
                                    @RequestParam(required = false, defaultValue = "false") boolean showSponsors,
                                    @RequestParam(required = false) String sponsorsText,
+                                   @RequestParam(required = false) String sponsorLogosText,
+                                   @RequestParam(required = false, defaultValue = "false") boolean showMedia,
+                                   @RequestParam(required = false) String youtubeUrl,
+                                   @RequestParam(required = false) String spotifyUrl,
+                                   @RequestParam(required = false, defaultValue = "false") boolean showStageMap,
+                                   @RequestParam(required = false) String stageImageUrl,
+                                   @RequestParam(required = false) MultipartFile stageImageFile,
+                                   @RequestParam(required = false) String stageText,
+                                   @RequestParam(required = false, defaultValue = "false") boolean showSessions,
+                                   @RequestParam(required = false) String sessionText,
                                    Authentication authentication) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
@@ -83,8 +105,11 @@ public class DesignerPresentationController {
         }
         presentation.setPrimaryColor(safeColor(primaryColor, "#4f46e5"));
         presentation.setAccentColor(safeColor(accentColor, "#8b5cf6"));
-        presentation.setCoverImageUrl(safeUrl(coverImageUrl));
-        presentation.setThumbnailImageUrl(safeUrl(thumbnailImageUrl));
+        presentation.setCoverImageUrl(firstText(imageStorageService.store(coverImageFile, "presentations"), safeUrl(coverImageUrl)));
+        presentation.setThumbnailImageUrl(firstText(imageStorageService.store(thumbnailImageFile, "presentations"), safeUrl(thumbnailImageUrl)));
+        presentation.setBackgroundImageUrl(firstText(imageStorageService.store(backgroundImageFile, "presentations"), safeUrl(backgroundImageUrl)));
+        presentation.setOrganizerBrandName(optionalText(organizerBrandName));
+        presentation.setOrganizerLogoUrl(firstText(imageStorageService.store(organizerLogoFile, "presentations"), safeUrl(organizerLogoUrl)));
         presentation.setCoverFocus(safeChoice(coverFocus, COVER_FOCUS, "CENTER"));
         presentation.setContentFocus(safeChoice(contentFocus, CONTENT_FOCUS, "BALANCED"));
         presentation.setInfoPosition(safeChoice(infoPosition, INFO_POSITION, "STANDARD"));
@@ -97,6 +122,15 @@ public class DesignerPresentationController {
         presentation.setBenefitsText(optionalText(benefitsText));
         presentation.setShowSponsors(showSponsors);
         presentation.setSponsorsText(optionalText(sponsorsText));
+        presentation.setSponsorLogosText(optionalText(sponsorLogosText));
+        presentation.setShowMedia(showMedia);
+        presentation.setYoutubeUrl(safeUrl(youtubeUrl));
+        presentation.setSpotifyUrl(safeUrl(spotifyUrl));
+        presentation.setShowStageMap(showStageMap);
+        presentation.setStageImageUrl(firstText(imageStorageService.store(stageImageFile, "presentations"), safeUrl(stageImageUrl)));
+        presentation.setStageText(optionalText(stageText));
+        presentation.setShowSessions(showSessions);
+        presentation.setSessionText(optionalText(sessionText));
         presentationSettingsRepository.save(presentation);
 
         EventAdminRecord record = new EventAdminRecord();
@@ -111,7 +145,10 @@ public class DesignerPresentationController {
                 + ", organizador=" + yesNo(showOrganizer)
                 + ", agenda=" + yesNo(showAgenda)
                 + ", beneficios=" + yesNo(showBenefits)
-                + ", sponsors=" + yesNo(showSponsors) + "\n"
+                + ", sponsors=" + yesNo(showSponsors)
+                + ", media=" + yesNo(showMedia)
+                + ", escenario=" + yesNo(showStageMap)
+                + ", sesiones=" + yesNo(showSessions) + "\n"
                 + "Texto destacado: " + clean(highlightText));
         record.setCreatedAt(LocalDateTime.now());
         recordRepository.save(record);
@@ -157,6 +194,13 @@ public class DesignerPresentationController {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
+    private String firstText(String preferred, String fallback) {
+        if (preferred != null && !preferred.isBlank()) {
+            return preferred.trim();
+        }
+        return fallback == null || fallback.isBlank() ? null : fallback.trim();
+    }
+
     private String safeColor(String value, String fallback) {
         return value != null && value.matches("#[0-9a-fA-F]{6}") ? value : fallback;
     }
@@ -164,7 +208,8 @@ public class DesignerPresentationController {
     private String safeUrl(String value) {
         if (value == null || value.isBlank()) return null;
         String normalized = value.trim();
-        return normalized.startsWith("https://") || normalized.startsWith("http://") ? normalized : null;
+        return normalized.startsWith("https://") || normalized.startsWith("http://") || normalized.startsWith("/uploads/")
+                ? normalized : null;
     }
 
     private String safeChoice(String value, Set<String> allowed, String fallback) {

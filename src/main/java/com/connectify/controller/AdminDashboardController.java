@@ -9,10 +9,12 @@ import com.connectify.entity.MessagePriority;
 import com.connectify.entity.MessageType;
 import com.connectify.entity.Role;
 import com.connectify.entity.TicketType;
+import com.connectify.entity.UserAccount;
 import com.connectify.repository.EventAdminRecordRepository;
 import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
+import com.connectify.repository.UserAccountRepository;
 import com.connectify.service.InternalMessageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,17 +40,20 @@ public class AdminDashboardController {
     private final TicketTypeRepository ticketTypeRepository;
     private final EventAdminRecordRepository recordRepository;
     private final EventPresentationSettingsRepository presentationSettingsRepository;
+    private final UserAccountRepository userAccountRepository;
     private final InternalMessageService messageService;
 
     public AdminDashboardController(EventRepository eventRepository,
                                     TicketTypeRepository ticketTypeRepository,
                                     EventAdminRecordRepository recordRepository,
                                     EventPresentationSettingsRepository presentationSettingsRepository,
+                                    UserAccountRepository userAccountRepository,
                                     InternalMessageService messageService) {
         this.eventRepository = eventRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.recordRepository = recordRepository;
         this.presentationSettingsRepository = presentationSettingsRepository;
+        this.userAccountRepository = userAccountRepository;
         this.messageService = messageService;
     }
 
@@ -67,6 +72,7 @@ public class AdminDashboardController {
         model.addAttribute("eventCapacity", number(event.getCapacity()));
         model.addAttribute("organizerName", text(event.getOrganizerName(), "Organizador registrado"));
         model.addAttribute("organizerEmail", text(event.getOrganizerEmail(), "Cuenta no registrada"));
+        addOrganizerDetails(event, model);
         model.addAttribute("ticketLines", ticketLines(id));
         model.addAttribute("recordLines", recordLines(records));
         model.addAttribute("changeLines", changeLines(records));
@@ -90,6 +96,21 @@ public class AdminDashboardController {
         model.addAttribute("previewMode", true);
         model.addAttribute("adminReturnUrl", "/dashboard/admin/events/" + id);
         return "events/detail";
+    }
+
+    private void addOrganizerDetails(Event event, Model model) {
+        UserAccount account = safeOrganizerAccount(event.getOrganizerEmail());
+        model.addAttribute("organizerCompany", text(account == null ? event.getOrganizerName() : account.getCompanyName(), "Sin razón social registrada"));
+        model.addAttribute("organizerLegalContact", text(account == null ? null : account.getFullName(), text(event.getOrganizerName(), "Sin representante registrado")));
+        model.addAttribute("organizerRuc", text(account == null ? null : account.getRuc(), "Sin RUC registrado"));
+        model.addAttribute("organizerPhone", text(account == null ? null : account.getPhone(), "Sin teléfono registrado"));
+        model.addAttribute("organizerAccountState", account == null ? "Cuenta no vinculada" : account.isActive() ? "Cuenta activa" : "Cuenta desactivada");
+    }
+
+    private UserAccount safeOrganizerAccount(String email) {
+        if (email == null || email.isBlank()) return null;
+        try { return userAccountRepository.findByEmailIgnoreCase(email).orElse(null); }
+        catch (RuntimeException ex) { return null; }
     }
 
     @PostMapping("/{id}/observe")

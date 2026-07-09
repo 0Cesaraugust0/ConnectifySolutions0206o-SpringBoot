@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de privacidad - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Privacidad</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Marketplace</a><a class="btn secondary" th:href="@{/cookies}">Cookies</a></nav>
+</header>
+
+<main class="legal-page">
+    <section class="legal-hero">
+        <p class="badge">Protección de datos</p>
+        <h1>Política de privacidad</h1>
+        <p>Describe qué datos se registran en Connectify, para qué se usan y cómo se protegen dentro del flujo de eventos, compras y soporte.</p>
+        <span>Referencia: Ley N° 29733 - Protección de Datos Personales</span>
+    </section>
+
+    <article class="legal-document single">
+        <section>
+            <h2>1. Datos que se pueden registrar</h2>
+            <p>Connectify puede registrar nombres, apellidos, correo, DNI, teléfono, datos de organizador, RUC, eventos creados, compras, tickets, mensajes de soporte y registros de validación de acceso.</p>
+        </section>
+
+        <section>
+            <h2>2. Finalidades</h2>
+            <ul>
+                <li>Crear y autenticar cuentas por rol.</li>
+                <li>Procesar compras y generar tickets digitales.</li>
+                <li>Permitir revisión administrativa de eventos.</li>
+                <li>Registrar validaciones QR en puerta.</li>
+                <li>Atender consultas de soporte y comunicaciones internas.</li>
+                <li>Generar métricas operativas para organizadores y administradores.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Acceso por roles</h2>
+            <p>El acceso a la información se limita según rol. Un Cliente no opera eventos de organizadores; un Organizador ve sus propios eventos; el Administrador revisa propuestas; el Agente de acceso solo valida tickets; y el Developer administra cuentas y permisos.</p>
+        </section>
+
+        <section>
+            <h2>4. Conservación y seguridad</h2>
+            <p>Los datos se conservan mientras sean necesarios para la operación del marketplace, trazabilidad de compras, auditoría básica o cumplimiento de obligaciones académicas y administrativas del proyecto.</p>
+            <p>Las contraseñas se almacenan cifradas. Las sesiones y permisos se controlan desde Spring Security.</p>
+        </section>
+
+        <section>
+            <h2>5. Derechos del usuario</h2>
+            <p>El usuario puede solicitar corrección o actualización de datos desde su panel o mediante soporte. Las consultas de clientes se envían al Administrador desde el buzón de soporte.</p>
+        </section>
+    </article>
+</main>
+
+<div th:replace="~{fragments/site-footer :: publicFooter}"></div>
+<div th:replace="~{fragments/site-footer :: cookieNotice}"></div>
+</body>
+</html>

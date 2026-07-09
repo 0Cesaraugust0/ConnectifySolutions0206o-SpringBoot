@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de ayuda - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Centro de ayuda</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Marketplace</a><a class="btn primary compact" th:href="@{/communications}">Escribir a soporte</a></nav>
+</header>
+
+<main class="help-page">
+    <section class="help-hero">
+        <p class="badge">Ayuda real</p>
+        <h1>Centro de ayuda</h1>
+        <p>Respuestas rápidas para comprar entradas, publicar eventos, revisar tickets QR y contactar soporte.</p>
+    </section>
+
+    <section class="help-quick-grid">
+        <a href="#comprar"><strong>Comprar entradas</strong><span>Cuenta Cliente, carrito y checkout.</span></a>
+        <a href="#organizador"><strong>Publicar eventos</strong><span>Cuenta Organizador, revisión y entradas.</span></a>
+        <a href="#tickets"><strong>Tickets QR</strong><span>Consulta, validación y acceso.</span></a>
+        <a href="#soporte"><strong>Soporte</strong><span>Incidencias y mensajes al Administrador.</span></a>
+    </section>
+
+    <section class="faq-list" id="comprar">
+        <div class="section-heading"><div><p class="badge">Cliente</p><h2>Comprar entradas</h2></div></div>
+        <details open><summary>¿Cómo compro una entrada?</summary><p>Entra al marketplace, elige un evento publicado, selecciona el tipo de entrada y agrégala al carrito. El checkout queda asociado a tu cuenta Cliente.</p></details>
+        <details><summary>¿Necesito imprimir mi ticket?</summary><p>No. El ticket se consulta desde tu cuenta y contiene un código QR para validación en puerta.</p></details>
+        <details><summary>¿Dónde veo mis compras?</summary><p>Desde el dashboard Cliente puedes revisar tickets QR, favoritos, carrito y consultas de soporte.</p></details>
+    </section>
+
+    <section class="faq-list" id="organizador">
+        <div class="section-heading"><div><p class="badge">Organizador</p><h2>Publicar eventos</h2></div></div>
+        <details open><summary>¿Cómo publico un evento?</summary><p>Regístrate como Organizador, completa tus datos de organizador, crea el evento y envíalo a revisión administrativa. El Administrador puede aprobar, observar o rechazar la propuesta.</p></details>
+        <details><summary>¿Puedo configurar varios tipos de entrada?</summary><p>Sí. Cada evento puede tener variantes como General, VIP, Estudiante u otra definida por el Organizador, con precio y cantidad disponible.</p></details>
+        <details><summary>¿Por qué piden RUC o razón social?</summary><p>Estos datos identifican al publicador del evento y ayudan al Administrador a revisar quién está detrás de la propuesta.</p></details>
+    </section>
+
+    <section class="faq-list" id="tickets">
+        <div class="section-heading"><div><p class="badge">Acceso</p><h2>Tickets QR</h2></div></div>
+        <details open><summary>¿Quién valida el QR?</summary><p>El Agente de acceso valida tickets desde su panel de puerta. El Administrador configura el evento, pero no reemplaza la función del agente.</p></details>
+        <details><summary>¿Qué pasa si el ticket ya fue usado?</summary><p>El sistema muestra el estado de validación para evitar doble ingreso con el mismo código.</p></details>
+    </section>
+
+    <section class="support-panel" id="soporte">
+        <div>
+            <p class="badge">Soporte</p>
+            <h2>¿Necesitas ayuda con una compra o ticket?</h2>
+            <p>Si tienes una cuenta Cliente, escribe desde el buzón de soporte. Tu mensaje llega a la bandeja del Administrador.</p>
+        </div>
+        <a class="btn primary" th:href="@{/communications}">Escribir a soporte</a>
+    </section>
+</main>
+
+<div th:replace="~{fragments/site-footer :: publicFooter}"></div>
+<div th:replace="~{fragments/site-footer :: cookieNotice}"></div>
+</body>
+</html>

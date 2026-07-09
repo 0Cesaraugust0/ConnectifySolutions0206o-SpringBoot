@@ -10,8 +10,9 @@
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <div class="brand"><span class="logo">🎯</span><div><strong>Connectify</strong><small>Organizador</small></div></div>
+    <div class="brand"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Organizador</small></div></div>
     <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/dashboard/organizer/profile}">Datos de organizador</a>
         <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
         <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
@@ -19,24 +20,38 @@
 </header>
 
 <main class="dashboard-page">
-    <section class="organizer-hero">
-        <p class="badge">Gestión comercial</p>
-        <h1 th:text="${title}">Panel Organizador</h1>
-        <p class="hero-text">Sesión activa: <strong th:text="${email}">organizador</strong>. Administra eventos, tipos de entrada, métricas y publicación. La compra pertenece al cliente/asistente.</p>
+    <div th:if="${param.profileSaved != null}" class="alert success">Datos de organizador actualizados correctamente.</div>
+
+    <section class="organizer-hero organizer-dashboard-hero">
+        <div>
+            <p class="badge">Gestión comercial</p>
+            <h1 th:text="${title}">Panel Organizador</h1>
+            <p class="hero-text">Sesión activa: <strong th:text="${email}">organizador</strong>. Publica eventos, define entradas y mantén identificada la cuenta que envía propuestas a revisión administrativa.</p>
+            <div class="organizer-hero-actions">
+                <a class="btn primary" th:href="@{/dashboard/organizer/profile}">Datos de organizador</a>
+                <a class="btn secondary" th:href="@{/dashboard/organizer/events/new}">Crear evento</a>
+            </div>
+        </div>
+        <aside class="organizer-identity-card" th:classappend="${organizerProfileComplete} ? ' complete' : ' pending'">
+            <span th:text="${organizerProfileComplete} ? 'Identificado' : 'Pendiente'">Pendiente</span>
+            <strong th:text="${organizerName}">Datos pendientes</strong>
+            <small th:text="${organizerRuc}">Sin RUC</small>
+            <p th:text="${organizerProfileComplete} ? 'Estos datos acompañan la revisión administrativa.' : 'Completa razón social y RUC antes de enviar eventos importantes.'">Estado</p>
+        </aside>
     </section>
 
     <section class="dashboard-grid">
         <a class="module-card" th:href="@{/dashboard/organizer/events}">
-            <span>📅</span><h3>Mis eventos</h3><p>Ver eventos creados, estado, capacidad, ventas y seguimiento.</p>
+            <span>EV</span><h3>Mis eventos</h3><p>Ver eventos creados, estado, capacidad, ventas y seguimiento.</p>
         </a>
         <a class="module-card" th:href="@{/dashboard/organizer/events/new}">
-            <span>➕</span><h3>Crear evento</h3><p>Registrar un evento y enviarlo a revisión administrativa.</p>
+            <span>+</span><h3>Crear evento</h3><p>Registrar un evento y enviarlo a revisión administrativa.</p>
         </a>
         <a class="module-card" th:href="@{/dashboard/organizer/events/metrics}">
-            <span>📊</span><h3>Métricas</h3><p>Consultar ventas, aforo, disponibilidad e ingresos estimados.</p>
+            <span>ME</span><h3>Métricas</h3><p>Consultar ventas, aforo, disponibilidad e ingresos estimados.</p>
         </a>
         <a class="module-card" th:href="@{/events}">
-            <span>👁️</span><h3>Previsualizar marketplace</h3><p>Revisar cómo se verán los eventos publicados para compradores. No es flujo de compra del organizador.</p>
+            <span>MP</span><h3>Previsualizar marketplace</h3><p>Revisar cómo se verán los eventos publicados para compradores. No es flujo de compra del organizador.</p>
         </a>
     </section>
 </main>

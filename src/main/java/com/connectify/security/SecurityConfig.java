@@ -49,8 +49,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/login", "/register", "/setup", "/prototype",
+                                "/terms", "/privacy", "/cookies", "/help", "/help/**",
                                 "/events", "/events/**",
-                                "/css/**", "/js/**", "/images/**"
+                                "/payments/izipay/**",
+                                "/css/**", "/js/**", "/images/**", "/uploads/**"
                         ).permitAll()
                         .requestMatchers("/prototype/**").permitAll()
                         .requestMatchers("/dashboard/developer/**").hasRole("DEVELOPER")

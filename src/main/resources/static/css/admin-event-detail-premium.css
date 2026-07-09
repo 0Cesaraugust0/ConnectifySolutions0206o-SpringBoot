@@ -90,6 +90,7 @@
 .admin-event-detail-page .review-stack { display: grid; gap: 18px; }
 .admin-event-detail-page .review-panel,
 .admin-event-detail-page .decision-console,
+.admin-event-detail-page .organizer-review-panel,
 .admin-event-detail-page .ticket-review-panel {
     overflow: hidden;
     border: 1px solid #e6e9f2;
@@ -104,6 +105,18 @@
     gap: 14px;
     padding: 21px 22px 16px;
     border-bottom: 1px solid #eef0f5;
+}
+.admin-event-detail-page .panel-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+}
+.admin-event-detail-page .organizer-info-trigger {
+    min-height: 38px;
+    border-color: #d8d4ff;
+    background: #f5f4ff;
+    color: #5146e5;
 }
 .admin-event-detail-page .panel-head h2 {
     margin: 0;
@@ -177,6 +190,91 @@
     font-size: .93rem;
     line-height: 1.62;
     white-space: pre-line;
+}
+.admin-event-detail-page .organizer-review-content {
+    display: grid;
+    grid-template-columns: minmax(250px, .9fr) minmax(0, 1.1fr);
+    gap: 14px;
+    padding: 18px 22px 22px;
+}
+.admin-event-detail-page .organizer-modal-card {
+    width: min(760px, 96vw);
+}
+.admin-event-detail-page .modal-organizer-facts {
+    margin-top: 14px;
+}
+.admin-event-detail-page .organizer-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid #e4e7f1;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fbfcff, #f5f3ff);
+}
+.admin-event-detail-page .organizer-profile-mark {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    background: #17214d;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 950;
+    letter-spacing: .05em;
+}
+.admin-event-detail-page .organizer-profile-card div {
+    min-width: 0;
+}
+.admin-event-detail-page .organizer-profile-card small,
+.admin-event-detail-page .organizer-detail-facts small {
+    display: block;
+    margin-bottom: 5px;
+    color: #7a8397;
+    font-size: .71rem;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.admin-event-detail-page .organizer-profile-card strong,
+.admin-event-detail-page .organizer-detail-facts strong {
+    display: block;
+    overflow-wrap: anywhere;
+    color: #1f2a55;
+    font-size: .92rem;
+    line-height: 1.32;
+}
+.admin-event-detail-page .organizer-profile-card span:not(.organizer-profile-mark) {
+    display: block;
+    margin-top: 5px;
+    overflow-wrap: anywhere;
+    color: #5f6b84;
+    font-size: .84rem;
+}
+.admin-event-detail-page .organizer-profile-card b {
+    align-self: flex-start;
+    margin-left: auto;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #e8f7ef;
+    color: #047857;
+    font-size: .71rem;
+    white-space: nowrap;
+}
+.admin-event-detail-page .organizer-detail-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+}
+.admin-event-detail-page .organizer-detail-facts article {
+    min-height: 72px;
+    padding: 13px 14px;
+    border: 1px solid #e9ecf3;
+    border-radius: 15px;
+    background: #fbfcff;
 }
 .admin-event-detail-page .decision-console {
     position: sticky;
@@ -278,5 +376,9 @@
     .admin-event-detail-page .review-hero-actions { align-items:stretch; }
     .admin-event-detail-page .review-hero-actions .btn { flex:1; }
     .admin-event-detail-page .detail-facts { grid-template-columns:1fr; }
+    .admin-event-detail-page .organizer-review-content,
+    .admin-event-detail-page .organizer-detail-facts { grid-template-columns:1fr; }
+    .admin-event-detail-page .organizer-profile-card { align-items:flex-start; flex-wrap:wrap; }
+    .admin-event-detail-page .organizer-profile-card b { margin-left:0; }
     .admin-event-detail-page .publication-actions { grid-template-columns:1fr; }
 }

@@ -11,31 +11,34 @@
 <header class="navbar dashboard-nav">
     <div class="brand"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div></div>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/dashboard/admin/events(view='list')}">Gestión de eventos</a>
-        <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Solicitudes</a>
+        <a class="btn secondary" th:href="@{/dashboard/admin/events(view='list')}">Revisión de eventos</a>
+        <a class="btn secondary" th:href="@{/admin/events}">Puerta</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
 
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge">Gestión global</p>
+        <p class="badge">Gestión administrativa</p>
         <h1 th:text="${title}">Panel Administrador</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">admin</strong>. Gestiona revisiones, solicitudes y control operativo.</p>
+        <p class="muted">Sesión activa: <strong th:text="${email}">admin</strong>. Revisa eventos y prepara el acceso de puerta para el agente asignado.</p>
     </section>
 
     <section class="dashboard-grid">
         <a class="module-card" th:href="@{/dashboard/admin/events(view='list')}">
-            <span>🗂️</span><h3>Gestión de eventos</h3><p>Consulta la Lista de ingresos y cambia al Tablero Kanban dentro del mismo módulo.</p>
+            <span>🗂️</span>
+            <h3>Revisión de eventos</h3>
+            <p>Aprueba, rechaza o devuelve eventos para corrección antes de publicarlos.</p>
         </a>
-        <a class="module-card" th:href="@{/communications(role='ADMIN')}">
-            <span>💬</span><h3>Solicitudes internas</h3><p>Atiende comunicaciones del organizador y del diseñador vinculadas a eventos.</p>
-        </a>
-        <a class="module-card" th:href="@{/tickets/validate}">
-            <span>🚪</span><h3>Control de puerta</h3><p>Valida tickets mediante el código del evento y la credencial operativa.</p>
+        <a class="module-card" th:href="@{/admin/events}">
+            <span>🚪</span>
+            <h3>Control de puerta</h3>
+            <p>Configura el código del evento y la contraseña diaria que usará el agente de acceso.</p>
         </a>
         <a class="module-card" th:href="@{/events}">
-            <span>👁️</span><h3>Marketplace público</h3><p>Consulta los eventos que ya están visibles para compradores.</p>
+            <span>👁️</span>
+            <h3>Marketplace público</h3>
+            <p>Consulta los eventos que ya están visibles para compradores.</p>
         </a>
     </section>
 </main>

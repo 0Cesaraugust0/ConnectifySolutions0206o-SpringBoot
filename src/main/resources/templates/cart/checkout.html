@@ -6,11 +6,21 @@
     <title>Checkout - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet"
+          href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/classic.css"
+          th:if="${izipayReady and izipayFormToken != null}">
+    <script type="text/javascript"
+            th:if="${izipayReady and izipayFormToken != null}"
+            th:src="${izipayScriptUrl}"
+            th:attr="kr-public-key=${izipayPublicKey},kr-post-url-success=${izipaySuccessUrl},kr-post-url-error=${izipayErrorUrl},kr-post-url-cancel=${izipayCancelUrl},kr-language='es-ES'"></script>
+    <script type="text/javascript"
+            src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/classic.js"
+            th:if="${izipayReady and izipayFormToken != null}"></script>
 </head>
 <body>
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/client}">
-        <span class="logo">💳</span>
+        <span class="logo brand-mark">C</span>
         <div><strong>Connectify</strong><small>Checkout de Cliente</small></div>
     </a>
     <nav class="top-actions">
@@ -23,33 +33,72 @@
     <section class="dashboard-hero">
         <p class="badge">Checkout seguro</p>
         <h1>Finalizar compra</h1>
-        <p class="muted">La compra quedará asociada a tu cuenta Cliente. Los tickets QR se guardarán automáticamente en <strong th:text="${buyerEmail}">cliente@email.com</strong>.</p>
+        <p class="muted">La compra queda asociada a tu cuenta Cliente. Los tickets QR se guardan automaticamente en <strong th:text="${buyerEmail}">cliente@email.com</strong>.</p>
     </section>
 
     <section class="checkout-layout" th:if="${!items.isEmpty()}">
-        <form class="checkout-form" th:action="@{/cart/checkout/confirm}" method="post">
-            <h2>Datos del comprador</h2>
-            <div th:if="${param.profileError != null}" class="alert error">Completa nombres y apellidos para generar tus tickets.</div>
-            <div class="form-grid">
-                <label>Nombres<input name="firstName" type="text" th:value="${buyerFirstName}" autocomplete="given-name" placeholder="Juan" required></label>
-                <label>Apellidos<input name="lastName" type="text" th:value="${buyerLastName}" autocomplete="family-name" placeholder="Pérez" required></label>
-                <label>DNI<input name="dni" type="text" th:value="${buyerDni}" autocomplete="off" placeholder="12345678" required></label>
-                <label>Teléfono<input name="phone" type="tel" th:value="${buyerPhone}" autocomplete="tel" placeholder="987654321" required></label>
-                <label class="wide">Cuenta Cliente<input type="email" th:value="${buyerEmail}" readonly aria-readonly="true"><small class="muted">El correo se toma de la sesión activa y no puede cambiarse durante la compra.</small></label>
-            </div>
+        <div class="checkout-main">
+            <form class="checkout-form"
+                  th:action="${izipayEnabled} ? @{/cart/checkout/izipay/start} : @{/cart/checkout/confirm}"
+                  method="post">
+                <h2>Datos del comprador</h2>
+                <div th:if="${param.profileError != null}" class="alert error">Completa nombres y apellidos para generar tus tickets.</div>
+                <div th:if="${param.paymentConfigError != null}" class="alert error">IZIPay esta activo, pero faltan credenciales locales para preparar el pago.</div>
+                <div th:if="${param.paymentTokenError != null}" class="alert error">No se pudo preparar el pago con IZIPay. Revisa la configuracion.</div>
+                <div th:if="${param.paymentError != null}" class="alert error">El pago no fue confirmado. No se generaron tickets.</div>
+                <div th:if="${param.paymentCancelled != null}" class="alert error">Pago cancelado. Puedes volver a intentarlo cuando desees.</div>
+                <div th:if="${paymentErrorMessage != null}" class="alert error" th:text="${paymentErrorMessage}">Detalle del pago</div>
 
-            <div class="payment-box">
-                <h2>Pago</h2>
-                <p class="muted">Modo prototipo: se confirma la compra y se generan tickets. IZIPay se conectará luego mediante backend seguro.</p>
-                <div class="fake-payment">
-                    <span>🔐</span>
-                    <strong>Pago prototipo aprobado</strong>
-                    <small>Próxima fase: reemplazar este bloque por IZIPay/Krypton con formToken generado en Spring Boot.</small>
+                <div class="form-grid">
+                    <label>Nombres<input name="firstName" type="text" th:value="${buyerFirstName}" autocomplete="given-name" placeholder="Juan" required></label>
+                    <label>Apellidos<input name="lastName" type="text" th:value="${buyerLastName}" autocomplete="family-name" placeholder="Perez" required></label>
+                    <label>DNI<input name="dni" type="text" th:value="${buyerDni}" autocomplete="off" placeholder="12345678" required></label>
+                    <label>Telefono<input name="phone" type="tel" th:value="${buyerPhone}" autocomplete="tel" placeholder="987654321" required></label>
+                    <label class="wide">Cuenta Cliente<input type="email" th:value="${buyerEmail}" readonly aria-readonly="true"><small class="muted">El correo se toma de la sesion activa y no puede cambiarse durante la compra.</small></label>
                 </div>
-            </div>
 
-            <button class="btn primary full" type="submit">Confirmar compra y generar tickets</button>
-        </form>
+                <p class="legal-consent">Al continuar aceptas los <a th:href="@{/terms}">terminos y condiciones</a> aplicables al marketplace y al evento seleccionado.</p>
+                <button class="btn primary full"
+                        type="submit"
+                        th:disabled="${izipayEnabled and !izipayReady}"
+                        th:text="${izipayEnabled} ? 'Preparar pago seguro con IZIPay' : 'Confirmar compra y generar tickets'">Preparar pago seguro</button>
+            </form>
+
+            <section class="payment-box">
+                <div class="payment-heading">
+                    <div>
+                        <p class="badge">Pago</p>
+                        <h2 th:text="${izipayEnabled} ? 'Formulario embebido IZIPay' : 'Pago prototipo'">Pago</h2>
+                    </div>
+                    <span th:if="${izipayOrderId != null}" class="payment-order" th:text="${izipayOrderId}">CNF-000</span>
+                </div>
+
+                <div th:if="${izipayReady and izipayFormToken != null}" class="izipay-embedded-box">
+                    <p class="muted">Orden preparada. Ingresa los datos de la tarjeta en el formulario seguro de IZIPay.</p>
+                    <div id="micuentawebstd_rest_wrapper" class="izipay-wrapper">
+                        <div class="kr-embedded" th:attr="kr-form-token=${izipayFormToken}"></div>
+                    </div>
+                    <p class="payment-note">Los tickets QR se generan solo cuando IZIPay devuelve una respuesta pagada y firmada.</p>
+                </div>
+
+                <div th:if="${izipayEnabled and izipayReady and izipayFormToken == null}" class="fake-payment">
+                    <span>IP</span>
+                    <strong>Listo para preparar el pago</strong>
+                    <small>Completa o confirma tus datos y pulsa el boton principal. Spring Boot generara el formToken y aqui aparecera el formulario incrustado.</small>
+                </div>
+
+                <div th:if="${izipayEnabled and !izipayReady}" class="payment-warning">
+                    <strong>Falta configuracion local de IZIPay</strong>
+                    <small>Completa endpoint, usuario REST, password, public key, HMAC y URL del script en variables de entorno o application-local.properties.</small>
+                </div>
+
+                <div th:if="${!izipayEnabled}" class="fake-payment">
+                    <span>OK</span>
+                    <strong>Pago prototipo habilitado</strong>
+                    <small>Activa IZIPay en la configuracion local para reemplazar este bloque por el formulario real.</small>
+                </div>
+            </section>
+        </div>
 
         <aside class="summary-card">
             <h2>Resumen de compra</h2>
@@ -70,5 +119,6 @@
         <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
     </section>
 </main>
+<div th:replace="~{fragments/site-footer :: publicFooter}"></div>
 </body>
 </html>

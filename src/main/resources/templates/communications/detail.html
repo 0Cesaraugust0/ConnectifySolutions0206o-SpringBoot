@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de comunicación - Connectify Solutions</title>
+    <title th:text="${supportMode} ? 'Detalle de consulta - Connectify' : 'Detalle de comunicación - Connectify'">Detalle</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
     <script th:src="@{/js/app.js}" defer></script>
@@ -11,27 +11,27 @@
 <body>
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/communications}">
-        <span class="logo">📌</span>
-        <div><strong>Connectify</strong><small>Detalle de solicitud</small></div>
+        <span class="logo" th:text="${supportMode} ? '🛟' : '📌'">📌</span>
+        <div><strong>Connectify</strong><small th:text="${supportMode} ? 'Soporte' : 'Detalle de solicitud'">Detalle</small></div>
     </a>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/communications(role=${message.targetRole})}">Volver a bandeja</a>
-        <a class="btn secondary" th:href="@{/communications/new}">Nuevo mensaje</a>
+        <a class="btn secondary" th:href="@{/communications}" th:text="${supportMode} ? 'Mis consultas' : 'Volver a bandeja'">Volver</a>
+        <a class="btn secondary" th:href="@{/communications/new}" th:text="${supportMode} ? 'Escribir a soporte' : 'Nuevo mensaje'">Nuevo mensaje</a>
     </nav>
 </header>
 
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge" th:text="${message.type}">GENERAL_COORDINATION</p>
+        <p class="badge" th:text="${supportMode} ? 'Soporte al cliente' : ${message.type}">GENERAL_COORDINATION</p>
         <h1 th:text="${message.subject}">Asunto</h1>
-        <p class="muted">Solicitud interna entre agentes del sistema.</p>
+        <p class="muted" th:text="${supportMode} ? 'Consulta enviada al soporte de Connectify.' : 'Solicitud interna entre agentes del sistema.'">Detalle del mensaje.</p>
     </section>
 
     <section class="checkout-layout">
         <article class="message-card">
             <div class="message-meta">
-                <span class="role-pill" th:text="${message.senderRole + ' → ' + message.targetRole}">ADMIN → ORGANIZER</span>
-                <span class="priority-pill" th:classappend="${message.priority == T(com.connectify.entity.MessagePriority).URGENT ? ' priority-urgent' : message.priority == T(com.connectify.entity.MessagePriority).HIGH ? ' priority-high' : message.priority == T(com.connectify.entity.MessagePriority).LOW ? ' priority-low' : ' priority-normal'}" th:text="${message.priority}">NORMAL</span>
+                <span class="role-pill" th:text="${supportMode ? 'CLIENTE → SOPORTE' : message.senderRole + ' → ' + message.targetRole}">CLIENTE → SOPORTE</span>
+                <span class="priority-pill" th:unless="${supportMode}" th:classappend="${message.priority == T(com.connectify.entity.MessagePriority).URGENT ? ' priority-urgent' : message.priority == T(com.connectify.entity.MessagePriority).HIGH ? ' priority-high' : message.priority == T(com.connectify.entity.MessagePriority).LOW ? ' priority-low' : ' priority-normal'}" th:text="${message.priority}">NORMAL</span>
                 <span class="status-pill" th:classappend="${message.status == T(com.connectify.entity.MessageStatus).RESOLVED ? ' status-resolved' : message.status == T(com.connectify.entity.MessageStatus).IN_PROGRESS ? ' status-progress' : message.status == T(com.connectify.entity.MessageStatus).ARCHIVED ? ' status-archived' : ' status-open'}" th:text="${message.status}">OPEN</span>
             </div>
 
@@ -42,7 +42,7 @@
                 <div><strong>Remitente</strong><span th:text="${message.senderName}">Nombre</span></div>
                 <div><strong>Email</strong><span th:text="${message.senderEmail}">email</span></div>
                 <div><strong>Creado</strong><span th:text="${#temporals.format(message.createdAt, 'dd/MM/yyyy HH:mm')}">fecha</span></div>
-                <div><strong>Leído</strong><span th:text="${message.readByTarget ? 'Sí' : 'No'}">Sí</span></div>
+                <div th:unless="${supportMode}"><strong>Leído</strong><span th:text="${message.readByTarget ? 'Sí' : 'No'}">Sí</span></div>
             </div>
 
             <div th:if="${message.relatedEvent != null}" class="payment-box">
@@ -52,7 +52,15 @@
             </div>
         </article>
 
-        <aside class="summary-card">
+        <aside class="summary-card" th:if="${supportMode}">
+            <h2>Estado</h2>
+            <div class="summary-row"><span>Destino</span><strong>Soporte</strong></div>
+            <div class="summary-row"><span>Estado</span><strong th:text="${message.status}">OPEN</strong></div>
+            <p class="muted small">El Administrador puede revisar esta consulta desde su bandeja.</p>
+            <a class="btn secondary full" th:href="@{/communications}">Volver a mis consultas</a>
+        </aside>
+
+        <aside class="summary-card" th:unless="${supportMode}">
             <h2>Gestión</h2>
             <form th:action="@{/communications/{id}/status(id=${message.id})}" method="post" class="auth-form">
                 <label>Cambiar estado</label>

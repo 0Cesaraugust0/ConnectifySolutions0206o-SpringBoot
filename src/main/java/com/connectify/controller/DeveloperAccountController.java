@@ -36,13 +36,14 @@ public class DeveloperAccountController {
 
     @GetMapping
     public String accounts(Model model, Authentication authentication) {
-        populateModel(model, authentication, "", "", "", "", Role.ADMIN, null);
+        populateModel(model, authentication, "", "", "", "", "", Role.ADMIN, null);
         return "dashboard/developer/accounts";
     }
 
     @PostMapping
     public String create(@RequestParam String firstName,
-                         @RequestParam String lastName,
+                         @RequestParam String paternalLastName,
+                         @RequestParam(required = false) String maternalLastName,
                          @RequestParam String dni,
                          @RequestParam String email,
                          @RequestParam String password,
@@ -50,23 +51,27 @@ public class DeveloperAccountController {
                          Model model,
                          Authentication authentication) {
         String normalizedFirstName = clean(firstName);
-        String normalizedLastName = clean(lastName);
+        String normalizedPaternalLastName = clean(paternalLastName);
+        String normalizedMaternalLastName = clean(maternalLastName);
         String normalizedDni = clean(dni);
         String normalizedEmail = clean(email).toLowerCase(Locale.ROOT);
 
-        String error = validate(normalizedFirstName, normalizedLastName, normalizedDni, normalizedEmail, password, role);
+        String error = validate(normalizedFirstName, normalizedPaternalLastName, normalizedDni, normalizedEmail, password, role);
         if (error != null) {
-            populateModel(model, authentication, normalizedFirstName, normalizedLastName, normalizedDni, normalizedEmail, role, error);
+            populateModel(model, authentication, normalizedFirstName, normalizedPaternalLastName, normalizedMaternalLastName, normalizedDni, normalizedEmail, role, error);
             return "dashboard/developer/accounts";
         }
         if (userAccountRepository.existsByEmailIgnoreCase(normalizedEmail)) {
-            populateModel(model, authentication, normalizedFirstName, normalizedLastName, normalizedDni, normalizedEmail, role,
+            populateModel(model, authentication, normalizedFirstName, normalizedPaternalLastName, normalizedMaternalLastName, normalizedDni, normalizedEmail, role,
                     "Ya existe una cuenta con este correo.");
             return "dashboard/developer/accounts";
         }
 
         UserAccount account = new UserAccount();
-        account.setFullName(normalizedFirstName + " " + normalizedLastName);
+        account.setFullName((normalizedFirstName + " " + normalizedPaternalLastName + " " + normalizedMaternalLastName).trim().replaceAll("\\s+", " "));
+        account.setFirstName(normalizedFirstName);
+        account.setPaternalLastName(normalizedPaternalLastName);
+        account.setMaternalLastName(normalizedMaternalLastName);
         account.setDni(normalizedDni);
         account.setEmail(normalizedEmail);
         account.setCredentialHash(passwordEncoder.encode(password));
@@ -96,7 +101,8 @@ public class DeveloperAccountController {
     private void populateModel(Model model,
                                Authentication authentication,
                                String firstName,
-                               String lastName,
+                               String paternalLastName,
+                               String maternalLastName,
                                String dni,
                                String email,
                                Role selectedRole,
@@ -110,16 +116,17 @@ public class DeveloperAccountController {
         model.addAttribute("accountCount", accounts.size());
         model.addAttribute("developerEmail", authentication == null ? "" : authentication.getName());
         model.addAttribute("firstName", firstName);
-        model.addAttribute("lastName", lastName);
+        model.addAttribute("paternalLastName", paternalLastName);
+        model.addAttribute("maternalLastName", maternalLastName);
         model.addAttribute("dni", dni);
         model.addAttribute("email", email);
         model.addAttribute("selectedRole", selectedRole == null ? Role.ADMIN : selectedRole);
         model.addAttribute("error", error);
     }
 
-    private String validate(String firstName, String lastName, String dni, String email, String password, Role role) {
+    private String validate(String firstName, String paternalLastName, String dni, String email, String password, Role role) {
         if (firstName.length() < 2) return "Escribe los nombres de la persona.";
-        if (lastName.length() < 2) return "Escribe los apellidos de la persona.";
+        if (paternalLastName.length() < 2) return "Escribe el apellido paterno de la persona.";
         if (!dni.matches("\\d{8}")) return "El DNI debe contener exactamente 8 dígitos.";
         if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) return "Ingresa un correo válido.";
         if (password == null || password.length() < 8) return "La contraseña debe tener al menos 8 caracteres.";

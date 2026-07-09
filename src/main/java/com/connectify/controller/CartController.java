@@ -1,5 +1,9 @@
 package com.connectify.controller;
 
+import com.connectify.config.IzipayProperties;
+import com.connectify.dto.IzipayCheckoutSession;
+import com.connectify.dto.IzipayPaymentRequest;
+import com.connectify.dto.IzipayPaymentToken;
 import com.connectify.entity.Event;
 import com.connectify.entity.EventStatus;
 import com.connectify.entity.Purchase;
@@ -9,36 +13,54 @@ import com.connectify.repository.TicketTypeRepository;
 import com.connectify.repository.UserAccountRepository;
 import com.connectify.service.CartService;
 import com.connectify.service.EventService;
+import com.connectify.service.IzipayPaymentException;
+import com.connectify.service.IzipayPaymentService;
 import com.connectify.service.PurchaseService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/cart")
 public class CartController {
 
+    public static final String IZIPAY_CHECKOUT_SESSION_KEY = "CONNECTIFY_IZIPAY_CHECKOUT";
+    public static final String IZIPAY_FORM_TOKEN_KEY = "CONNECTIFY_IZIPAY_FORM_TOKEN";
+    public static final String IZIPAY_ORDER_ID_KEY = "CONNECTIFY_IZIPAY_ORDER_ID";
+
     private final CartService cartService;
     private final EventService eventService;
     private final PurchaseService purchaseService;
+    private final IzipayPaymentService izipayPaymentService;
+    private final IzipayProperties izipayProperties;
     private final TicketTypeRepository ticketTypeRepository;
     private final UserAccountRepository userAccountRepository;
 
     public CartController(CartService cartService,
                           EventService eventService,
                           PurchaseService purchaseService,
+                          IzipayPaymentService izipayPaymentService,
+                          IzipayProperties izipayProperties,
                           TicketTypeRepository ticketTypeRepository,
                           UserAccountRepository userAccountRepository) {
         this.cartService = cartService;
         this.eventService = eventService;
         this.purchaseService = purchaseService;
+        this.izipayPaymentService = izipayPaymentService;
+        this.izipayProperties = izipayProperties;
         this.ticketTypeRepository = ticketTypeRepository;
         this.userAccountRepository = userAccountRepository;
     }
@@ -90,7 +112,71 @@ public class CartController {
         model.addAttribute("buyerEmail", account.getEmail());
         model.addAttribute("buyerDni", text(account.getDni()));
         model.addAttribute("buyerPhone", text(account.getPhone()));
+        addIzipayAttributes(session, model);
         return "cart/checkout";
+    }
+
+    @PostMapping("/checkout/izipay/start")
+    public String startIzipayCheckout(@RequestParam String firstName,
+                                      @RequestParam String lastName,
+                                      @RequestParam String dni,
+                                      @RequestParam String phone,
+                                      HttpSession session,
+                                      Authentication authentication,
+                                      RedirectAttributes redirectAttributes) {
+        UserAccount account = currentAccount(authentication);
+        String normalizedFirstName = text(firstName);
+        String normalizedLastName = text(lastName);
+        String normalizedDni = text(dni);
+        String normalizedPhone = text(phone);
+        if (normalizedFirstName.isBlank() || normalizedLastName.isBlank()) {
+            clearIzipaySession(session);
+            return "redirect:/cart/checkout?profileError=true";
+        }
+        if (cartService.getItems(session).isEmpty()) {
+            clearIzipaySession(session);
+            return "redirect:/cart";
+        }
+        if (!izipayPaymentService.isReady()) {
+            clearIzipaySession(session);
+            return "redirect:/cart/checkout?paymentConfigError=true";
+        }
+
+        account.setFullName(normalizedFirstName + " " + normalizedLastName);
+        account.setDni(normalizedDni);
+        account.setPhone(normalizedPhone);
+        userAccountRepository.save(account);
+
+        BigDecimal total = cartService.total(session);
+        String orderId = newOrderId();
+
+        try {
+            IzipayPaymentToken token = izipayPaymentService.createPaymentToken(new IzipayPaymentRequest(
+                    orderId,
+                    total,
+                    izipayCurrency(),
+                    normalizedFirstName,
+                    normalizedLastName,
+                    normalizedDni,
+                    normalizedPhone,
+                    account.getEmail()));
+
+            session.setAttribute(IZIPAY_CHECKOUT_SESSION_KEY, new IzipayCheckoutSession(
+                    orderId,
+                    normalizedFirstName,
+                    normalizedLastName,
+                    normalizedDni,
+                    normalizedPhone,
+                    account.getEmail(),
+                    total));
+            session.setAttribute(IZIPAY_FORM_TOKEN_KEY, token.formToken());
+            session.setAttribute(IZIPAY_ORDER_ID_KEY, token.orderId());
+            return "redirect:/cart/checkout?paymentReady=true";
+        } catch (IzipayPaymentException exception) {
+            clearIzipaySession(session);
+            redirectAttributes.addFlashAttribute("paymentErrorMessage", exception.getMessage());
+            return "redirect:/cart/checkout?paymentTokenError=true";
+        }
     }
 
     @PostMapping("/checkout/confirm")
@@ -126,6 +212,11 @@ public class CartController {
         }
         model.addAttribute("purchase", purchase);
         return "cart/confirmation";
+    }
+
+    @ModelAttribute("izipayDefaultScriptUrl")
+    public String izipayDefaultScriptUrl() {
+        return "https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js";
     }
 
     private String addToCart(Long eventId, int quantity, Long ticketTypeId, HttpSession session) {
@@ -164,12 +255,40 @@ public class CartController {
         return value == null ? "" : value.trim();
     }
 
+    private String newOrderId() {
+        return "CNF-" + Instant.now().toEpochMilli() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    private String izipayCurrency() {
+        String currency = text(izipayProperties.getCurrency());
+        return currency.isBlank() ? "PEN" : currency;
+    }
+
+    private void clearIzipaySession(HttpSession session) {
+        session.removeAttribute(IZIPAY_CHECKOUT_SESSION_KEY);
+        session.removeAttribute(IZIPAY_FORM_TOKEN_KEY);
+        session.removeAttribute(IZIPAY_ORDER_ID_KEY);
+    }
+
     private void addCartAttributes(HttpSession session, Model model) {
         model.addAttribute("items", cartService.getItems(session));
         model.addAttribute("cartCount", cartService.countItems(session));
         model.addAttribute("subtotal", cartService.subtotal(session));
         model.addAttribute("serviceFee", cartService.serviceFee(session));
         model.addAttribute("total", cartService.total(session));
+    }
+
+    private void addIzipayAttributes(HttpSession session, Model model) {
+        String scriptUrl = text(izipayProperties.getSmartFormScriptUrl());
+        model.addAttribute("izipayEnabled", izipayPaymentService.isEnabled());
+        model.addAttribute("izipayReady", izipayPaymentService.isReady());
+        model.addAttribute("izipayPublicKey", text(izipayProperties.getPublicKey()));
+        model.addAttribute("izipayScriptUrl", scriptUrl.isBlank() ? izipayDefaultScriptUrl() : scriptUrl);
+        model.addAttribute("izipaySuccessUrl", text(izipayProperties.getSuccessUrl()));
+        model.addAttribute("izipayErrorUrl", text(izipayProperties.getErrorUrl()));
+        model.addAttribute("izipayCancelUrl", text(izipayProperties.getCancelUrl()));
+        model.addAttribute("izipayFormToken", session.getAttribute(IZIPAY_FORM_TOKEN_KEY));
+        model.addAttribute("izipayOrderId", session.getAttribute(IZIPAY_ORDER_ID_KEY));
     }
 
     private record NameParts(String firstName, String lastName) {

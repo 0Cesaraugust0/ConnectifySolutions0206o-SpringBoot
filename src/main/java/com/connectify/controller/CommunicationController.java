@@ -29,10 +29,25 @@ public class CommunicationController {
     }
 
     @GetMapping
-    public String inbox(@RequestParam(defaultValue = "ADMIN") Role role, Model model) {
-        model.addAttribute("role", role);
-        model.addAttribute("messages", messageService.inbox(role));
-        model.addAttribute("unread", messageService.unread(role));
+    public String inbox(@RequestParam(required = false) Role role,
+                        Authentication authentication,
+                        Model model) {
+        Role currentRole = currentRole(authentication);
+        String email = authentication != null ? authentication.getName() : "system@connectify.com";
+
+        if (currentRole == Role.CLIENT) {
+            model.addAttribute("supportMode", true);
+            model.addAttribute("role", Role.CLIENT);
+            model.addAttribute("messages", messageService.sent(email));
+            model.addAttribute("unread", 0);
+            return "communications/inbox";
+        }
+
+        Role inboxRole = role != null ? role : currentRole;
+        model.addAttribute("supportMode", false);
+        model.addAttribute("role", inboxRole);
+        model.addAttribute("messages", messageService.inbox(inboxRole));
+        model.addAttribute("unread", messageService.unread(inboxRole));
         return "communications/inbox";
     }
 
@@ -44,7 +59,13 @@ public class CommunicationController {
     }
 
     @GetMapping("/new")
-    public String newMessage(Model model) {
+    public String newMessage(Authentication authentication, Model model) {
+        Role currentRole = currentRole(authentication);
+        boolean supportMode = currentRole == Role.CLIENT;
+
+        model.addAttribute("supportMode", supportMode);
+        model.addAttribute("senderRole", supportMode ? Role.CLIENT : currentRole);
+        model.addAttribute("senderEmail", authentication != null ? authentication.getName() : "");
         model.addAttribute("roles", Role.values());
         model.addAttribute("types", MessageType.values());
         model.addAttribute("priorities", MessagePriority.values());
@@ -54,29 +75,80 @@ public class CommunicationController {
 
     @PostMapping
     public String create(@RequestParam String senderName,
-                         @RequestParam String senderEmail,
-                         @RequestParam Role senderRole,
-                         @RequestParam Role targetRole,
-                         @RequestParam MessageType type,
-                         @RequestParam MessagePriority priority,
+                         @RequestParam(required = false) String senderEmail,
+                         @RequestParam(required = false) Role senderRole,
+                         @RequestParam(required = false) Role targetRole,
+                         @RequestParam(required = false) MessageType type,
+                         @RequestParam(required = false) MessagePriority priority,
                          @RequestParam String subject,
                          @RequestParam String body,
-                         @RequestParam(required = false) Long relatedEventId) {
-        messageService.create(senderName, senderEmail, senderRole, targetRole, type, priority, subject, body, relatedEventId);
-        return "redirect:/communications?role=" + targetRole.name();
+                         @RequestParam(required = false) Long relatedEventId,
+                         Authentication authentication) {
+        Role currentRole = currentRole(authentication);
+
+        if (currentRole == Role.CLIENT) {
+            String email = authentication != null ? authentication.getName() : senderEmail;
+            messageService.create(senderName, email, Role.CLIENT, Role.ADMIN, MessageType.CUSTOMER_SUPPORT,
+                    MessagePriority.NORMAL, subject, body, null);
+            return "redirect:/communications?sent=true";
+        }
+
+        Role safeSenderRole = senderRole != null ? senderRole : currentRole;
+        Role safeTargetRole = targetRole != null ? targetRole : Role.ADMIN;
+        MessageType safeType = type != null ? type : MessageType.GENERAL_COORDINATION;
+        MessagePriority safePriority = priority != null ? priority : MessagePriority.NORMAL;
+        String safeSenderEmail = senderEmail == null || senderEmail.isBlank()
+                ? authentication != null ? authentication.getName() : "system@connectify.com"
+                : senderEmail;
+
+        messageService.create(senderName, safeSenderEmail, safeSenderRole, safeTargetRole, safeType,
+                safePriority, subject, body, relatedEventId);
+        return "redirect:/communications?role=" + safeTargetRole.name();
     }
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        InternalMessage message = messageService.markAsRead(id);
+    public String detail(@PathVariable Long id, Authentication authentication, Model model) {
+        Role currentRole = currentRole(authentication);
+        InternalMessage message = currentRole == Role.CLIENT
+                ? messageService.findById(id)
+                : messageService.markAsRead(id);
+
+        if (currentRole == Role.CLIENT && !message.getSenderEmail().equalsIgnoreCase(authentication.getName())) {
+            return "redirect:/communications";
+        }
+
+        model.addAttribute("supportMode", currentRole == Role.CLIENT);
         model.addAttribute("message", message);
         model.addAttribute("statuses", MessageStatus.values());
         return "communications/detail";
     }
 
     @PostMapping("/{id}/status")
-    public String updateStatus(@PathVariable Long id, @RequestParam MessageStatus status) {
+    public String updateStatus(@PathVariable Long id,
+                               @RequestParam MessageStatus status,
+                               Authentication authentication) {
+        if (currentRole(authentication) == Role.CLIENT) {
+            return "redirect:/communications";
+        }
         messageService.updateStatus(id, status);
         return "redirect:/communications/" + id;
+    }
+
+    private Role currentRole(Authentication authentication) {
+        if (authentication == null) {
+            return Role.ADMIN;
+        }
+        if (hasRole(authentication, "ROLE_DEVELOPER")) return Role.DEVELOPER;
+        if (hasRole(authentication, "ROLE_ADMIN")) return Role.ADMIN;
+        if (hasRole(authentication, "ROLE_ORGANIZER")) return Role.ORGANIZER;
+        if (hasRole(authentication, "ROLE_CLIENT")) return Role.CLIENT;
+        if (hasRole(authentication, "ROLE_DESIGNER")) return Role.DESIGNER;
+        if (hasRole(authentication, "ROLE_GATE_AGENT")) return Role.GATE_AGENT;
+        return Role.ADMIN;
+    }
+
+    private boolean hasRole(Authentication authentication, String role) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals(role));
     }
 }

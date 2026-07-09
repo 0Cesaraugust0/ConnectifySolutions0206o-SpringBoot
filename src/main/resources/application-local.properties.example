@@ -8,7 +8,7 @@ izipay.currency=PEN
 
 # API REST de Izipay / Mi Cuenta Web (pruebas)
 # Usa la URL CreatePayment indicada en la documentación de tu comercio.
-izipay.endpoint=
+izipay.endpoint=https://api.micuentaweb.pe/api-payment/V4/Charge/CreatePayment
 izipay.username=
 izipay.password=
 
@@ -25,3 +25,6 @@ izipay.cancel-url=http://localhost:8080/payments/izipay/cancel
 # La URL de notificación debe ser HTTPS y públicamente alcanzable.
 # En local, no uses localhost como URL de IPN.
 izipay.notification-url=
+
+# Nota de seguridad: si compartiste capturas con claves visibles, rota esas
+# credenciales en el Back Office antes de pasar a produccion.
