@@ -3,57 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de comunicación - Connectify Solutions</title>
+    <title th:text="${supportMode} ? 'Detalle de consulta - Connectify' : 'Detalle de comunicacion - Connectify'">Detalle</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <script th:src="@{/js/app.js}" defer></script>
+    <style>
+        .message-detail-hero{padding:30px;border-radius:24px;background:linear-gradient(135deg,#111827,#312e81 60%,#7c3aed);color:#fff;box-shadow:0 24px 54px rgba(32,40,90,.18);margin-bottom:22px}.message-detail-hero .badge{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.24)}.message-detail-hero h1{margin:16px 0 8px;color:#fff;max-width:900px}.message-detail-hero p{color:rgba(255,255,255,.82);max-width:780px}.message-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:start}.message-panel,.message-side{background:#fff;border:1px solid #e7eaf3;border-radius:20px;box-shadow:0 18px 42px rgba(15,23,42,.06)}.message-panel{padding:24px}.message-side{padding:20px;position:sticky;top:18px}.message-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}.message-route{display:inline-flex;border-radius:999px;padding:7px 10px;background:#f4f6fb;color:#26324f;font-size:.74rem;font-weight:900;text-transform:uppercase}.message-content{padding:18px;border-radius:16px;background:#f8fafc;border:1px solid #edf0f5;color:#25304b;line-height:1.65;white-space:pre-line}.message-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.message-facts div{padding:12px;border-radius:14px;background:#fbfcff;border:1px solid #edf0f5}.message-facts strong{display:block;color:#667085;font-size:.75rem;text-transform:uppercase}.message-facts span{display:block;margin-top:4px;color:#111827;font-weight:850}.message-side h2{margin-top:0}.message-side .btn{margin-top:10px}@media(max-width:840px){.message-detail-layout{grid-template-columns:1fr}.message-side{position:static}.message-facts{grid-template-columns:1fr}}
+    </style>
 </head>
 <body>
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/communications}">
-        <span class="logo">📌</span>
-        <div><strong>Connectify</strong><small>Detalle de solicitud</small></div>
+        <span class="logo">BM</span>
+        <div><strong>Connectify</strong><small th:text="${supportMode} ? 'Consulta Cliente' : 'Detalle de mensaje'">Detalle</small></div>
     </a>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/communications(role=${message.targetRole})}">Volver a bandeja</a>
-        <a class="btn secondary" th:href="@{/communications/new}">Nuevo mensaje</a>
+        <a class="btn secondary" th:if="${supportMode}" th:href="@{/communications}">Mis consultas</a>
+        <a class="btn secondary" th:if="${customerInboxMode}" th:href="@{/communications(from='CLIENT')}">Mensajeria de los Clientes</a>
+        <a class="btn secondary" th:if="${operationsMode}" th:href="@{/communications(box='operations')}">Solicitudes</a>
+        <a class="btn secondary" th:if="${supportMode or operationsMode}" th:href="@{/communications/new}" th:text="${supportMode} ? 'Escribir a Soporte' : 'Nueva solicitud'">Nueva solicitud</a>
     </nav>
 </header>
 
 <main class="dashboard-page">
-    <section class="dashboard-hero">
-        <p class="badge" th:text="${message.type}">GENERAL_COORDINATION</p>
+    <section class="message-detail-hero">
+        <p class="badge" th:text="${supportMode} ? 'Cliente -> Soporte' : ${message.type}">GENERAL_COORDINATION</p>
         <h1 th:text="${message.subject}">Asunto</h1>
-        <p class="muted">Solicitud interna entre agentes del sistema.</p>
+        <p th:text="${supportMode} ? 'Consulta enviada a Soporte Connectify desde la cuenta Cliente.' : 'Mensaje interno registrado entre roles del sistema.'">Detalle del mensaje.</p>
     </section>
 
-    <section class="checkout-layout">
-        <article class="message-card">
-            <div class="message-meta">
-                <span class="role-pill" th:text="${message.senderRole + ' → ' + message.targetRole}">ADMIN → ORGANIZER</span>
-                <span class="priority-pill" th:classappend="${message.priority == T(com.connectify.entity.MessagePriority).URGENT ? ' priority-urgent' : message.priority == T(com.connectify.entity.MessagePriority).HIGH ? ' priority-high' : message.priority == T(com.connectify.entity.MessagePriority).LOW ? ' priority-low' : ' priority-normal'}" th:text="${message.priority}">NORMAL</span>
-                <span class="status-pill" th:classappend="${message.status == T(com.connectify.entity.MessageStatus).RESOLVED ? ' status-resolved' : message.status == T(com.connectify.entity.MessageStatus).IN_PROGRESS ? ' status-progress' : message.status == T(com.connectify.entity.MessageStatus).ARCHIVED ? ' status-archived' : ' status-open'}" th:text="${message.status}">OPEN</span>
+    <section class="message-detail-layout">
+        <article class="message-panel">
+            <div class="message-head">
+                <span class="message-route" th:text="${supportMode ? 'CLIENTE -> ADMIN' : message.senderRole + ' -> ' + message.targetRole}">CLIENTE -> ADMIN</span>
+                <div>
+                    <span class="priority-pill" th:unless="${supportMode}" th:classappend="${message.priority == T(com.connectify.entity.MessagePriority).URGENT ? ' priority-urgent' : message.priority == T(com.connectify.entity.MessagePriority).HIGH ? ' priority-high' : message.priority == T(com.connectify.entity.MessagePriority).LOW ? ' priority-low' : ' priority-normal'}" th:text="${message.priority}">NORMAL</span>
+                    <span class="status-pill" th:classappend="${message.status == T(com.connectify.entity.MessageStatus).RESOLVED ? ' status-resolved' : message.status == T(com.connectify.entity.MessageStatus).IN_PROGRESS ? ' status-progress' : message.status == T(com.connectify.entity.MessageStatus).ARCHIVED ? ' status-archived' : ' status-open'}" th:text="${message.status}">OPEN</span>
+                </div>
             </div>
 
             <h2>Mensaje</h2>
-            <p class="message-body" th:text="${message.body}">Cuerpo</p>
+            <div class="message-content" th:text="${message.body}">Cuerpo</div>
 
-            <div class="event-meta-grid">
+            <div class="message-facts">
                 <div><strong>Remitente</strong><span th:text="${message.senderName}">Nombre</span></div>
                 <div><strong>Email</strong><span th:text="${message.senderEmail}">email</span></div>
                 <div><strong>Creado</strong><span th:text="${#temporals.format(message.createdAt, 'dd/MM/yyyy HH:mm')}">fecha</span></div>
-                <div><strong>Leído</strong><span th:text="${message.readByTarget ? 'Sí' : 'No'}">Sí</span></div>
+                <div th:unless="${supportMode}"><strong>Leido</strong><span th:text="${message.readByTarget ? 'Si' : 'No'}">Si</span></div>
             </div>
 
-            <div th:if="${message.relatedEvent != null}" class="payment-box">
+            <div th:if="${message.relatedEvent != null}" class="payment-box" style="margin-top:18px">
                 <h3>Evento relacionado</h3>
                 <p class="muted"><strong th:text="${message.relatedEvent.title}">Evento</strong></p>
                 <a class="btn secondary compact" th:href="@{/events/{id}(id=${message.relatedEvent.id})}">Ver evento</a>
             </div>
         </article>
 
-        <aside class="summary-card">
-            <h2>Gestión</h2>
+        <aside class="message-side" th:if="${supportMode}">
+            <h2>Estado</h2>
+            <div class="summary-row"><span>Destino</span><strong>Soporte Connectify</strong></div>
+            <div class="summary-row"><span>Estado</span><strong th:text="${message.status}">OPEN</strong></div>
+            <p class="muted small">El equipo de Soporte revisa esta consulta desde su bandeja de atencion.</p>
+            <a class="btn secondary full" th:href="@{/communications}">Volver a mis consultas</a>
+        </aside>
+
+        <aside class="message-side" th:unless="${supportMode}">
+            <h2>Gestion</h2>
             <form th:action="@{/communications/{id}/status(id=${message.id})}" method="post" class="auth-form">
                 <label>Cambiar estado</label>
                 <select class="search-input" name="status">
@@ -61,7 +75,9 @@
                 </select>
                 <button class="btn primary full" type="submit">Actualizar estado</button>
             </form>
-            <a class="btn secondary full" th:href="@{/communications(role=${message.targetRole})}">Volver a bandeja</a>
+            <a class="btn secondary full" th:if="${customerInboxMode}" th:href="@{/communications(from='CLIENT')}">Volver a mensajeria de Clientes</a>
+            <a class="btn secondary full" th:if="${operationsMode}" th:href="@{/communications(box='operations')}">Volver a solicitudes</a>
+            <a class="btn secondary full" th:if="${!customerInboxMode and !operationsMode}" th:href="@{/communications(role=${message.targetRole})}">Volver a bandeja</a>
         </aside>
     </section>
 </main>

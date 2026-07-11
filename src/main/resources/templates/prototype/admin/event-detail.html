@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de evento - Administrador</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/prototype/admin/events}">
+        <span class="logo">🛡️</span>
+        <div><strong>Connectify</strong><small>Revisión administrativa</small></div>
+    </a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/prototype/admin/events}">Eventos</a>
+        <a class="btn secondary" th:href="@{/prototype}">Flujo</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero">
+        <p class="badge">Decisión administrativa</p>
+        <h1 th:text="${event.title}">Evento</h1>
+        <p class="muted">Valida la información del evento y registra una decisión antes de publicarlo.</p>
+    </section>
+
+    <section class="checkout-layout">
+        <div class="checkout-form">
+            <h2>Datos del evento</h2>
+            <div class="summary-row"><span>Estado</span><strong th:text="${event.status}">PENDING_REVIEW</strong></div>
+            <div class="summary-row"><span>Categoría</span><strong th:text="${event.category != null ? event.category.name : 'Sin categoría'}">Categoría</strong></div>
+            <div class="summary-row"><span>Fecha</span><strong th:text="${event.eventDate != null ? #temporals.format(event.eventDate, 'dd MMM yyyy HH:mm') : 'Sin fecha'}">Fecha</strong></div>
+            <div class="summary-row"><span>Ubicación</span><strong th:text="${event.location + ' - ' + event.city}">Lugar</strong></div>
+            <div class="summary-row"><span>Capacidad</span><strong th:text="${event.capacity}">0</strong></div>
+            <div class="summary-row"><span>Precio base</span><strong th:text="${'S/ ' + event.price}">S/ 0.00</strong></div>
+            <div class="summary-row"><span>Organizador</span><strong th:text="${event.organizerName}">Organizador</strong></div>
+
+            <h2>Entradas</h2>
+            <table class="table-modern">
+                <thead><tr><th>Tipo</th><th>Precio</th><th>Cupos</th></tr></thead>
+                <tbody>
+                <tr th:each="ticketType : ${ticketTypes}">
+                    <td th:text="${ticketType.name}">General</td>
+                    <td th:text="${'S/ ' + ticketType.price}">S/ 0.00</td>
+                    <td th:text="${ticketType.quantityAvailable}">0</td>
+                </tr>
+                <tr th:if="${ticketTypes == null || ticketTypes.isEmpty()}"><td colspan="3" class="empty-row">No hay tipos de entrada registrados.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <aside class="summary-card">
+            <h2>Decisión</h2>
+            <div th:if="${param.approved}" class="alert success">Evento aprobado.</div>
+            <div th:if="${param.published}" class="alert success">Evento publicado en marketplace.</div>
+            <div th:if="${param.observed}" class="alert success">Evento devuelto para corrección.</div>
+            <div th:if="${param.rejected}" class="alert error">Evento rechazado.</div>
+
+            <form class="auth-form" th:action="@{/prototype/admin/events/{id}/approve(id=${event.id})}" method="post">
+                <label>Nota de aprobación</label>
+                <textarea class="search-input" name="note" rows="2" placeholder="Datos y entradas conformes."></textarea>
+                <button class="btn primary full" type="submit">Aprobar evento</button>
+            </form>
+
+            <form class="auth-form" th:action="@{/prototype/admin/events/{id}/publish(id=${event.id})}" method="post">
+                <label>Nota de publicación</label>
+                <textarea class="search-input" name="note" rows="2" placeholder="Evento publicado en marketplace."></textarea>
+                <button class="btn secondary full" type="submit">Publicar</button>
+            </form>
+
+            <form class="auth-form" th:action="@{/prototype/admin/events/{id}/observe(id=${event.id})}" method="post">
+                <label>Corrección requerida</label>
+                <textarea class="search-input" name="note" rows="2" placeholder="Indica que debe corregir el organizador."></textarea>
+                <button class="btn secondary full" type="submit">Devolver para corrección</button>
+            </form>
+
+            <form class="auth-form" th:action="@{/prototype/admin/events/{id}/reject(id=${event.id})}" method="post">
+                <label>Motivo de rechazo</label>
+                <textarea class="search-input" name="note" rows="2" placeholder="Motivo administrativo."></textarea>
+                <button class="btn secondary full" type="submit">Rechazar</button>
+            </form>
+        </aside>
+    </section>
+
+    <section class="table-card">
+        <h2>Bitácora</h2>
+        <table class="table-modern">
+            <thead><tr><th>Registro</th><th>Fecha</th></tr></thead>
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td><strong th:text="${record.type}">TIPO</strong><span class="data-sub" th:text="${record.description}">Descripción</span></td>
+                <td th:text="${record.createdAt != null ? #temporals.format(record.createdAt, 'dd MMM yyyy HH:mm') : ''}">Fecha</td>
+            </tr>
+            <tr th:if="${records == null || records.isEmpty()}"><td colspan="2" class="empty-row">Aún no hay registros administrativos.</td></tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

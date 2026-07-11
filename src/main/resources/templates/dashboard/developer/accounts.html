@@ -10,7 +10,7 @@
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/dashboard/developer}"><span class="logo">🧰</span><div><strong>Connectify</strong><small>Developer</small></div></a>
+    <a class="brand brand-link" th:href="@{/dashboard/developer}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Developer</small></div></a>
     <nav class="top-actions"><a class="btn secondary" th:href="@{/dashboard/developer}">Volver al panel</a><form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form></nav>
 </header>
 
@@ -19,9 +19,9 @@
         <div>
             <p class="badge">Provisionamiento técnico</p>
             <h1>Gestión de cuentas operativas</h1>
-            <p class="muted">Crea y administra accesos para Administrador, Organizador, Diseñador y Auxiliar de Puerta. Las cuentas Cliente se registran desde el flujo público y las cuentas Developer se mantienen separadas.</p>
+            <p class="muted">Crea y administra accesos para Administrador, Organizador, Diseñador y Auxiliar de Puerta. Las cuentas Cliente y Organizador también pueden iniciar su registro público cuando corresponda.</p>
         </div>
-        <div class="developer-identity"><span>🧰</span><span>Sesión Developer:</span><strong th:text="${developerEmail}">developer@connectify.local</strong></div>
+        <div class="developer-identity"><span>DEV</span><span>Sesión Developer:</span><strong th:text="${developerEmail}">developer@connectify.local</strong></div>
     </section>
 
     <div th:if="${param.created != null}" class="alert success">Cuenta operativa creada correctamente.</div>
@@ -30,22 +30,23 @@
 
     <section class="accounts-console-layout">
         <section class="accounts-panel">
-            <div class="accounts-panel-head"><div><h2>Crear cuenta</h2><p>Los permisos se asignan desde el selector. La contraseña se guarda cifrada.</p></div><span class="accounts-panel-icon">＋</span></div>
+            <div class="accounts-panel-head"><div><h2>Crear cuenta</h2><p>Los permisos se asignan desde el selector. La contraseña se guarda cifrada.</p></div><span class="accounts-panel-icon">+</span></div>
             <form class="account-form" th:action="@{/dashboard/developer/accounts}" method="post">
                 <div class="account-form-grid">
                     <label>Nombres<input name="firstName" type="text" th:value="${firstName}" autocomplete="given-name" placeholder="María Elena" required></label>
-                    <label>Apellidos<input name="lastName" type="text" th:value="${lastName}" autocomplete="family-name" placeholder="García Flores" required></label>
+                    <label>Apellido paterno<input name="paternalLastName" type="text" th:value="${paternalLastName}" autocomplete="family-name" placeholder="García" required></label>
                 </div>
+                <label>Apellido materno <span class="optional">Opcional</span><input name="maternalLastName" type="text" th:value="${maternalLastName}" autocomplete="additional-name" placeholder="Flores"></label>
                 <label>DNI<input name="dni" type="text" inputmode="numeric" pattern="\d{8}" maxlength="8" th:value="${dni}" placeholder="12345678" required></label>
                 <label>Correo institucional<input name="email" type="email" th:value="${email}" autocomplete="email" placeholder="persona@connectify.local" required></label>
                 <label>Contraseña temporal<input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required></label>
                 <div class="role-selector">
                     <label>Permiso operativo
                         <select name="role" required>
-                            <option value="ADMIN" th:selected="${selectedRole.name() == 'ADMIN'}">Administrador — revisión, aprobación y publicación</option>
-                            <option value="ORGANIZER" th:selected="${selectedRole.name() == 'ORGANIZER'}">Organizador — creación de eventos y entradas</option>
-                            <option value="DESIGNER" th:selected="${selectedRole.name() == 'DESIGNER'}">Diseñador — estudio visual y propuesta de Marketplace</option>
-                            <option value="GATE_AGENT" th:selected="${selectedRole.name() == 'GATE_AGENT'}">Auxiliar de Puerta — validación de tickets QR</option>
+                            <option value="ADMIN" th:selected="${selectedRole.name() == 'ADMIN'}">Administrador - revisión, aprobación y publicación</option>
+                            <option value="ORGANIZER" th:selected="${selectedRole.name() == 'ORGANIZER'}">Organizador - creación de eventos y entradas</option>
+                            <option value="DESIGNER" th:selected="${selectedRole.name() == 'DESIGNER'}">Diseñador - estudio visual y propuesta de Marketplace</option>
+                            <option value="GATE_AGENT" th:selected="${selectedRole.name() == 'GATE_AGENT'}">Auxiliar de Puerta - validación de tickets QR</option>
                         </select>
                     </label>
                 </div>
@@ -84,10 +85,10 @@
     </section>
 
     <section class="accounts-policy">
-        <article><span>🛡️</span><strong>Administrador</strong><small>Revisa propuestas, observa, aprueba y publica eventos en Marketplace.</small></article>
-        <article><span>🎯</span><strong>Organizador</strong><small>Crea eventos, define entradas y consulta la operación de sus publicaciones.</small></article>
-        <article><span>🎨</span><strong>Diseñador</strong><small>Trabaja plantillas, colores, portada y composición de la propuesta visual.</small></article>
-        <article><span>📲</span><strong>Auxiliar de Puerta</strong><small>Valida tickets QR en el acceso, sin modificar compras ni contenido del evento.</small></article>
+        <article><span>AD</span><strong>Administrador</strong><small>Revisa propuestas, observa, aprueba y publica eventos en Marketplace.</small></article>
+        <article><span>OR</span><strong>Organizador</strong><small>Crea eventos, define entradas y consulta la operación de sus publicaciones.</small></article>
+        <article><span>DI</span><strong>Diseñador</strong><small>Trabaja plantillas, colores, portada y composición de la propuesta visual.</small></article>
+        <article><span>PU</span><strong>Auxiliar de Puerta</strong><small>Valida tickets QR en el acceso, sin modificar compras ni contenido del evento.</small></article>
     </section>
 </main>
 </body>

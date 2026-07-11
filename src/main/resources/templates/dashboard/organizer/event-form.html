@@ -7,9 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
     <link rel="stylesheet" th:href="@{/css/organizer.css}">
-    <link rel="stylesheet" th:href="@{/css/organizer-presentation-modal.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer-presentation-modal.css(v='templates-2')}">
     <style>
         .create-shell{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}.create-card{background:#fff;border:1px solid #e8eaf2;border-radius:24px;padding:26px;box-shadow:0 18px 45px rgba(15,23,42,.06)}.stepper{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0 22px}.step{padding:10px;border-radius:12px;background:#f5f6fb;color:#68708a;font-size:.83rem;font-weight:800}.step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#e7eaff;color:#4f46e5;margin-right:6px}.step.active{background:#efedff;color:#3328b7}.step.active b{background:#5146e5;color:#fff}.create-section{padding:22px 0;border-top:1px solid #edf0f6}.create-section:first-of-type{border-top:0;padding-top:0}.create-section h2{margin:0 0 4px}.section-note{margin:0 0 18px;color:#667085;font-size:.92rem}.ticket-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:12px 0}.ticket-toolbar small{color:#68708a}.ticket-rows{display:grid;gap:12px}.ticket-row{border:1px solid #e5e8f2;border-radius:16px;padding:16px;background:#fbfcff;position:relative}.ticket-row-grid{display:grid;grid-template-columns:1.15fr .75fr .75fr;gap:12px}.ticket-row .wide{grid-column:1/-1}.remove-ticket{position:absolute;right:12px;top:12px;border:0;background:#fff1f2;color:#be123c;border-radius:8px;padding:7px 9px;font-weight:800;cursor:pointer}.design-request{border:1px solid #dedbff;background:#faf9ff;border-radius:16px;padding:16px;margin-top:14px}.design-request label{font-weight:800}.brief-wrap{display:none;margin-top:12px}.brief-wrap.open{display:block}.summary-side{position:sticky;top:18px}.summary-side h2{margin-top:0}.summary-side .summary-row{padding:13px 0}.price-preview{font-size:1.4rem;font-weight:900;color:#312e81}.save-bar{display:flex;gap:10px;justify-content:flex-end;align-items:center;padding-top:20px}.save-bar .btn{min-width:220px}@media(max-width:980px){.create-shell{grid-template-columns:1fr}.summary-side{position:static}.stepper{grid-template-columns:1fr 1fr}}@media(max-width:620px){.ticket-row-grid,.field-grid{grid-template-columns:1fr}.stepper{grid-template-columns:1fr}.save-bar{align-items:stretch;flex-direction:column}.save-bar .btn{width:100%}}
+        .advanced-presentation{margin-top:16px;border:1px solid #e3e7f3;border-radius:18px;background:#fbfcff;overflow:hidden}.advanced-presentation summary{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 16px;cursor:pointer;font-weight:900;color:#27335d;list-style:none}.advanced-presentation summary::-webkit-details-marker{display:none}.advanced-presentation summary span{color:#6b7280;font-size:.82rem;font-weight:700}.advanced-presentation-body{display:grid;gap:16px;padding:0 16px 16px}.mini-toggle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mini-toggle-grid label{display:flex;gap:8px;align-items:flex-start;padding:10px;border:1px solid #e6e9f2;border-radius:12px;background:#fff;font-weight:800;color:#34405f}.mini-toggle-grid span{display:block;color:#6b7280;font-size:.78rem;font-weight:700}.advanced-presentation textarea{min-height:86px}
     </style>
 </head>
 <body>
@@ -31,7 +32,7 @@
     </section>
 
     <div class="create-shell">
-        <form id="eventCreateForm" class="create-card" th:action="@{/dashboard/organizer/events/create-with-tickets}" method="post">
+        <form id="eventCreateForm" class="create-card" th:action="@{/dashboard/organizer/events/create-with-tickets}" method="post" enctype="multipart/form-data">
             <input id="designTemplate" name="designTemplate" type="hidden" value="CLASSIC">
 
             <section class="create-section">
@@ -51,7 +52,8 @@
             <section class="create-section">
                 <h2>2. Presentación en Marketplace</h2><p class="section-note">Selecciona una plantilla inicial y mírala en una vista paralela. El Diseñador podrá tomar esa base y elevarla cuando le solicites apoyo.</p>
                 <div class="field-grid">
-                    <label class="wide">URL de imagen principal<input id="eventImageUrl" class="search-input" name="imageUrl" type="url" placeholder="https://.../portada-evento.jpg"></label>
+                    <label>URL de imagen principal<input id="eventImageUrl" class="search-input" name="imageUrl" type="url" placeholder="https://.../portada-evento.jpg"></label>
+                    <label>Subir JPG/PNG<input id="eventImageFile" class="search-input" name="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
                 </div>
 
                 <div class="organizer-presentation-picker">
@@ -62,6 +64,35 @@
                     </div>
                     <button id="openPresentationModal" class="btn primary compact" type="button">Plantillas y vista previa</button>
                 </div>
+
+                <details class="advanced-presentation">
+                    <summary>Contenido visual avanzado <span>Fondo, venta flotante, escenario, auspiciadores y media</span></summary>
+                    <div class="advanced-presentation-body">
+                        <div class="field-grid">
+                            <label>URL de fondo para landing<input class="search-input" name="backgroundImageUrl" type="url" placeholder="https://.../fondo-campana.jpg"></label>
+                            <label>Marca visible del organizador<input class="search-input" name="organizerBrandName" type="text" placeholder="Ej. Producciones Andinas"></label>
+                            <label>Logo del organizador<input class="search-input" name="organizerLogoUrl" type="url" placeholder="https://.../logo.png"></label>
+                            <label class="wide">Texto destacado<input class="search-input" name="highlightText" type="text" placeholder="Ej. Preventa exclusiva, experiencia inmersiva o recorrido nacional."></label>
+                        </div>
+                        <div class="mini-toggle-grid">
+                            <label><input name="floatingSalesCard" value="true" type="checkbox"> Ficha de venta flotante <span>Ideal para Venta con panel lateral.</span></label>
+                            <label><input name="showSponsors" value="true" type="checkbox"> Marcas auspiciadoras <span>Nombres y/o logos por linea.</span></label>
+                            <label><input name="showMedia" value="true" type="checkbox"> YouTube / Spotify <span>Video y playlist del evento.</span></label>
+                            <label><input name="showStageMap" value="true" type="checkbox"> Escenario / zonas <span>PNG del mapa de zonas o descripcion.</span></label>
+                            <label><input name="showSessions" value="true" type="checkbox"> Sesiones desplegables <span>Gira nacional o fechas multiples.</span></label>
+                        </div>
+                        <div class="field-grid">
+                            <label class="wide">Auspiciadores<textarea class="search-input" name="sponsorsText" rows="3" placeholder="Marca A&#10;Marca B&#10;Institucion C"></textarea></label>
+                            <label class="wide">URLs de logos de auspiciadores<textarea class="search-input" name="sponsorLogosText" rows="3" placeholder="https://.../logo-bbva.png&#10;https://.../logo-radio.png"></textarea></label>
+                            <label>YouTube<input class="search-input" name="youtubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></label>
+                            <label>Playlist Spotify<input class="search-input" name="spotifyUrl" type="url" placeholder="https://open.spotify.com/playlist/..."></label>
+                            <label>URL PNG/JPG del escenario<input class="search-input" name="stageImageUrl" type="url" placeholder="https://.../mapa-escenario.png"></label>
+                            <label>Subir escenario PNG/JPG<input class="search-input" name="stageImageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+                            <label class="wide">Detalle del escenario<textarea class="search-input" name="stageText" rows="3" placeholder="Escenario principal, Platinum, VIP, General, accesos..."></textarea></label>
+                            <label class="wide">Sesiones, fechas o ciudades<textarea class="search-input" name="sessionText" rows="4" placeholder="Lima | 25 julio | Parque de la Exposicion&#10;Cusco | 28 julio | Explanada principal&#10;Tacna | 30 julio | Parque Peru"></textarea></label>
+                        </div>
+                    </div>
+                </details>
 
                 <div class="design-request">
                     <label><input id="requestDesigner" name="requestDesigner" value="true" type="checkbox"> Solicitar apoyo del Diseñador sobre esta plantilla</label>
@@ -112,10 +143,14 @@
             </div>
             <div class="presentation-modal-body">
                 <aside class="template-library">
-                    <p class="template-library-title">4 plantillas disponibles</p>
+                    <p class="template-library-title">8 plantillas disponibles</p>
                     <button class="template-option active" type="button" data-template="CLASSIC"><div class="template-option-top"><span class="template-option-icon">◫</span><strong>Clásico</strong></div><small>Presentación limpia, equilibrada y fácil de leer.</small></button>
                     <button class="template-option" type="button" data-template="CARD_GRID"><div class="template-option-top"><span class="template-option-icon">▦</span><strong>Cards Marketplace</strong></div><small>Catálogo compacto con datos y entradas visibles.</small></button>
                     <button class="template-option" type="button" data-template="PROMO_DETAIL"><div class="template-option-top"><span class="template-option-icon">✦</span><strong>Detalle promocional</strong></div><small>Hero dominante para campañas, festivales o lanzamientos.</small></button>
+                    <button class="template-option" type="button" data-template="POSTER_LANDING"><div class="template-option-top"><span class="template-option-icon">▣</span><strong>Landing publicitaria</strong></div><small>Portada completa tipo campaña, ideal para shows, circo o lanzamiento.</small></button>
+                    <button class="template-option" type="button" data-template="TICKET_PANEL"><div class="template-option-top"><span class="template-option-icon">▥</span><strong>Venta con panel lateral</strong></div><small>Imagen fuerte y entradas siempre visibles para alta demanda.</small></button>
+                    <button class="template-option" type="button" data-template="STAGE_MEDIA"><div class="template-option-top"><span class="template-option-icon">▴</span><strong>Escenario + media</strong></div><small>Escenario, auspiciadores, video y playlist para ferias o festivales.</small></button>
+                    <button class="template-option" type="button" data-template="TOUR_SESSIONS"><div class="template-option-top"><span class="template-option-icon">＋</span><strong>Gira por sesiones</strong></div><small>Fechas o ciudades desplegables con acceso rápido a compra.</small></button>
                     <button class="template-option" type="button" data-template="IMMERSIVE"><div class="template-option-top"><span class="template-option-icon">◉</span><strong>Inmersivo premium</strong></div><small>Composición visual intensa para experiencias destacadas.</small></button>
                 </aside>
                 <section class="template-preview-zone">
@@ -181,7 +216,7 @@
     ticketRows.addEventListener('input', syncTickets);
     requestDesigner.addEventListener('change', () => { designBriefWrap.classList.toggle('open', requestDesigner.checked); designerState.textContent = requestDesigner.checked ? 'Solicitud incluida' : 'No solicitado'; });
 
-    const templateNames = { CLASSIC: 'Clásico', CARD_GRID: 'Cards Marketplace', PROMO_DETAIL: 'Detalle promocional', IMMERSIVE: 'Inmersivo premium' };
+    const templateNames = { CLASSIC: 'Clásico', CARD_GRID: 'Cards Marketplace', PROMO_DETAIL: 'Detalle promocional', POSTER_LANDING: 'Landing publicitaria', TICKET_PANEL: 'Venta con panel lateral', STAGE_MEDIA: 'Escenario + media', TOUR_SESSIONS: 'Gira por sesiones', IMMERSIVE: 'Inmersivo premium' };
     const designTemplateInput = document.getElementById('designTemplate');
     const templateModal = document.getElementById('presentationModal');
     const templatePreview = document.getElementById('templatePreview');
@@ -202,7 +237,23 @@
 
     function inputValue(id, fallback) { const node = document.getElementById(id); return node && node.value && node.value.trim() ? node.value.trim() : fallback; }
     function selectedCategory() { const select = document.getElementById('eventCategory'); return select && select.selectedOptions.length && select.value ? select.selectedOptions[0].text : 'Categoría del evento'; }
-    function updateImagePreview() { const imageUrl = inputValue('eventImageUrl', ''); if (imageUrl) { templatePreviewImage.src = imageUrl; templatePreviewImage.hidden = false; templatePreviewFallback.hidden = true; } else { templatePreviewImage.removeAttribute('src'); templatePreviewImage.hidden = true; templatePreviewFallback.hidden = false; } }
+    function updateImagePreview() {
+        const imageFile = document.getElementById('eventImageFile');
+        const imageUrl = inputValue('eventImageUrl', '');
+        if (imageFile && imageFile.files && imageFile.files[0]) {
+            templatePreviewImage.src = URL.createObjectURL(imageFile.files[0]);
+            templatePreviewImage.hidden = false;
+            templatePreviewFallback.hidden = true;
+        } else if (imageUrl) {
+            templatePreviewImage.src = imageUrl;
+            templatePreviewImage.hidden = false;
+            templatePreviewFallback.hidden = true;
+        } else {
+            templatePreviewImage.removeAttribute('src');
+            templatePreviewImage.hidden = true;
+            templatePreviewFallback.hidden = false;
+        }
+    }
     function syncTemplatePreview() {
         templatePreview.dataset.template = workingTemplate;
         templatePreviewLabel.textContent = templateNames[workingTemplate];
@@ -227,7 +278,7 @@
     document.querySelectorAll('.template-option').forEach(option => option.addEventListener('click', () => { workingTemplate = option.dataset.template; syncTemplatePreview(); }));
     document.getElementById('applyTemplate').addEventListener('click', () => { designTemplateInput.value = workingTemplate; setAppliedTemplate(); closePresentationModal(); });
     document.getElementById('toggleTemplateMobile').addEventListener('click', event => { templatePreview.classList.toggle('mobile'); event.currentTarget.textContent = templatePreview.classList.contains('mobile') ? 'Modo escritorio' : 'Modo móvil'; document.getElementById('templatePreviewMode').textContent = templatePreview.classList.contains('mobile') ? 'Vista móvil' : 'Vista de detalle'; });
-    ['eventTitle','eventDescription','eventCategory','eventDate','eventCity','eventImageUrl','eventCapacity','basePrice'].forEach(id => { const node = document.getElementById(id); if (node) node.addEventListener('input', syncTemplatePreview); if (node) node.addEventListener('change', syncTemplatePreview); });
+    ['eventTitle','eventDescription','eventCategory','eventDate','eventCity','eventImageUrl','eventImageFile','eventCapacity','basePrice'].forEach(id => { const node = document.getElementById(id); if (node) node.addEventListener('input', syncTemplatePreview); if (node) node.addEventListener('change', syncTemplatePreview); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape') closePresentationModal(); });
     setAppliedTemplate();
     syncTickets();

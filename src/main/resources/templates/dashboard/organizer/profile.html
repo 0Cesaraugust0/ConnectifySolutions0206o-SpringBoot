@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos de organizador - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+</head>
+<body>
+<header class="navbar dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/organizer}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Datos de organizador</small></div></a>
+    <nav class="top-actions">
+        <a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a>
+        <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
+    </nav>
+</header>
+
+<main class="dashboard-page">
+    <section class="dashboard-hero organizer-profile-hero">
+        <p class="badge">Identificación del publicador</p>
+        <h1>Datos de organizador</h1>
+        <p class="muted">Esta información identifica a la cuenta que crea eventos y ayuda al administrador durante la revisión.</p>
+    </section>
+
+    <form class="organizer-profile-form" th:action="@{/dashboard/organizer/profile}" method="post">
+        <section class="organizer-profile-section">
+            <div>
+                <h2>Datos comerciales</h2>
+                <p class="muted small">Razón social, RUC y teléfono visible para gestión interna.</p>
+            </div>
+            <label>Razón social o nombre comercial<input name="companyName" type="text" th:value="${account != null ? account.companyName : ''}" placeholder="Connectify Producciones S.A.C." required></label>
+            <div class="organizer-profile-grid">
+                <label>RUC<input name="ruc" type="text" inputmode="numeric" maxlength="11" th:value="${account != null ? account.ruc : ''}" placeholder="20123456789" required></label>
+                <label>Teléfono<input name="phone" type="tel" th:value="${account != null ? account.phone : ''}" placeholder="987 654 321"></label>
+            </div>
+        </section>
+
+        <section class="organizer-profile-section">
+            <div>
+                <h2>Representante</h2>
+                <p class="muted small">Apellidos separados para mantener la ficha ordenada.</p>
+            </div>
+            <div class="organizer-profile-grid">
+                <label>Nombres<input name="firstName" type="text" th:value="${account != null ? (account.firstName != null && !account.firstName.isBlank() ? account.firstName : account.fullName) : ''}" placeholder="Valeria" required></label>
+                <label>Apellido paterno<input name="paternalLastName" type="text" th:value="${account != null ? account.paternalLastName : ''}" placeholder="Torres" required></label>
+            </div>
+            <div class="organizer-profile-grid">
+                <label>Apellido materno<input name="maternalLastName" type="text" th:value="${account != null ? account.maternalLastName : ''}" placeholder="Rojas"></label>
+                <label>DNI<input name="dni" type="text" inputmode="numeric" maxlength="8" th:value="${account != null ? account.dni : ''}" placeholder="12345678"></label>
+            </div>
+        </section>
+
+        <div class="organizer-profile-actions">
+            <a class="btn secondary" th:href="@{/dashboard/organizer}">Cancelar</a>
+            <button class="btn primary" type="submit">Guardar datos</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

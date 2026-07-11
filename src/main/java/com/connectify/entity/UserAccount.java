@@ -20,6 +20,10 @@ public class UserAccount {
     @Column(nullable = false)
     private String fullName;
 
+    private String firstName;
+    private String paternalLastName;
+    private String maternalLastName;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -56,6 +60,30 @@ public class UserAccount {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getPaternalLastName() {
+        return paternalLastName;
+    }
+
+    public void setPaternalLastName(String paternalLastName) {
+        this.paternalLastName = paternalLastName;
+    }
+
+    public String getMaternalLastName() {
+        return maternalLastName;
+    }
+
+    public void setMaternalLastName(String maternalLastName) {
+        this.maternalLastName = maternalLastName;
     }
 
     public String getEmail() {

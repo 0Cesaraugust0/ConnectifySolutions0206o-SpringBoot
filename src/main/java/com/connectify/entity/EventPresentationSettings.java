@@ -32,11 +32,26 @@ public class EventPresentationSettings {
     @Column(length = 500)
     private String highlightText;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String coverImageUrl;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String thumbnailImageUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String backgroundImageUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String stageImageUrl;
+
+    @Column(length = 180)
+    private String organizerBrandName;
+
+    @Column(columnDefinition = "TEXT")
+    private String organizerLogoUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String sponsorLogosText;
 
     @Column(length = 20)
     private String coverFocus = "CENTER";
@@ -53,18 +68,36 @@ public class EventPresentationSettings {
 
     private boolean showAgenda = false;
 
-    @Column(length = 1500)
+    @Column(columnDefinition = "TEXT")
     private String agendaText;
 
     private boolean showBenefits = false;
 
-    @Column(length = 1500)
+    @Column(columnDefinition = "TEXT")
     private String benefitsText;
 
     private boolean showSponsors = false;
 
-    @Column(length = 1200)
+    @Column(columnDefinition = "TEXT")
     private String sponsorsText;
+
+    private boolean showMedia = false;
+
+    @Column(columnDefinition = "TEXT")
+    private String youtubeUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String spotifyUrl;
+
+    private boolean showStageMap = false;
+
+    @Column(columnDefinition = "TEXT")
+    private String stageText;
+
+    private boolean showSessions = false;
+
+    @Column(columnDefinition = "TEXT")
+    private String sessionText;
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -81,6 +114,16 @@ public class EventPresentationSettings {
     public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; touch(); }
     public String getThumbnailImageUrl() { return thumbnailImageUrl; }
     public void setThumbnailImageUrl(String thumbnailImageUrl) { this.thumbnailImageUrl = thumbnailImageUrl; touch(); }
+    public String getBackgroundImageUrl() { return backgroundImageUrl; }
+    public void setBackgroundImageUrl(String backgroundImageUrl) { this.backgroundImageUrl = backgroundImageUrl; touch(); }
+    public String getStageImageUrl() { return stageImageUrl; }
+    public void setStageImageUrl(String stageImageUrl) { this.stageImageUrl = stageImageUrl; touch(); }
+    public String getOrganizerBrandName() { return organizerBrandName; }
+    public void setOrganizerBrandName(String organizerBrandName) { this.organizerBrandName = organizerBrandName; touch(); }
+    public String getOrganizerLogoUrl() { return organizerLogoUrl; }
+    public void setOrganizerLogoUrl(String organizerLogoUrl) { this.organizerLogoUrl = organizerLogoUrl; touch(); }
+    public String getSponsorLogosText() { return sponsorLogosText; }
+    public void setSponsorLogosText(String sponsorLogosText) { this.sponsorLogosText = sponsorLogosText; touch(); }
     public String getCoverFocus() { return coverFocus; }
     public void setCoverFocus(String coverFocus) { this.coverFocus = coverFocus; touch(); }
     public String getContentFocus() { return contentFocus; }
@@ -103,6 +146,20 @@ public class EventPresentationSettings {
     public void setShowSponsors(boolean showSponsors) { this.showSponsors = showSponsors; touch(); }
     public String getSponsorsText() { return sponsorsText; }
     public void setSponsorsText(String sponsorsText) { this.sponsorsText = sponsorsText; touch(); }
+    public boolean isShowMedia() { return showMedia; }
+    public void setShowMedia(boolean showMedia) { this.showMedia = showMedia; touch(); }
+    public String getYoutubeUrl() { return youtubeUrl; }
+    public void setYoutubeUrl(String youtubeUrl) { this.youtubeUrl = youtubeUrl; touch(); }
+    public String getSpotifyUrl() { return spotifyUrl; }
+    public void setSpotifyUrl(String spotifyUrl) { this.spotifyUrl = spotifyUrl; touch(); }
+    public boolean isShowStageMap() { return showStageMap; }
+    public void setShowStageMap(boolean showStageMap) { this.showStageMap = showStageMap; touch(); }
+    public String getStageText() { return stageText; }
+    public void setStageText(String stageText) { this.stageText = stageText; touch(); }
+    public boolean isShowSessions() { return showSessions; }
+    public void setShowSessions(boolean showSessions) { this.showSessions = showSessions; touch(); }
+    public String getSessionText() { return sessionText; }
+    public void setSessionText(String sessionText) { this.sessionText = sessionText; touch(); }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 

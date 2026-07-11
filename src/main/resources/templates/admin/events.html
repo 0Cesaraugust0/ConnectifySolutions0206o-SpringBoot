@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventos Admin - Connectify Solutions</title>
+    <title>Control de puerta - Administrador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/cart.css}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/admin}">
-        <span class="logo">🛡️</span>
-        <div><strong>Connectify</strong><small>Administrador</small></div>
+        <span class="logo">🚪</span>
+        <div><strong>Connectify</strong><small>Control de puerta</small></div>
     </a>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/tickets/gate}">Control de puerta</a>
+        <a class="btn secondary" th:href="@{/dashboard/admin}">Panel Admin</a>
         <a class="btn secondary" th:href="@{/events}">Marketplace</a>
     </nav>
 </header>
 
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge">Administración</p>
+        <p class="badge">Administrador</p>
         <h1>Eventos y acceso de puerta</h1>
-        <p class="muted">Configura el código del evento y la contraseña diaria que usará el auxiliar en puerta.</p>
+        <p class="muted">Configura el código del evento y la contraseña diaria que usará el agente de acceso para validar tickets QR.</p>
     </section>
 
     <section class="cart-items">

@@ -9,10 +9,12 @@ import com.connectify.entity.MessagePriority;
 import com.connectify.entity.MessageType;
 import com.connectify.entity.Role;
 import com.connectify.entity.TicketType;
+import com.connectify.entity.UserAccount;
 import com.connectify.repository.CategoryRepository;
 import com.connectify.repository.EventAdminRecordRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
+import com.connectify.repository.UserAccountRepository;
 import com.connectify.service.InternalMessageService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -43,17 +45,20 @@ public class OrganizerDashboardController {
     private final TicketTypeRepository ticketTypeRepository;
     private final EventAdminRecordRepository recordRepository;
     private final InternalMessageService messageService;
+    private final UserAccountRepository userAccountRepository;
 
     public OrganizerDashboardController(EventRepository eventRepository,
                                         CategoryRepository categoryRepository,
                                         TicketTypeRepository ticketTypeRepository,
                                         EventAdminRecordRepository recordRepository,
-                                        InternalMessageService messageService) {
+                                        InternalMessageService messageService,
+                                        UserAccountRepository userAccountRepository) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.recordRepository = recordRepository;
         this.messageService = messageService;
+        this.userAccountRepository = userAccountRepository;
     }
 
     @GetMapping
@@ -90,7 +95,7 @@ public class OrganizerDashboardController {
         event.setEventDate(LocalDateTime.parse(eventDate));
         event.setLocation(location);
         event.setCity(city);
-        event.setOrganizerName(displayNameFromEmail(organizerEmail));
+        event.setOrganizerName(organizerDisplayName(organizerEmail));
         event.setOrganizerEmail(organizerEmail);
         event.setPrice(price);
         event.setCapacity(capacity);
@@ -315,7 +320,7 @@ public class OrganizerDashboardController {
     }
 
     private boolean isLocked(Event event) {
-        return event.getStatus() == EventStatus.APPROVED || event.getStatus() == EventStatus.PUBLISHED;
+        return event.getStatus() == EventStatus.PUBLISHED;
     }
 
     private String resolveTicketTypeName(String namePreset, String customName) {
@@ -335,6 +340,21 @@ public class OrganizerDashboardController {
         String localPart = email.contains("@") ? email.substring(0, email.indexOf('@')) : email;
         String normalized = localPart.replace('.', ' ').replace('_', ' ').replace('-', ' ').trim();
         return normalized.isBlank() ? "Organizador" : normalized.substring(0, 1).toUpperCase() + normalized.substring(1);
+    }
+
+    private String organizerDisplayName(String email) {
+        UserAccount account = userAccountRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (account != null && hasText(account.getCompanyName())) {
+            return account.getCompanyName().trim();
+        }
+        if (account != null && hasText(account.getFullName())) {
+            return account.getFullName().trim();
+        }
+        return displayNameFromEmail(email);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     private String buildEventChangeSummary(Event event, String title, String description, Category category,

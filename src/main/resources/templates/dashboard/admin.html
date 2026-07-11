@@ -9,33 +9,40 @@
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <div class="brand"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div></div>
+    <div class="brand"><span class="logo">AD</span><div><strong>Connectify</strong><small>Administrador</small></div></div>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/dashboard/admin/events(view='list')}">Gestión de eventos</a>
-        <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Solicitudes</a>
-        <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
+        <span class="btn secondary">Eventos hoy&nbsp; <strong th:text="${eventsToday}">0</strong></span>
+        <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesion</button></form>
     </nav>
 </header>
 
 <main class="dashboard-page">
     <section class="dashboard-hero">
-        <p class="badge">Gestión global</p>
+        <p class="badge">Gestion administrativa</p>
         <h1 th:text="${title}">Panel Administrador</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">admin</strong>. Gestiona revisiones, solicitudes y control operativo.</p>
+        <p class="muted">Sesion activa: <strong th:text="${email}">admin</strong>. Revisa eventos y prepara el acceso de puerta para el agente asignado.</p>
     </section>
 
     <section class="dashboard-grid">
         <a class="module-card" th:href="@{/dashboard/admin/events(view='list')}">
-            <span>🗂️</span><h3>Gestión de eventos</h3><p>Consulta la Lista de ingresos y cambia al Tablero Kanban dentro del mismo módulo.</p>
+            <span>RE</span>
+            <h3>Revision de eventos</h3>
+            <p>Aprueba, rechaza o devuelve eventos para correccion antes de publicarlos.</p>
         </a>
-        <a class="module-card" th:href="@{/communications(role='ADMIN')}">
-            <span>💬</span><h3>Solicitudes internas</h3><p>Atiende comunicaciones del organizador y del diseñador vinculadas a eventos.</p>
+        <a class="module-card" th:href="@{/admin/events}">
+            <span>CP</span>
+            <h3>Control de puerta</h3>
+            <p>Configura el codigo del evento y la contrasena diaria que usara el agente de acceso.</p>
         </a>
-        <a class="module-card" th:href="@{/tickets/validate}">
-            <span>🚪</span><h3>Control de puerta</h3><p>Valida tickets mediante el código del evento y la credencial operativa.</p>
+        <a class="module-card" th:href="@{/communications(from='CLIENT')}">
+            <span>BM</span>
+            <h3>Soporte al cliente</h3>
+            <p>Lee exclusivamente las consultas enviadas por clientes a Soporte Connectify.</p>
         </a>
         <a class="module-card" th:href="@{/events}">
-            <span>👁️</span><h3>Marketplace público</h3><p>Consulta los eventos que ya están visibles para compradores.</p>
+            <span>MP</span>
+            <h3>Marketplace publico</h3>
+            <p>Consulta los eventos que ya estan visibles para compradores.</p>
         </a>
     </section>
 </main>

@@ -6,7 +6,7 @@
     <title>Estudio Visual - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/designer-studio-pro.css}">
+    <link rel="stylesheet" th:href="@{/css/designer-studio-pro.css(v='templates-2')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -55,10 +55,13 @@
                             <div class="preview-meta"><span th:text="${selectedEvent.eventDate != null ? #temporals.format(selectedEvent.eventDate, 'dd MMM yyyy · HH:mm') : 'Fecha por definir'}">Fecha</span><span th:text="${selectedEvent.city != null ? selectedEvent.city : 'Ciudad'}">Ciudad</span></div>
                             <p class="preview-description" th:text="${selectedEvent.description}">Descripción del evento.</p>
                             <div id="previewHighlight" class="preview-highlight" th:text="${presentation != null && presentation.highlightText != null ? presentation.highlightText : 'Una experiencia diseñada para conectar con tu público.'}">Una experiencia diseñada para conectar con tu público.</div>
-                            <div id="previewOrganizer" class="preview-block" th:style="${presentation != null && !presentation.showOrganizer} ? 'display:none' : ''"><b>Organiza</b><p th:text="${selectedEvent.organizerName != null ? selectedEvent.organizerName : 'Organizador'}">Organizador</p></div>
+                            <div id="previewOrganizer" class="preview-block preview-organizer-brand" th:style="${presentation != null && !presentation.showOrganizer} ? 'display:none' : ''"><b>Organiza</b><div><img id="previewOrganizerLogo" th:src="${presentation != null && presentation.organizerLogoUrl != null && !presentation.organizerLogoUrl.isBlank() ? presentation.organizerLogoUrl : ''}" th:style="${presentation != null && presentation.organizerLogoUrl != null && !presentation.organizerLogoUrl.isBlank()} ? '' : 'display:none'" alt="Logo del organizador"><p id="previewOrganizerName" th:text="${presentation != null && presentation.organizerBrandName != null && !presentation.organizerBrandName.isBlank() ? presentation.organizerBrandName : (selectedEvent.organizerName != null ? selectedEvent.organizerName : 'Organizador')}">Organizador</p></div></div>
                             <div id="previewAgenda" class="preview-block" th:style="${presentation != null && presentation.showAgenda} ? '' : 'display:none'"><b>Agenda</b><p th:text="${presentation != null && presentation.agendaText != null ? presentation.agendaText : 'Agenda por confirmar.'}">Agenda</p></div>
                             <div id="previewBenefits" class="preview-block" th:style="${presentation != null && presentation.showBenefits} ? '' : 'display:none'"><b>Beneficios</b><p th:text="${presentation != null && presentation.benefitsText != null ? presentation.benefitsText : 'Beneficios incluidos.'}">Beneficios</p></div>
                             <div id="previewSponsors" class="preview-block" th:style="${presentation != null && presentation.showSponsors} ? '' : 'display:none'"><b>Sponsors y aliados</b><p th:text="${presentation != null && presentation.sponsorsText != null ? presentation.sponsorsText : 'Aliados por confirmar.'}">Sponsors</p></div>
+                            <div id="previewMedia" class="preview-block preview-media-block" th:style="${presentation != null && presentation.showMedia} ? '' : 'display:none'"><b>Media del evento</b><p>Video y playlist para acompañar la propuesta.</p><div class="preview-media-links"><span id="previewYoutube" th:text="${presentation != null && presentation.youtubeUrl != null ? presentation.youtubeUrl : 'YouTube pendiente'}">YouTube pendiente</span><span id="previewSpotify" th:text="${presentation != null && presentation.spotifyUrl != null ? presentation.spotifyUrl : 'Spotify pendiente'}">Spotify pendiente</span></div></div>
+                            <div id="previewStageMap" class="preview-block preview-stage-block" th:style="${presentation != null && presentation.showStageMap} ? '' : 'display:none'"><b>Escenario y zonas</b><img id="previewStageImage" class="stage-mini-image" th:src="${presentation != null && presentation.stageImageUrl != null && !presentation.stageImageUrl.isBlank() ? presentation.stageImageUrl : ''}" th:style="${presentation != null && presentation.stageImageUrl != null && !presentation.stageImageUrl.isBlank()} ? '' : 'display:none'" alt="Mapa de escenario"><div id="previewStageFallback" class="stage-mini-map" th:style="${presentation != null && presentation.stageImageUrl != null && !presentation.stageImageUrl.isBlank()} ? 'display:none' : ''"><span>Escenario</span><strong>VIP</strong><em>General</em></div><p th:text="${presentation != null && presentation.stageText != null ? presentation.stageText : 'Distribución de zonas por confirmar.'}">Escenario</p></div>
+                            <div id="previewSessions" class="preview-block preview-sessions-block" th:style="${presentation != null && presentation.showSessions} ? '' : 'display:none'"><b>Sesiones / recorrido</b><p th:text="${presentation != null && presentation.sessionText != null ? presentation.sessionText : 'Fecha o ciudad por confirmar.'}">Sesiones</p></div>
                             <div id="previewGallery" class="preview-gallery" th:style="${presentation != null && presentation.showGallery} ? '' : 'display:none'">
                                 <img id="previewGalleryCover" th:src="${presentation != null && presentation.coverImageUrl != null && !presentation.coverImageUrl.isBlank() ? presentation.coverImageUrl : selectedEvent.imageUrl}" alt="Imagen principal">
                                 <img id="previewGalleryThumb" th:src="${presentation != null && presentation.thumbnailImageUrl != null && !presentation.thumbnailImageUrl.isBlank() ? presentation.thumbnailImageUrl : selectedEvent.imageUrl}" alt="Miniatura">
@@ -71,14 +74,15 @@
         </section>
 
         <aside class="studio-panel inspector-panel">
-            <form th:action="@{/dashboard/designer/events/{id}/presentation(id=${selectedEvent.id})}" method="post">
+            <form th:action="@{/dashboard/designer/events/{id}/presentation(id=${selectedEvent.id})}" method="post" enctype="multipart/form-data">
                 <div class="studio-panel-head"><h2>Panel de control</h2><p>Herramientas de composición, contenido y visualización.</p></div>
                 <div class="inspector-scroll">
                     <section class="inspector-section"><span class="inspector-label">Punto de partida</span><div class="organizer-base">✦ El Organizador eligió <strong th:text="${selectedEvent.designTemplate != null ? selectedEvent.designTemplate.label : 'Clásico'}">Clásico</strong>. Puedes conservarlo o mejorarlo.</div></section>
                     <section class="inspector-section"><span class="inspector-label">Plantilla</span><div class="template-options"><label class="template-option" th:each="template : ${templates}"><input type="radio" name="designTemplate" th:value="${template.name()}" th:checked="${selectedEvent.designTemplate == template}" th:data-label="${template.label}"><strong th:text="${template.label}">Clásico</strong><small th:text="${template.description}">Descripción</small></label></div></section>
-                    <section class="inspector-section"><span class="inspector-label">Portada y miniatura</span><label class="control-label">URL de portada<input id="coverImageUrl" type="url" name="coverImageUrl" th:value="${presentation != null && presentation.coverImageUrl != null ? presentation.coverImageUrl : selectedEvent.imageUrl}" placeholder="https://.../portada.jpg"></label><label class="control-label">URL de miniatura<input id="thumbnailImageUrl" type="url" name="thumbnailImageUrl" th:value="${presentation != null && presentation.thumbnailImageUrl != null ? presentation.thumbnailImageUrl : ''}" placeholder="https://.../miniatura.jpg"></label><label class="control-label">Encuadre de portada<select id="coverFocus" name="coverFocus"><option value="TOP" th:selected="${presentation != null && presentation.coverFocus == 'TOP'}">Foco arriba</option><option value="CENTER" th:selected="${presentation == null || presentation.coverFocus == 'CENTER'}">Foco centrado</option><option value="BOTTOM" th:selected="${presentation != null && presentation.coverFocus == 'BOTTOM'}">Foco abajo</option></select></label></section>
-                    <section class="inspector-section"><span class="inspector-label">Paleta y composición</span><div class="two-cols"><label class="control-label">Color principal<div class="color-field"><input id="primaryColor" type="color" name="primaryColor" th:value="${presentation != null ? presentation.primaryColor : '#4f46e5'}"><span id="primaryValue">#4f46e5</span></div></label><label class="control-label">Color de acento<div class="color-field"><input id="accentColor" type="color" name="accentColor" th:value="${presentation != null ? presentation.accentColor : '#8b5cf6'}"><span id="accentValue">#8b5cf6</span></div></label></div><label class="control-label">Posición del bloque informativo<select id="infoPosition" name="infoPosition"><option value="STANDARD" th:selected="${presentation == null || presentation.infoPosition == 'STANDARD'}">Después de la portada</option><option value="SIDEBAR" th:selected="${presentation != null && presentation.infoPosition == 'SIDEBAR'}">Al lado de las entradas</option></select></label><div class="focus-options"><label class="focus-choice"><input type="radio" name="contentFocus" value="BALANCED" th:checked="${presentation == null || presentation.contentFocus == 'BALANCED'}">Equilibrado</label><label class="focus-choice"><input type="radio" name="contentFocus" value="SALES" th:checked="${presentation != null && presentation.contentFocus == 'SALES'}">Foco venta</label><label class="focus-choice"><input type="radio" name="contentFocus" value="INFORMATION" th:checked="${presentation != null && presentation.contentFocus == 'INFORMATION'}">Foco información</label></div></section>
-                    <section class="inspector-section"><span class="inspector-label">Bloques visibles</span><label class="control-label">Texto destacado<input id="highlightText" type="text" name="highlightText" th:value="${presentation != null && presentation.highlightText != null ? presentation.highlightText : ''}" placeholder="Reserva tu entrada y vive la experiencia."></label><label class="toggle-row"><input id="showGallery" type="checkbox" name="showGallery" value="true" th:checked="${presentation == null || presentation.showGallery}"><span>Mostrar galería visual</span></label><label class="toggle-row"><input id="showOrganizer" type="checkbox" name="showOrganizer" value="true" th:checked="${presentation == null || presentation.showOrganizer}"><span>Mostrar bloque del organizador</span></label><label class="toggle-row"><input id="showAgenda" type="checkbox" name="showAgenda" value="true" th:checked="${presentation != null && presentation.showAgenda}"><span>Activar agenda</span></label><label id="agendaField" class="control-label conditional-field">Agenda<textarea id="agendaText" name="agendaText" rows="3" placeholder="18:00 Apertura&#10;20:00 Presentación principal" th:text="${presentation != null && presentation.agendaText != null ? presentation.agendaText : ''}"></textarea></label><label class="toggle-row"><input id="showBenefits" type="checkbox" name="showBenefits" value="true" th:checked="${presentation != null && presentation.showBenefits}"><span>Activar beneficios</span></label><label id="benefitsField" class="control-label conditional-field">Beneficios<textarea id="benefitsText" name="benefitsText" rows="3" placeholder="Acceso preferente, zona especial, bebida de cortesía..." th:text="${presentation != null && presentation.benefitsText != null ? presentation.benefitsText : ''}"></textarea></label><label class="toggle-row"><input id="showSponsors" type="checkbox" name="showSponsors" value="true" th:checked="${presentation != null && presentation.showSponsors}"><span>Activar sponsors / aliados</span></label><label id="sponsorsField" class="control-label conditional-field">Sponsors y aliados<textarea id="sponsorsText" name="sponsorsText" rows="3" placeholder="Marca A · Aliado B · Institución C" th:text="${presentation != null && presentation.sponsorsText != null ? presentation.sponsorsText : ''}"></textarea></label></section>
+                    <section class="inspector-section"><span class="inspector-label">Portada, fondo y marca</span><label class="control-label">URL de portada<input id="coverImageUrl" type="url" name="coverImageUrl" th:value="${presentation != null && presentation.coverImageUrl != null ? presentation.coverImageUrl : selectedEvent.imageUrl}" placeholder="https://.../portada.jpg"></label><label class="control-label">Subir portada JPG/PNG<input id="coverImageFile" type="file" name="coverImageFile" accept="image/jpeg,image/png,image/webp"></label><label class="control-label">URL de miniatura<input id="thumbnailImageUrl" type="url" name="thumbnailImageUrl" th:value="${presentation != null && presentation.thumbnailImageUrl != null ? presentation.thumbnailImageUrl : ''}" placeholder="https://.../miniatura.jpg"></label><label class="control-label">Subir miniatura JPG/PNG<input id="thumbnailImageFile" type="file" name="thumbnailImageFile" accept="image/jpeg,image/png,image/webp"></label><label class="control-label">URL de fondo landing<input id="backgroundImageUrl" type="url" name="backgroundImageUrl" th:value="${presentation != null && presentation.backgroundImageUrl != null ? presentation.backgroundImageUrl : ''}" placeholder="https://.../fondo.jpg"></label><label class="control-label">Subir fondo JPG/PNG<input id="backgroundImageFile" type="file" name="backgroundImageFile" accept="image/jpeg,image/png,image/webp"></label><label class="control-label">Marca del organizador<input id="organizerBrandName" type="text" name="organizerBrandName" th:value="${presentation != null && presentation.organizerBrandName != null ? presentation.organizerBrandName : selectedEvent.organizerName}" placeholder="Nombre comercial"></label><label class="control-label">Logo del organizador<input id="organizerLogoUrl" type="url" name="organizerLogoUrl" th:value="${presentation != null && presentation.organizerLogoUrl != null ? presentation.organizerLogoUrl : ''}" placeholder="https://.../logo.png"></label><label class="control-label">Subir logo PNG<input id="organizerLogoFile" type="file" name="organizerLogoFile" accept="image/jpeg,image/png,image/webp"></label><label class="control-label">Encuadre de portada<select id="coverFocus" name="coverFocus"><option value="TOP" th:selected="${presentation != null && presentation.coverFocus == 'TOP'}">Foco arriba</option><option value="CENTER" th:selected="${presentation == null || presentation.coverFocus == 'CENTER'}">Foco centrado</option><option value="BOTTOM" th:selected="${presentation != null && presentation.coverFocus == 'BOTTOM'}">Foco abajo</option></select></label></section>
+                    <section class="inspector-section"><span class="inspector-label">Paleta y composición</span><div class="two-cols"><label class="control-label">Color principal<div class="color-field"><input id="primaryColor" type="color" name="primaryColor" th:value="${presentation != null ? presentation.primaryColor : '#4f46e5'}"><span id="primaryValue">#4f46e5</span></div></label><label class="control-label">Color de acento<div class="color-field"><input id="accentColor" type="color" name="accentColor" th:value="${presentation != null ? presentation.accentColor : '#8b5cf6'}"><span id="accentValue">#8b5cf6</span></div></label></div><label class="control-label">Posición del bloque informativo<select id="infoPosition" name="infoPosition"><option value="STANDARD" th:selected="${presentation == null || presentation.infoPosition == 'STANDARD'}">Después de la portada</option><option value="SIDEBAR" th:selected="${presentation != null && presentation.infoPosition == 'SIDEBAR'}">Al lado de las entradas</option><option value="FLOATING" th:selected="${presentation != null && presentation.infoPosition == 'FLOATING'}">Ficha de venta flotante</option></select></label><div class="focus-options"><label class="focus-choice"><input type="radio" name="contentFocus" value="BALANCED" th:checked="${presentation == null || presentation.contentFocus == 'BALANCED'}">Equilibrado</label><label class="focus-choice"><input type="radio" name="contentFocus" value="SALES" th:checked="${presentation != null && presentation.contentFocus == 'SALES'}">Foco venta</label><label class="focus-choice"><input type="radio" name="contentFocus" value="INFORMATION" th:checked="${presentation != null && presentation.contentFocus == 'INFORMATION'}">Foco información</label></div></section>
+                    <section class="inspector-section"><span class="inspector-label">Bloques visibles</span><label class="control-label">Texto destacado<input id="highlightText" type="text" name="highlightText" th:value="${presentation != null && presentation.highlightText != null ? presentation.highlightText : ''}" placeholder="Reserva tu entrada y vive la experiencia."></label><label class="toggle-row"><input id="showGallery" type="checkbox" name="showGallery" value="true" th:checked="${presentation == null || presentation.showGallery}"><span>Mostrar galería visual</span></label><label class="toggle-row"><input id="showOrganizer" type="checkbox" name="showOrganizer" value="true" th:checked="${presentation == null || presentation.showOrganizer}"><span>Mostrar bloque del organizador</span></label><label class="toggle-row"><input id="showAgenda" type="checkbox" name="showAgenda" value="true" th:checked="${presentation != null && presentation.showAgenda}"><span>Activar agenda</span></label><label id="agendaField" class="control-label conditional-field">Agenda<textarea id="agendaText" name="agendaText" rows="3" placeholder="18:00 Apertura&#10;20:00 Presentación principal" th:text="${presentation != null && presentation.agendaText != null ? presentation.agendaText : ''}"></textarea></label><label class="toggle-row"><input id="showBenefits" type="checkbox" name="showBenefits" value="true" th:checked="${presentation != null && presentation.showBenefits}"><span>Activar beneficios</span></label><label id="benefitsField" class="control-label conditional-field">Beneficios<textarea id="benefitsText" name="benefitsText" rows="3" placeholder="Acceso preferente, zona especial, bebida de cortesía..." th:text="${presentation != null && presentation.benefitsText != null ? presentation.benefitsText : ''}"></textarea></label><label class="toggle-row"><input id="showSponsors" type="checkbox" name="showSponsors" value="true" th:checked="${presentation != null && presentation.showSponsors}"><span>Activar sponsors / aliados</span></label><label id="sponsorsField" class="control-label conditional-field">Sponsors y aliados<textarea id="sponsorsText" name="sponsorsText" rows="3" placeholder="Marca A · Aliado B · Institución C" th:text="${presentation != null && presentation.sponsorsText != null ? presentation.sponsorsText : ''}"></textarea></label><label id="sponsorLogosField" class="control-label conditional-field">Logos de auspiciadores<textarea id="sponsorLogosText" name="sponsorLogosText" rows="3" placeholder="https://.../logo-bbva.png&#10;https://.../logo-radio.png" th:text="${presentation != null && presentation.sponsorLogosText != null ? presentation.sponsorLogosText : ''}"></textarea></label></section>
+                    <section class="inspector-section"><span class="inspector-label">Media, escenario y sesiones</span><label class="toggle-row"><input id="showMedia" type="checkbox" name="showMedia" value="true" th:checked="${presentation != null && presentation.showMedia}"><span>Activar YouTube / Spotify</span></label><label id="youtubeField" class="control-label conditional-field">Enlace YouTube<input id="youtubeUrl" type="url" name="youtubeUrl" th:value="${presentation != null && presentation.youtubeUrl != null ? presentation.youtubeUrl : ''}" placeholder="https://www.youtube.com/..."></label><label id="spotifyField" class="control-label conditional-field">Playlist Spotify<input id="spotifyUrl" type="url" name="spotifyUrl" th:value="${presentation != null && presentation.spotifyUrl != null ? presentation.spotifyUrl : ''}" placeholder="https://open.spotify.com/playlist/..."></label><label class="toggle-row"><input id="showStageMap" type="checkbox" name="showStageMap" value="true" th:checked="${presentation != null && presentation.showStageMap}"><span>Activar escenario / zonas</span></label><label id="stageImageUrlField" class="control-label conditional-field">URL PNG/JPG de escenario<input id="stageImageUrl" type="url" name="stageImageUrl" th:value="${presentation != null && presentation.stageImageUrl != null ? presentation.stageImageUrl : ''}" placeholder="https://.../mapa-escenario.png"></label><label id="stageImageFileField" class="control-label conditional-field">Subir escenario PNG/JPG<input id="stageImageFile" type="file" name="stageImageFile" accept="image/jpeg,image/png,image/webp"></label><label id="stageField" class="control-label conditional-field">Detalle de escenario<textarea id="stageText" name="stageText" rows="3" placeholder="Escenario principal, Platinum, VIP, General, accesos..." th:text="${presentation != null && presentation.stageText != null ? presentation.stageText : ''}"></textarea></label><label class="toggle-row"><input id="showSessions" type="checkbox" name="showSessions" value="true" th:checked="${presentation != null && presentation.showSessions}"><span>Activar sesiones desplegables</span></label><label id="sessionsField" class="control-label conditional-field">Sesiones o ciudades<textarea id="sessionText" name="sessionText" rows="4" placeholder="Lima · 25 julio · Parque de la Exposición&#10;Cusco · 28 julio · Explanada principal&#10;Tacna · 30 julio · Parque Perú" th:text="${presentation != null && presentation.sessionText != null ? presentation.sessionText : ''}"></textarea></label></section>
                     <section class="inspector-section"><div class="save-actions"><button id="resetPreview" class="btn secondary compact" type="button">Restablecer</button><button class="btn primary compact" type="submit">Guardar propuesta</button></div><p class="muted small">Los cambios se guardan con el evento y quedan disponibles para Administración y Marketplace.</p></section>
                 </div>
             </form>
@@ -107,6 +111,154 @@
         function refreshComposition(){preview.dataset.infoPosition=infoPosition.value;const selectedFocus=document.querySelector('input[name="contentFocus"]:checked');preview.dataset.focus=selectedFocus?selectedFocus.value:'BALANCED'}
         primary.addEventListener('input',setColors);accent.addEventListener('input',setColors);coverImageUrl.addEventListener('input',setPreviewImage);thumbnailImageUrl.addEventListener('input',setPreviewImage);coverFocus.addEventListener('change',()=>preview.style.setProperty('--cover-position',focusPositions[coverFocus.value]||focusPositions.CENTER));highlightInput.addEventListener('input',()=>previewHighlight.textContent=textOr(highlightInput.value,'Una experiencia diseñada para conectar con tu público.'));showGallery.addEventListener('change',setGallery);showOrganizer.addEventListener('change',()=>previewOrganizer.style.display=showOrganizer.checked?'block':'none');showAgenda.addEventListener('change',()=>setBlock(showAgenda,agendaField,previewAgenda,agendaText,'Agenda por confirmar.'));showBenefits.addEventListener('change',()=>setBlock(showBenefits,benefitsField,previewBenefits,benefitsText,'Beneficios incluidos.'));showSponsors.addEventListener('change',()=>setBlock(showSponsors,sponsorsField,previewSponsors,sponsorsText,'Aliados por confirmar.'));agendaText.addEventListener('input',()=>previewAgenda.querySelector('p').textContent=textOr(agendaText.value,'Agenda por confirmar.'));benefitsText.addEventListener('input',()=>previewBenefits.querySelector('p').textContent=textOr(benefitsText.value,'Beneficios incluidos.'));sponsorsText.addEventListener('input',()=>previewSponsors.querySelector('p').textContent=textOr(sponsorsText.value,'Aliados por confirmar.'));infoPosition.addEventListener('change',refreshComposition);document.querySelectorAll('input[name="contentFocus"]').forEach(input=>input.addEventListener('change',refreshComposition));document.querySelectorAll('input[name="designTemplate"]').forEach(input=>input.addEventListener('change',()=>{preview.dataset.template=input.value;templateLabel.textContent=input.dataset.label}));previewModeButton.addEventListener('click',()=>{preview.classList.toggle('mobile');const mobile=preview.classList.contains('mobile');previewModeButton.textContent=mobile?'Modo escritorio':'Modo móvil';previewModeLabel.textContent=mobile?'Vista móvil':'Vista escritorio'});document.getElementById('resetPreview').addEventListener('click',()=>{primary.value='#4f46e5';accent.value='#8b5cf6';coverFocus.value='CENTER';infoPosition.value='STANDARD';highlightInput.value='';showGallery.checked=true;showOrganizer.checked=true;showAgenda.checked=false;showBenefits.checked=false;showSponsors.checked=false;agendaText.value='';benefitsText.value='';sponsorsText.value='';document.querySelector('input[name="contentFocus"][value="BALANCED"]').checked=true;setColors();setPreviewImage();preview.style.setProperty('--cover-position',focusPositions.CENTER);previewHighlight.textContent='Una experiencia diseñada para conectar con tu público.';previewGallery.style.display='grid';previewOrganizer.style.display='block';setBlock(showAgenda,agendaField,previewAgenda,agendaText,'Agenda por confirmar.');setBlock(showBenefits,benefitsField,previewBenefits,benefitsText,'Beneficios incluidos.');setBlock(showSponsors,sponsorsField,previewSponsors,sponsorsText,'Aliados por confirmar.');refreshComposition()});coverImage.addEventListener('error',()=>{coverImage.style.display='none';coverFallback.style.display='block'});setColors();setPreviewImage();preview.style.setProperty('--cover-position',focusPositions[coverFocus.value]||focusPositions.CENTER);setGallery();previewOrganizer.style.display=showOrganizer.checked?'block':'none';setBlock(showAgenda,agendaField,previewAgenda,agendaText,'Agenda por confirmar.');setBlock(showBenefits,benefitsField,previewBenefits,benefitsText,'Beneficios incluidos.');setBlock(showSponsors,sponsorsField,previewSponsors,sponsorsText,'Aliados por confirmar.');refreshComposition();
     }
+</script>
+<script>
+    (function () {
+        const preview = document.getElementById('marketPreview');
+        if (!preview) return;
+
+        const textOr = (value, fallback) => value && value.trim() ? value.trim() : fallback;
+        const coverImage = document.getElementById('previewCoverImage');
+        const coverFallback = document.getElementById('previewFallback');
+        const galleryCover = document.getElementById('previewGalleryCover');
+        const galleryThumb = document.getElementById('previewGalleryThumb');
+        const coverImageFile = document.getElementById('coverImageFile');
+        const thumbnailImageFile = document.getElementById('thumbnailImageFile');
+        const organizerBrandName = document.getElementById('organizerBrandName');
+        const organizerLogoUrl = document.getElementById('organizerLogoUrl');
+        const organizerLogoFile = document.getElementById('organizerLogoFile');
+        const showMedia = document.getElementById('showMedia');
+        const showSponsors = document.getElementById('showSponsors');
+        const showStageMap = document.getElementById('showStageMap');
+        const showSessions = document.getElementById('showSessions');
+        const sponsorLogosField = document.getElementById('sponsorLogosField');
+        const youtubeField = document.getElementById('youtubeField');
+        const spotifyField = document.getElementById('spotifyField');
+        const stageImageUrlField = document.getElementById('stageImageUrlField');
+        const stageImageFileField = document.getElementById('stageImageFileField');
+        const stageField = document.getElementById('stageField');
+        const sessionsField = document.getElementById('sessionsField');
+        const youtubeUrl = document.getElementById('youtubeUrl');
+        const spotifyUrl = document.getElementById('spotifyUrl');
+        const stageImageUrl = document.getElementById('stageImageUrl');
+        const stageImageFile = document.getElementById('stageImageFile');
+        const stageText = document.getElementById('stageText');
+        const sessionText = document.getElementById('sessionText');
+        const previewOrganizerName = document.getElementById('previewOrganizerName');
+        const previewOrganizerLogo = document.getElementById('previewOrganizerLogo');
+        const previewMedia = document.getElementById('previewMedia');
+        const previewStageMap = document.getElementById('previewStageMap');
+        const previewStageImage = document.getElementById('previewStageImage');
+        const previewStageFallback = document.getElementById('previewStageFallback');
+        const previewSessions = document.getElementById('previewSessions');
+        const previewYoutube = document.getElementById('previewYoutube');
+        const previewSpotify = document.getElementById('previewSpotify');
+
+        function fileUrl(input) {
+            return input && input.files && input.files[0] ? URL.createObjectURL(input.files[0]) : '';
+        }
+
+        function syncUploadedImages() {
+            const cover = fileUrl(coverImageFile);
+            if (cover) {
+                coverImage.src = cover;
+                coverImage.style.display = 'block';
+                coverFallback.style.display = 'none';
+                galleryCover.src = cover;
+            }
+            const thumb = fileUrl(thumbnailImageFile);
+            if (thumb) {
+                galleryThumb.src = thumb;
+                galleryThumb.style.display = 'block';
+            }
+        }
+
+        function setImagePreview(img, fallback, url) {
+            if (url) {
+                img.src = url;
+                img.style.display = 'block';
+                if (fallback) fallback.style.display = 'none';
+            } else {
+                img.removeAttribute('src');
+                img.style.display = 'none';
+                if (fallback) fallback.style.display = '';
+            }
+        }
+
+        function syncOrganizerBrand() {
+            previewOrganizerName.textContent = textOr(organizerBrandName.value, 'Organizador');
+            setImagePreview(previewOrganizerLogo, null, fileUrl(organizerLogoFile) || textOr(organizerLogoUrl.value, ''));
+        }
+
+        function syncSponsorLogos() {
+            sponsorLogosField.classList.toggle('active', showSponsors.checked);
+        }
+
+        function syncMedia() {
+            youtubeField.classList.toggle('active', showMedia.checked);
+            spotifyField.classList.toggle('active', showMedia.checked);
+            previewMedia.style.display = showMedia.checked ? 'block' : 'none';
+            previewYoutube.textContent = textOr(youtubeUrl.value, 'YouTube pendiente');
+            previewSpotify.textContent = textOr(spotifyUrl.value, 'Spotify pendiente');
+        }
+
+        function syncStage() {
+            stageImageUrlField.classList.toggle('active', showStageMap.checked);
+            stageImageFileField.classList.toggle('active', showStageMap.checked);
+            stageField.classList.toggle('active', showStageMap.checked);
+            previewStageMap.style.display = showStageMap.checked ? 'block' : 'none';
+            setImagePreview(previewStageImage, previewStageFallback, fileUrl(stageImageFile) || textOr(stageImageUrl.value, ''));
+            previewStageMap.querySelector('p').textContent = textOr(stageText.value, 'Distribución de zonas por confirmar.');
+        }
+
+        function syncSessions() {
+            sessionsField.classList.toggle('active', showSessions.checked);
+            previewSessions.style.display = showSessions.checked ? 'block' : 'none';
+            previewSessions.querySelector('p').textContent = textOr(sessionText.value, 'Fecha o ciudad por confirmar.');
+        }
+
+        coverImageFile.addEventListener('change', syncUploadedImages);
+        thumbnailImageFile.addEventListener('change', syncUploadedImages);
+        organizerBrandName.addEventListener('input', syncOrganizerBrand);
+        organizerLogoUrl.addEventListener('input', syncOrganizerBrand);
+        organizerLogoFile.addEventListener('change', syncOrganizerBrand);
+        showSponsors.addEventListener('change', syncSponsorLogos);
+        showMedia.addEventListener('change', syncMedia);
+        showStageMap.addEventListener('change', syncStage);
+        showSessions.addEventListener('change', syncSessions);
+        youtubeUrl.addEventListener('input', syncMedia);
+        spotifyUrl.addEventListener('input', syncMedia);
+        stageImageUrl.addEventListener('input', syncStage);
+        stageImageFile.addEventListener('change', syncStage);
+        stageText.addEventListener('input', syncStage);
+        sessionText.addEventListener('input', syncSessions);
+        document.getElementById('resetPreview').addEventListener('click', () => setTimeout(() => {
+            coverImageFile.value = '';
+            thumbnailImageFile.value = '';
+            organizerLogoFile.value = '';
+            showMedia.checked = false;
+            showStageMap.checked = false;
+            showSessions.checked = false;
+            youtubeUrl.value = '';
+            spotifyUrl.value = '';
+            stageImageUrl.value = '';
+            stageImageFile.value = '';
+            stageText.value = '';
+            sessionText.value = '';
+            syncOrganizerBrand();
+            syncSponsorLogos();
+            syncMedia();
+            syncStage();
+            syncSessions();
+        }, 0));
+
+        syncUploadedImages();
+        syncOrganizerBrand();
+        syncSponsorLogos();
+        syncMedia();
+        syncStage();
+        syncSessions();
+    })();
 </script>
 </body>
 </html>

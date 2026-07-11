@@ -6,7 +6,7 @@
     <title>Detalle de evento - Administrador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/admin-event-detail-premium.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-event-detail-premium.css(v='organizer-button-1')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -55,7 +55,10 @@
             <section class="review-panel">
                 <div class="panel-head">
                     <div><h2>Construcción del evento</h2><p>Información registrada por el Organizador para esta propuesta.</p></div>
-                    <span class="panel-head-icon">⌘</span>
+                    <div class="panel-head-actions">
+                        <button class="btn secondary compact organizer-info-trigger" type="button" data-open-modal="organizerModal">Info del Organizador</button>
+                        <span class="panel-head-icon">⌘</span>
+                    </div>
                 </div>
                 <div class="review-summary-content">
                     <div class="detail-facts">
@@ -153,6 +156,32 @@
                 <h3 class="modal-section-title" style="margin-top:22px">Trazabilidad administrativa</h3>
                 <article class="change-entry" th:each="line : ${recordLines}" th:text="${line}">Registro</article>
                 <p class="muted" th:if="${recordLines == null || recordLines.isEmpty()}">Aún no hay trazabilidad administrativa.</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="organizerModal" class="modal-backdrop" aria-hidden="true">
+        <section class="modal-card organizer-modal-card" role="dialog" aria-modal="true" aria-labelledby="organizerModalTitle">
+            <div class="modal-head">
+                <div><h2 id="organizerModalTitle">Detalles del Organizador</h2><p>Datos de cuenta y contacto vinculados a esta propuesta.</p></div>
+                <button class="modal-close" type="button" data-close-modal="organizerModal">Cerrar</button>
+            </div>
+            <div class="modal-body">
+                <article class="organizer-profile-card">
+                    <span class="organizer-profile-mark" aria-hidden="true">ORG</span>
+                    <div>
+                        <small>Cuenta organizadora</small>
+                        <strong th:text="${organizerName}">Organizador</strong>
+                        <span th:text="${organizerEmail}">correo@empresa.com</span>
+                    </div>
+                    <b th:text="${organizerAccountState}">Cuenta activa</b>
+                </article>
+                <div class="organizer-detail-facts modal-organizer-facts">
+                    <article><small>Razón social / marca</small><strong th:text="${organizerCompany}">Empresa</strong></article>
+                    <article><small>Representante</small><strong th:text="${organizerLegalContact}">Representante</strong></article>
+                    <article><small>RUC</small><strong th:text="${organizerRuc}">00000000000</strong></article>
+                    <article><small>Teléfono</small><strong th:text="${organizerPhone}">999 999 999</strong></article>
+                </div>
             </div>
         </section>
     </div>

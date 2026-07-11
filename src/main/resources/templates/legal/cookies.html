@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de cookies - Connectify</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+<header class="navbar marketplace-nav">
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Cookies</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Marketplace</a><a class="btn secondary" th:href="@{/privacy}">Privacidad</a></nav>
+</header>
+
+<main class="legal-page">
+    <section class="legal-hero">
+        <p class="badge">Preferencias del navegador</p>
+        <h1>Política de cookies</h1>
+        <p>Información sobre cookies esenciales, preferencias locales y datos técnicos usados para mantener la experiencia segura.</p>
+    </section>
+
+    <article class="legal-document single">
+        <section>
+            <h2>1. Qué son las cookies</h2>
+            <p>Las cookies son pequeños datos que el navegador conserva para que un sitio pueda recordar información necesaria, por ejemplo una sesión iniciada o una preferencia de visualización.</p>
+        </section>
+
+        <section>
+            <h2>2. Cookies esenciales</h2>
+            <p>Connectify puede usar cookies de sesión necesarias para autenticar usuarios, mantener la seguridad del acceso y aplicar permisos por rol. Sin estas cookies, funciones como carrito, dashboard, tickets o soporte no operarían correctamente.</p>
+        </section>
+
+        <section>
+            <h2>3. Preferencias locales</h2>
+            <p>El aviso de cookies puede recordar en el navegador que el usuario ya aceptó la información. Esta preferencia se guarda localmente y no sustituye el control de sesión de Spring Security.</p>
+        </section>
+
+        <section>
+            <h2>4. Gestión</h2>
+            <p>El usuario puede borrar cookies o almacenamiento local desde la configuración del navegador. Al hacerlo, puede cerrar sesiones activas o volver a mostrar avisos informativos.</p>
+        </section>
+    </article>
+</main>
+
+<div th:replace="~{fragments/site-footer :: publicFooter}"></div>
+<div th:replace="~{fragments/site-footer :: cookieNotice}"></div>
+</body>
+</html>

@@ -3,48 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear cuenta cliente - Connectify</title>
+    <title>Crear cuenta - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/auth-client.css}">
+    <link rel="stylesheet" th:href="@{/css/auth-client.css(v='gate-assist-2')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/events}"><span class="logo">🎫</span><div><strong>Connectify</strong><small>Cuenta Cliente</small></div></a>
-    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Explorar eventos</a><a class="btn secondary" th:href="@{/login}">Iniciar sesión</a></nav>
+    <a class="brand brand-link" th:href="@{/events}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Registro público</small></div></a>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/events}">Explorar eventos</a><a class="btn secondary" th:href="@{/help}">Ayuda</a><a class="btn secondary" th:href="@{/login}">Iniciar sesión</a></nav>
 </header>
 
 <main class="auth-client-page">
-    <section class="auth-client-layout">
-        <aside class="auth-client-pitch">
-            <p class="badge glow">Cuenta personal</p>
-            <h1>Compra, consulta y conserva tus tickets.</h1>
-            <p>Esta cuenta es exclusivamente para asistentes y clientes del Marketplace. Tendrás acceso a tu carrito, checkout y tickets QR.</p>
+    <section class="auth-client-layout register-layout">
+        <aside class="auth-client-pitch register-pitch">
+            <p class="badge glow">Marketplace de eventos</p>
+            <h1>Compra entradas o publica tus eventos.</h1>
+            <p>Cliente y Organizador tienen cuentas separadas. El Cliente compra y conserva tickets; el Organizador crea eventos, define entradas y queda identificado ante la revisión administrativa.</p>
             <div class="auth-benefits">
-                <div><span>🛒</span><strong>Carrito personal</strong><small>Compra desde tu propia sesión.</small></div>
-                <div><span>🎫</span><strong>Tickets QR</strong><small>Consulta tus códigos y su estado.</small></div>
-                <div><span>🔒</span><strong>Rol separado</strong><small>Developer, Organizador y Admin no compran desde esta cuenta.</small></div>
+                <div><span>01</span><strong>Cliente</strong><small>Marketplace, carrito, checkout y tickets QR personales.</small></div>
+                <div><span>02</span><strong>Organizador</strong><small>Eventos, entradas, métricas y solicitudes de publicación.</small></div>
+                <button class="auth-benefit-action" type="button" data-gate-modal-open>
+                    <span>03</span><strong>Asistencia a puerta</strong><small>Código de evento y contraseña para abrir validación.</small>
+                </button>
             </div>
         </aside>
 
-        <section class="auth-client-card">
-            <p class="badge">Registro de cliente</p>
-            <h2>Crea tu cuenta</h2>
-            <p class="muted small">No puedes elegir un rol operativo desde aquí. Las cuentas públicas se registran solamente como Cliente.</p>
-            <div class="alert error" th:if="${error != null}" th:text="${error}">Error</div>
-            <form class="auth-client-form" th:action="@{/register}" method="post">
-                <label>Nombre completo<input name="fullName" type="text" th:value="${fullName}" autocomplete="name" placeholder="Andrea Salazar" required></label>
+        <section class="auth-client-card register-card">
+            <form id="registerForm" class="auth-client-form" th:action="@{/register}" method="post">
+                <div class="register-switch" role="radiogroup" aria-label="Tipo de registro">
+                    <input id="clientType" type="radio" name="accountType" value="client" th:checked="${accountType == null || accountType != 'organizer'}">
+                    <label for="clientType">Registro del Cliente</label>
+                    <input id="organizerType" type="radio" name="accountType" value="organizer" th:checked="${accountType == 'organizer'}">
+                    <label for="organizerType">Registro del Organizador</label>
+                    <span class="switch-indicator"></span>
+                </div>
+
+                <div class="register-heading">
+                    <p class="badge" id="registerBadge">Registro de cliente</p>
+                    <h2>Crea tu cuenta</h2>
+                    <p class="muted small" id="registerHelp">Usa esta cuenta para comprar entradas, guardar eventos y consultar tus tickets QR.</p>
+                </div>
+
+                <div class="alert error" th:if="${error != null}" th:text="${error}">Error</div>
+
+                <div class="auth-client-two-cols">
+                    <label>Nombres<input name="firstName" type="text" th:value="${firstName}" autocomplete="given-name" placeholder="Andrea" required></label>
+                    <label>Apellido paterno<input name="paternalLastName" type="text" th:value="${paternalLastName}" autocomplete="family-name" placeholder="Salazar" required></label>
+                </div>
+                <div class="auth-client-two-cols">
+                    <label>Apellido materno <span class="optional">Opcional</span><input name="maternalLastName" type="text" th:value="${maternalLastName}" autocomplete="additional-name" placeholder="Torres"></label>
+                    <label>DNI <span class="optional">Opcional para cliente</span><input name="dni" type="text" th:value="${dni}" inputmode="numeric" maxlength="8" placeholder="12345678"></label>
+                </div>
+
+                <section id="organizerFields" class="organizer-register-fields" aria-label="Datos de organizador">
+                    <div class="register-subsection">
+                        <strong>Datos de organizador</strong>
+                        <span>Información usada para identificar al publicador del evento.</span>
+                    </div>
+                    <label>Razón social o nombre comercial<input name="companyName" type="text" th:value="${companyName}" placeholder="Connectify Producciones S.A.C."></label>
+                    <label>RUC<input name="ruc" type="text" th:value="${ruc}" inputmode="numeric" maxlength="11" placeholder="20123456789"></label>
+                </section>
+
                 <label>Correo electrónico<input name="email" type="email" th:value="${email}" autocomplete="email" placeholder="tu@email.com" required></label>
                 <label>Teléfono <span class="optional">Opcional</span><input name="phone" type="tel" th:value="${phone}" autocomplete="tel" placeholder="987 654 321"></label>
                 <div class="auth-client-two-cols">
                     <label>Contraseña<input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required></label>
                     <label>Confirmar contraseña<input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Repite tu contraseña" required></label>
                 </div>
-                <button class="btn primary full" type="submit">Crear cuenta Cliente</button>
+                <p class="legal-consent">Al crear tu cuenta aceptas los <a th:href="@{/terms}">términos y condiciones</a>, la <a th:href="@{/privacy}">política de privacidad</a> y la <a th:href="@{/cookies}">política de cookies</a>.</p>
+                <button id="registerSubmit" class="btn primary full" type="submit">Crear cuenta Cliente</button>
             </form>
             <p class="auth-client-foot">¿Ya tienes cuenta? <a th:href="@{/login}">Inicia sesión</a></p>
         </section>
     </section>
 </main>
+
+<div id="gateAccessModal" class="gate-access-modal" aria-hidden="true">
+    <section class="gate-access-card" role="dialog" aria-modal="true" aria-labelledby="gateAccessTitle">
+        <div class="gate-access-head">
+            <div>
+                <span>Puerta</span>
+                <h2 id="gateAccessTitle">Asistencia a puerta</h2>
+                <p>Ingresa el código del evento y la contraseña asignada para desbloquear la validación QR.</p>
+            </div>
+            <button type="button" data-gate-modal-close aria-label="Cerrar">Cerrar</button>
+        </div>
+        <form class="gate-access-form" th:action="@{/tickets/validate/open}" method="post">
+            <label>Código del evento<input name="eventCode" type="text" placeholder="EVT-1" required></label>
+            <label>Contraseña de puerta<input name="gatePassword" type="password" placeholder="Clave diaria" required></label>
+            <button class="btn primary full" type="submit">Abrir validación</button>
+        </form>
+    </section>
+</div>
+
+<script>
+    (function () {
+        const form = document.getElementById('registerForm');
+        const clientType = document.getElementById('clientType');
+        const organizerType = document.getElementById('organizerType');
+        const organizerFields = document.getElementById('organizerFields');
+        const company = organizerFields.querySelector('input[name="companyName"]');
+        const ruc = organizerFields.querySelector('input[name="ruc"]');
+        const badge = document.getElementById('registerBadge');
+        const help = document.getElementById('registerHelp');
+        const submit = document.getElementById('registerSubmit');
+
+        function refresh() {
+            const organizer = organizerType.checked;
+            form.dataset.accountType = organizer ? 'organizer' : 'client';
+            organizerFields.hidden = !organizer;
+            company.required = organizer;
+            ruc.required = organizer;
+            badge.textContent = organizer ? 'Registro de organizador' : 'Registro de cliente';
+            help.textContent = organizer
+                ? 'Crea una cuenta para publicar eventos, declarar datos de organizador y enviar propuestas a revisión.'
+                : 'Usa esta cuenta para comprar entradas, guardar eventos y consultar tus tickets QR.';
+            submit.textContent = organizer ? 'Crear cuenta Organizador' : 'Crear cuenta Cliente';
+        }
+
+        clientType.addEventListener('change', refresh);
+        organizerType.addEventListener('change', refresh);
+        refresh();
+    })();
+
+    (function () {
+        const modal = document.getElementById('gateAccessModal');
+        document.querySelectorAll('[data-gate-modal-open]').forEach(button => {
+            button.addEventListener('click', () => {
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+                modal.querySelector('input').focus();
+            });
+        });
+        document.querySelectorAll('[data-gate-modal-close]').forEach(button => {
+            button.addEventListener('click', () => {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            });
+        });
+        modal.addEventListener('click', event => {
+            if (event.target === modal) {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    })();
+</script>
+<div th:replace="~{fragments/site-footer :: publicFooter}"></div>
+<div th:replace="~{fragments/site-footer :: cookieNotice}"></div>
 </body>
 </html>

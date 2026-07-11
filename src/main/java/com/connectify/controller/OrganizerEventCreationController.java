@@ -5,21 +5,27 @@ import com.connectify.entity.Event;
 import com.connectify.entity.EventAdminRecord;
 import com.connectify.entity.EventAdminRecordType;
 import com.connectify.entity.EventDesignTemplate;
+import com.connectify.entity.EventPresentationSettings;
 import com.connectify.entity.EventStatus;
 import com.connectify.entity.MessagePriority;
 import com.connectify.entity.MessageType;
 import com.connectify.entity.Role;
 import com.connectify.entity.TicketType;
+import com.connectify.entity.UserAccount;
 import com.connectify.repository.CategoryRepository;
 import com.connectify.repository.EventAdminRecordRepository;
+import com.connectify.repository.EventPresentationSettingsRepository;
 import com.connectify.repository.EventRepository;
 import com.connectify.repository.TicketTypeRepository;
+import com.connectify.repository.UserAccountRepository;
+import com.connectify.service.ImageStorageService;
 import com.connectify.service.InternalMessageService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,18 +39,27 @@ public class OrganizerEventCreationController {
     private final CategoryRepository categoryRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final EventAdminRecordRepository recordRepository;
+    private final EventPresentationSettingsRepository presentationSettingsRepository;
     private final InternalMessageService messageService;
+    private final UserAccountRepository userAccountRepository;
+    private final ImageStorageService imageStorageService;
 
     public OrganizerEventCreationController(EventRepository eventRepository,
                                             CategoryRepository categoryRepository,
                                             TicketTypeRepository ticketTypeRepository,
                                             EventAdminRecordRepository recordRepository,
-                                            InternalMessageService messageService) {
+                                            EventPresentationSettingsRepository presentationSettingsRepository,
+                                            InternalMessageService messageService,
+                                            UserAccountRepository userAccountRepository,
+                                            ImageStorageService imageStorageService) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.recordRepository = recordRepository;
+        this.presentationSettingsRepository = presentationSettingsRepository;
         this.messageService = messageService;
+        this.userAccountRepository = userAccountRepository;
+        this.imageStorageService = imageStorageService;
     }
 
     @PostMapping("/create-with-tickets")
@@ -57,7 +72,25 @@ public class OrganizerEventCreationController {
                                     @RequestParam BigDecimal price,
                                     @RequestParam Integer capacity,
                                     @RequestParam(required = false) String imageUrl,
+                                    @RequestParam(required = false) MultipartFile imageFile,
                                     @RequestParam(defaultValue = "CLASSIC") EventDesignTemplate designTemplate,
+                                    @RequestParam(required = false) String backgroundImageUrl,
+                                    @RequestParam(required = false) String organizerBrandName,
+                                    @RequestParam(required = false) String organizerLogoUrl,
+                                    @RequestParam(required = false) String highlightText,
+                                    @RequestParam(required = false, defaultValue = "false") boolean floatingSalesCard,
+                                    @RequestParam(required = false, defaultValue = "false") boolean showSponsors,
+                                    @RequestParam(required = false) String sponsorsText,
+                                    @RequestParam(required = false) String sponsorLogosText,
+                                    @RequestParam(required = false, defaultValue = "false") boolean showMedia,
+                                    @RequestParam(required = false) String youtubeUrl,
+                                    @RequestParam(required = false) String spotifyUrl,
+                                    @RequestParam(required = false, defaultValue = "false") boolean showStageMap,
+                                    @RequestParam(required = false) String stageImageUrl,
+                                    @RequestParam(required = false) MultipartFile stageImageFile,
+                                    @RequestParam(required = false) String stageText,
+                                    @RequestParam(required = false, defaultValue = "false") boolean showSessions,
+                                    @RequestParam(required = false) String sessionText,
                                     @RequestParam(required = false) List<String> ticketName,
                                     @RequestParam(required = false) List<BigDecimal> ticketPrice,
                                     @RequestParam(required = false) List<Integer> ticketQuantity,
@@ -76,12 +109,12 @@ public class OrganizerEventCreationController {
         event.setEventDate(LocalDateTime.parse(eventDate));
         event.setLocation(location.trim());
         event.setCity(city.trim());
-        event.setOrganizerName(displayNameFromEmail(organizerEmail));
+        event.setOrganizerName(organizerDisplayName(organizerEmail));
         event.setOrganizerEmail(organizerEmail);
         event.setPrice(price);
         event.setCapacity(capacity);
         event.setSold(0);
-        event.setImageUrl(imageUrl == null ? "" : imageUrl.trim());
+        event.setImageUrl(firstText(imageStorageService.store(imageFile, "presentations"), imageUrl));
         event.setFeatured(false);
         event.setDesignTemplate(designTemplate);
         event.setDesignEnabled(requestDesigner);
@@ -90,6 +123,9 @@ public class OrganizerEventCreationController {
         event.setUpdatedAt(LocalDateTime.now());
 
         Event saved = eventRepository.save(event);
+        saveOrganizerPresentation(saved, designTemplate, backgroundImageUrl, organizerBrandName, organizerLogoUrl,
+                highlightText, floatingSalesCard, showSponsors, sponsorsText, sponsorLogosText, showMedia,
+                youtubeUrl, spotifyUrl, showStageMap, stageImageUrl, stageImageFile, stageText, showSessions, sessionText);
         createRecord(saved, EventAdminRecordType.CREATED,
                 "Evento creado por organizador y enviado a revisión administrativa.\n"
                         + "Plantilla inicial de Marketplace: " + designTemplate.getLabel() + ".");
@@ -169,6 +205,48 @@ public class OrganizerEventCreationController {
         return new TicketSummary(created, totalQuantity, lowestPrice, description.toString());
     }
 
+    private void saveOrganizerPresentation(Event event,
+                                           EventDesignTemplate designTemplate,
+                                           String backgroundImageUrl,
+                                           String organizerBrandName,
+                                           String organizerLogoUrl,
+                                           String highlightText,
+                                           boolean floatingSalesCard,
+                                           boolean showSponsors,
+                                           String sponsorsText,
+                                           String sponsorLogosText,
+                                           boolean showMedia,
+                                           String youtubeUrl,
+                                           String spotifyUrl,
+                                           boolean showStageMap,
+                                           String stageImageUrl,
+                                           MultipartFile stageImageFile,
+                                           String stageText,
+                                           boolean showSessions,
+                                           String sessionText) {
+        EventPresentationSettings presentation = new EventPresentationSettings();
+        presentation.setEvent(event);
+        presentation.setBackgroundImageUrl(safeUrl(backgroundImageUrl));
+        presentation.setOrganizerBrandName(optionalText(organizerBrandName));
+        presentation.setOrganizerLogoUrl(safeUrl(organizerLogoUrl));
+        presentation.setHighlightText(optionalText(highlightText));
+        presentation.setInfoPosition(floatingSalesCard || designTemplate == EventDesignTemplate.TICKET_PANEL ? "FLOATING" : "STANDARD");
+        presentation.setShowSponsors(showSponsors);
+        presentation.setSponsorsText(optionalText(sponsorsText));
+        presentation.setSponsorLogosText(optionalText(sponsorLogosText));
+        presentation.setShowMedia(showMedia);
+        presentation.setYoutubeUrl(safeUrl(youtubeUrl));
+        presentation.setSpotifyUrl(safeUrl(spotifyUrl));
+        presentation.setShowStageMap(showStageMap);
+        presentation.setStageImageUrl(firstText(imageStorageService.store(stageImageFile, "presentations"), safeUrl(stageImageUrl)));
+        presentation.setStageText(optionalText(stageText));
+        presentation.setShowSessions(showSessions);
+        presentation.setSessionText(optionalText(sessionText));
+        presentation.setShowGallery(true);
+        presentation.setShowOrganizer(true);
+        presentationSettingsRepository.save(presentation);
+    }
+
     private String currentEmail(Authentication authentication) {
         if (authentication == null || !hasText(authentication.getName())) {
             throw new IllegalStateException("Se requiere una sesión de organizador");
@@ -182,8 +260,39 @@ public class OrganizerEventCreationController {
         return normalized.isBlank() ? "Organizador" : normalized.substring(0, 1).toUpperCase() + normalized.substring(1);
     }
 
+    private String organizerDisplayName(String email) {
+        UserAccount account = userAccountRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (account != null && hasText(account.getCompanyName())) {
+            return account.getCompanyName().trim();
+        }
+        if (account != null && hasText(account.getFullName())) {
+            return account.getFullName().trim();
+        }
+        return displayNameFromEmail(email);
+    }
+
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    private String firstText(String preferred, String fallback) {
+        if (hasText(preferred)) {
+            return preferred.trim();
+        }
+        return fallback == null ? "" : fallback.trim();
+    }
+
+    private String optionalText(String value) {
+        return hasText(value) ? value.trim() : null;
+    }
+
+    private String safeUrl(String value) {
+        if (!hasText(value)) {
+            return null;
+        }
+        String normalized = value.trim();
+        return normalized.startsWith("https://") || normalized.startsWith("http://") || normalized.startsWith("/uploads/")
+                ? normalized : null;
     }
 
     private void createRecord(Event event, EventAdminRecordType type, String description) {

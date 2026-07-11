@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,21 +22,20 @@ public class EventService {
     }
 
     public List<Event> findPublished(String query, String city, String category) {
+        return findPublished(query, city, category, null);
+    }
+
+    public List<Event> findPublished(String query, String city, String category, String dateRange) {
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime endDate = resolveEndDate(now, dateRange);
 
-        if (StringUtils.hasText(query)) {
-            return eventRepository.findByTitleContainingIgnoreCaseAndStatusAndEventDateAfterOrderByEventDateAsc(query.trim(), EventStatus.PUBLISHED, now);
-        }
-
-        if (StringUtils.hasText(city)) {
-            return eventRepository.findByCityContainingIgnoreCaseAndStatusAndEventDateAfterOrderByEventDateAsc(city.trim(), EventStatus.PUBLISHED, now);
-        }
-
-        if (StringUtils.hasText(category)) {
-            return eventRepository.findByCategoryNameAndStatusAndEventDateAfterOrderByEventDateAsc(category.trim(), EventStatus.PUBLISHED, now);
-        }
-
-        return eventRepository.findByStatusAndEventDateAfterOrderByEventDateAsc(EventStatus.PUBLISHED, now);
+        return eventRepository.findByStatusAndEventDateAfterOrderByEventDateAsc(EventStatus.PUBLISHED, now).stream()
+                .filter(event -> matchesQuery(event, query))
+                .filter(event -> matchesText(event.getCity(), city))
+                .filter(event -> !StringUtils.hasText(category)
+                        || (event.getCategory() != null && event.getCategory().getName().equalsIgnoreCase(category.trim())))
+                .filter(event -> endDate == null || !event.getEventDate().isAfter(endDate))
+                .toList();
     }
 
     public List<Event> findAll() {
@@ -57,5 +57,33 @@ public class EventService {
         event.setGateAccessCode(gateAccessCode);
         event.setGatePassword(gatePassword);
         return eventRepository.save(event);
+    }
+
+    private boolean matchesQuery(Event event, String query) {
+        if (!StringUtils.hasText(query)) return true;
+        return contains(event.getTitle(), query)
+                || contains(event.getDescription(), query)
+                || contains(event.getOrganizerName(), query);
+    }
+
+    private boolean matchesText(String value, String expected) {
+        if (!StringUtils.hasText(expected)) return true;
+        return contains(value, expected);
+    }
+
+    private boolean contains(String value, String expected) {
+        if (!StringUtils.hasText(expected)) return true;
+        return value != null && value.toLowerCase().contains(expected.trim().toLowerCase());
+    }
+
+    private LocalDateTime resolveEndDate(LocalDateTime now, String dateRange) {
+        if (!StringUtils.hasText(dateRange)) return null;
+        return switch (dateRange.trim().toLowerCase()) {
+            case "today" -> now.toLocalDate().atTime(LocalTime.MAX);
+            case "week" -> now.plusDays(7);
+            case "month" -> now.toLocalDate().withDayOfMonth(now.toLocalDate().lengthOfMonth()).atTime(LocalTime.MAX);
+            case "next2months" -> now.plusMonths(2);
+            default -> null;
+        };
     }
 }
