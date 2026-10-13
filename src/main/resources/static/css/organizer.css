@@ -202,6 +202,21 @@
 }
 
 /* Inicio del Organizador: compacto y con accesos verticales ovalados. */
+.organizer-home-nav {
+    gap: 7px;
+}
+
+.organizer-home-nav .btn {
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: .72rem;
+    font-weight: 400;
+}
+
+.organizer-home-nav form {
+    margin: 0;
+}
+
 .organizer-home-page {
     width: min(940px, calc(100% - 32px));
     padding: 26px 0 42px;
