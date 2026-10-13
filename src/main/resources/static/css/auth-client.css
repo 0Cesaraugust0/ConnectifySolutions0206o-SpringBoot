@@ -331,3 +331,21 @@
     font-size: .82rem;
     font-weight: 400;
 }
+
+.login-nav-actions {
+    gap: 8px;
+}
+
+.login-nav-actions .btn {
+    padding: 7px 11px;
+    border-radius: 10px;
+    font-size: .76rem;
+}
+
+.login-nav-actions .btn.secondary {
+    font-weight: 400;
+}
+
+.login-nav-actions .btn.primary {
+    font-weight: 700;
+}
