@@ -399,6 +399,153 @@
     }
 }
 
+/* Listado de eventos del Organizador en escala visual cercana al 80 %. */
+.organizer-events-nav {
+    gap: 7px;
+}
+
+.organizer-events-nav .btn {
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: .72rem;
+    font-weight: 400;
+}
+
+.organizer-events-page {
+    width: min(960px, calc(100% - 32px));
+    padding: 26px 0 46px;
+}
+
+.organizer-events-page .organizer-hero {
+    padding: 24px 27px;
+    border-radius: 24px;
+}
+
+.organizer-events-page .organizer-hero .badge {
+    padding: 6px 10px;
+    font-size: .72rem;
+}
+
+.organizer-events-page .organizer-hero h1 {
+    margin: 12px 0 7px;
+    font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+}
+
+.organizer-events-page .organizer-hero .hero-text {
+    max-width: 720px;
+    margin: 0;
+    font-size: .82rem;
+    line-height: 1.5;
+}
+
+.organizer-events-page .toolbar {
+    gap: 8px;
+    margin: 18px 0;
+}
+
+.organizer-events-page .toolbar .btn {
+    padding: 9px 13px;
+    border-radius: 10px;
+    font-size: .76rem;
+}
+
+.organizer-events-page .events-title-row {
+    gap: 14px;
+    margin: 16px 0;
+}
+
+.organizer-events-page .events-title-row h2 {
+    font-size: 1.25rem;
+}
+
+.organizer-events-page .event-count,
+.organizer-events-page .quick-note {
+    font-size: .74rem;
+}
+
+.organizer-events-page .quick-note {
+    padding: 10px 12px;
+    border-radius: 11px;
+}
+
+.organizer-events-page .event-list {
+    gap: 12px;
+}
+
+.organizer-events-page .event-row-card {
+    grid-template-columns: 102px minmax(0, 1fr) 138px;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 16px;
+}
+
+.organizer-events-page .event-cover {
+    width: 102px;
+    min-height: 106px;
+    border-radius: 11px;
+}
+
+.organizer-events-page .event-topline {
+    gap: 6px;
+}
+
+.organizer-events-page .status-pill,
+.organizer-events-page .event-topline .badge {
+    padding: 5px 8px;
+    font-size: .64rem;
+}
+
+.organizer-events-page .event-title {
+    margin: 7px 0 2px;
+    font-size: .94rem;
+}
+
+.organizer-events-page .event-summary {
+    font-size: .75rem;
+}
+
+.organizer-events-page .event-meta {
+    gap: 11px;
+    margin: 9px 0;
+    font-size: .72rem;
+}
+
+.organizer-events-page .event-kpis {
+    gap: 8px;
+    padding-top: 9px;
+}
+
+.organizer-events-page .event-kpi small {
+    font-size: .65rem;
+}
+
+.organizer-events-page .event-kpi strong {
+    margin-top: 2px;
+    font-size: .76rem;
+}
+
+.organizer-events-page .event-actions {
+    gap: 7px;
+    padding-left: 12px;
+}
+
+.organizer-events-page .event-actions .btn {
+    padding: 7px 9px;
+    border-radius: 9px;
+    font-size: .68rem;
+}
+
+@media (max-width: 860px) {
+    .organizer-events-page .event-row-card { grid-template-columns: 1fr; }
+    .organizer-events-page .event-cover { width: 100%; height: 165px; }
+    .organizer-events-page .event-actions { padding: 11px 0 0; }
+}
+
+@media (max-width: 560px) {
+    .organizer-events-page { width: calc(100% - 20px); padding-top: 16px; }
+    .organizer-events-page .organizer-hero { padding: 20px; }
+}
+
 @media (max-width: 900px) {
     .organizer-dashboard-hero {
         grid-template-columns: 1fr;
