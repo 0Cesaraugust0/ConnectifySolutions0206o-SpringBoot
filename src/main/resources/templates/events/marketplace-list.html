@@ -87,7 +87,6 @@
         </div>
     </section>
 
-    <div id="marketplaceResults" class="marketplace-results" aria-live="polite">
     <section class="date-filter-strip">
         <span>Fecha</span>
         <a data-marketplace-filter th:href="@{/events(q=${q},city=${city},category=${category})}" th:classappend="${dateRange == null || dateRange.isBlank()} ? ' active' : ''">Todas</a>
@@ -98,13 +97,14 @@
     </section>
 
     <section id="categories" class="category-strip professional-categories">
-        <a data-marketplace-filter th:href="@{/events(dateRange=${dateRange})}" class="category-chip">Todos</a>
-        <a data-marketplace-filter th:href="@{/events(category='Música',dateRange=${dateRange})}" class="category-chip">Música</a>
-        <a data-marketplace-filter th:href="@{/events(category='Tecnología',dateRange=${dateRange})}" class="category-chip">Tecnología</a>
-        <a data-marketplace-filter th:href="@{/events(category='Gastronomía',dateRange=${dateRange})}" class="category-chip">Gastronomía</a>
-        <a data-marketplace-filter th:href="@{/events(category='Deporte',dateRange=${dateRange})}" class="category-chip">Deporte</a>
+        <a data-marketplace-filter th:href="@{/events(dateRange=${dateRange})}" class="category-chip" th:classappend="${category == null || category.isBlank()} ? ' active' : ''">Todos</a>
+        <a data-marketplace-filter th:href="@{/events(category='Música',dateRange=${dateRange})}" class="category-chip" th:classappend="${category == 'Música'} ? ' active' : ''">Música</a>
+        <a data-marketplace-filter th:href="@{/events(category='Tecnología',dateRange=${dateRange})}" class="category-chip" th:classappend="${category == 'Tecnología'} ? ' active' : ''">Tecnología</a>
+        <a data-marketplace-filter th:href="@{/events(category='Gastronomía',dateRange=${dateRange})}" class="category-chip" th:classappend="${category == 'Gastronomía'} ? ' active' : ''">Gastronomía</a>
+        <a data-marketplace-filter th:href="@{/events(category='Deporte',dateRange=${dateRange})}" class="category-chip" th:classappend="${category == 'Deporte'} ? ' active' : ''">Deporte</a>
     </section>
 
+    <div id="marketplaceCards" class="marketplace-results" aria-live="polite">
     <section id="featured" class="section-heading">
         <div>
             <p class="badge">Explorar</p>
