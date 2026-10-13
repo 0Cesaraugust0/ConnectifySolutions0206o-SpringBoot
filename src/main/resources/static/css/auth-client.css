@@ -228,3 +228,14 @@
     -webkit-backdrop-filter: blur(16px) saturate(1.08);
     backdrop-filter: blur(16px) saturate(1.08);
 }
+
+.register-nav-actions {
+    gap: 8px;
+}
+
+.register-nav-actions .btn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: .82rem;
+    font-weight: 400;
+}
