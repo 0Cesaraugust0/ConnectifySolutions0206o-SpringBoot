@@ -6,40 +6,93 @@
     <title>Panel Administrador - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-dashboard.css(v='admin-redesign-1')}">
 </head>
-<body>
-<header class="navbar dashboard-nav">
-    <div class="brand"><span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div></div>
+<body class="admin-dashboard-body">
+<header class="navbar dashboard-nav admin-dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/admin}">
+        <span class="logo admin-brand-mark">C</span>
+        <div><strong>Connectify</strong><small>Administración</small></div>
+    </a>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/dashboard/admin/events(view='list')}">Revisión de eventos</a>
-        <a class="btn secondary" th:href="@{/admin/events}">Puerta</a>
+        <a class="btn secondary" th:href="@{/dashboard/admin/events(view='list')}">Revisar eventos</a>
+        <a class="btn secondary" th:href="@{/admin/events}">Control de puerta</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero">
-        <p class="badge">Gestión administrativa</p>
-        <h1 th:text="${title}">Panel Administrador</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">admin</strong>. Revisa eventos y prepara el acceso de puerta para el agente asignado.</p>
+<main class="dashboard-page admin-dashboard-page">
+    <section class="admin-dashboard-hero">
+        <div class="admin-hero-copy">
+            <p class="admin-eyebrow"><span></span> Centro de control</p>
+            <h1 th:text="${title}">Panel Administrador</h1>
+            <p>Supervisa las propuestas, decide su publicación y prepara el acceso seguro para cada evento desde un solo lugar.</p>
+            <div class="admin-hero-actions">
+                <a class="btn admin-primary-action" th:href="@{/dashboard/admin/events(view='list')}">Abrir revisión de eventos</a>
+                <a class="btn admin-secondary-action" th:href="@{/events}">Ver Marketplace</a>
+            </div>
+        </div>
+
+        <aside class="admin-session-card">
+            <span class="admin-session-icon">🛡️</span>
+            <small>Sesión administrativa</small>
+            <strong th:text="${email}">admin@connectify.pe</strong>
+            <p>Acceso habilitado para revisión, publicación y control operativo.</p>
+            <span class="admin-session-state"><i></i> Cuenta activa</span>
+        </aside>
     </section>
 
-    <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/dashboard/admin/events(view='list')}">
-            <span>🗂️</span>
-            <h3>Revisión de eventos</h3>
-            <p>Aprueba, rechaza o devuelve eventos para corrección antes de publicarlos.</p>
+    <div class="admin-section-heading">
+        <div>
+            <p>Herramientas principales</p>
+            <h2>Centro de operaciones</h2>
+        </div>
+        <span>3 áreas disponibles</span>
+    </div>
+
+    <section class="admin-action-grid" aria-label="Áreas administrativas">
+        <a class="admin-action-card admin-action-review" th:href="@{/dashboard/admin/events(view='list')}">
+            <span class="admin-action-icon">✓</span>
+            <div>
+                <small>Validación editorial</small>
+                <h2>Revisión de eventos</h2>
+                <p>Comprueba la información, solicita correcciones y decide qué propuestas están listas para publicarse.</p>
+            </div>
+            <strong>Entrar a revisión <span>→</span></strong>
         </a>
-        <a class="module-card" th:href="@{/admin/events}">
-            <span>🚪</span>
-            <h3>Control de puerta</h3>
-            <p>Configura el código del evento y la contraseña diaria que usará el agente de acceso.</p>
+
+        <a class="admin-action-card admin-action-gate" th:href="@{/admin/events}">
+            <span class="admin-action-icon">⌁</span>
+            <div>
+                <small>Operación presencial</small>
+                <h2>Control de puerta</h2>
+                <p>Configura el código del evento y la contraseña diaria que utilizará el agente encargado del acceso.</p>
+            </div>
+            <strong>Configurar acceso <span>→</span></strong>
         </a>
-        <a class="module-card" th:href="@{/events}">
-            <span>👁️</span>
-            <h3>Marketplace público</h3>
-            <p>Consulta los eventos que ya están visibles para compradores.</p>
+
+        <a class="admin-action-card admin-action-market" th:href="@{/events}">
+            <span class="admin-action-icon">◉</span>
+            <div>
+                <small>Vista pública</small>
+                <h2>Marketplace</h2>
+                <p>Revisa la experiencia final y confirma cómo aparecen ante los compradores los eventos publicados.</p>
+            </div>
+            <strong>Explorar eventos <span>→</span></strong>
         </a>
+    </section>
+
+    <section class="admin-process-panel">
+        <div class="admin-process-copy">
+            <p>Ruta de publicación</p>
+            <h2>Un flujo claro para cada propuesta</h2>
+            <span>Cada etapa conserva la trazabilidad entre el organizador, la administración y el equipo de acceso.</span>
+        </div>
+        <ol class="admin-process-list">
+            <li><b>01</b><div><strong>Revisar</strong><span>Validar contenido y datos comerciales.</span></div></li>
+            <li><b>02</b><div><strong>Publicar</strong><span>Habilitar el evento en Marketplace.</span></div></li>
+            <li><b>03</b><div><strong>Preparar acceso</strong><span>Entregar credenciales seguras a puerta.</span></div></li>
+        </ol>
     </section>
 </main>
 </body>
