@@ -349,3 +349,117 @@
 .login-nav-actions .btn.primary {
     font-weight: 700;
 }
+
+/* Densidad compacta del acceso, equivalente visualmente a un 80 %. */
+.login-page {
+    padding-block: 28px;
+}
+
+.login-page .auth-client-layout {
+    width: min(920px, 100%);
+    border-radius: 24px;
+}
+
+.login-page .auth-client-pitch {
+    padding: 38px 36px;
+}
+
+.login-page .auth-client-pitch h1 {
+    max-width: 430px;
+    margin: 14px 0 10px;
+    font-size: clamp(1.85rem, 3vw, 2.8rem);
+    line-height: 1.06;
+}
+
+.login-page .auth-client-pitch > p {
+    font-size: .86rem;
+    line-height: 1.5;
+}
+
+.login-page .badge {
+    padding: 6px 10px;
+    font-size: .73rem;
+}
+
+.login-page .auth-benefits {
+    gap: 8px;
+    margin-top: 22px;
+}
+
+.login-page .auth-benefits div,
+.login-page .auth-benefit-action {
+    grid-template-columns: 32px 1fr;
+    column-gap: 9px;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.login-page .auth-benefits span {
+    width: 29px;
+    height: 29px;
+    border-radius: 9px;
+    font-size: .7rem;
+}
+
+.login-page .auth-benefits strong {
+    font-size: .78rem;
+}
+
+.login-page .auth-benefits small {
+    font-size: .68rem;
+}
+
+.login-page .auth-client-card {
+    padding: 34px;
+}
+
+.login-page .auth-client-card h2 {
+    margin: 10px 0 5px;
+    font-size: 1.6rem;
+}
+
+.login-page .auth-client-card > .muted.small {
+    font-size: .78rem;
+}
+
+.login-page .auth-client-form {
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.login-page .auth-client-form label {
+    gap: 5px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.login-page .auth-client-form input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: .86rem;
+}
+
+.login-page .auth-client-form .btn {
+    padding: 10px 14px;
+    border-radius: 11px;
+    font-size: .84rem;
+}
+
+.login-page .auth-client-foot {
+    margin-top: 16px;
+    font-size: .78rem;
+}
+
+.login-page .demo-box {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.login-page .demo-box h3 {
+    font-size: .86rem;
+}
+
+.login-page .demo-box p {
+    font-size: .72rem;
+}
