@@ -1425,6 +1425,121 @@ h3 {
     line-height: 1.65;
 }
 
+/* Centro de ayuda compacto, equivalente visualmente a un 80 %. */
+.help-nav-actions{
+    gap:8px;
+}
+
+.help-nav-actions .btn{
+    padding:7px 11px;
+    border-radius:10px;
+    font-size:.76rem;
+}
+
+.help-nav-actions .btn.secondary{
+    font-weight:400;
+}
+
+.help-nav-actions .btn.primary{
+    font-weight:700;
+}
+
+.help-page{
+    width:min(940px,calc(100% - 32px));
+    padding:26px 0 22px;
+}
+
+.help-hero{
+    padding:30px;
+    border-radius:22px;
+}
+
+.help-hero h1{
+    margin:13px 0 8px;
+    font-size:clamp(2rem,4vw,3.15rem);
+}
+
+.help-hero p{
+    font-size:.86rem;
+    line-height:1.55;
+}
+
+.help-page .badge{
+    padding:6px 10px;
+    font-size:.72rem;
+}
+
+.help-quick-grid{
+    gap:12px;
+    margin:19px 0;
+}
+
+.help-quick-grid a{
+    gap:6px;
+    min-height:102px;
+    padding:16px;
+    border-radius:16px;
+}
+
+.help-quick-grid strong{
+    font-size:.84rem;
+}
+
+.help-quick-grid span{
+    font-size:.75rem;
+    line-height:1.4;
+}
+
+.help-page .section-heading{
+    margin:10px 0 17px;
+}
+
+.help-page .section-heading h2{
+    font-size:clamp(1.4rem,3vw,2.2rem);
+}
+
+.faq-list{
+    gap:9px;
+    margin-top:22px;
+}
+
+.faq-list details{
+    border-radius:14px;
+}
+
+.faq-list summary{
+    padding:14px 16px;
+    font-size:.82rem;
+}
+
+.faq-list details p{
+    padding:0 16px 16px;
+    font-size:.78rem;
+    line-height:1.55;
+}
+
+.support-panel{
+    gap:17px;
+    margin-top:24px;
+    padding:22px;
+    border-radius:19px;
+}
+
+.support-panel h2{
+    font-size:1.35rem;
+}
+
+.support-panel p{
+    font-size:.8rem;
+    line-height:1.5;
+}
+
+.support-panel .btn{
+    padding:10px 15px;
+    border-radius:11px;
+    font-size:.8rem;
+}
+
 @media (max-width: 900px) {
     .site-footer-inner,
     .help-quick-grid,
