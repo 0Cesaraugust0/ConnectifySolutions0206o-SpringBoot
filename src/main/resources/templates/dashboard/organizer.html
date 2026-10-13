@@ -6,7 +6,7 @@
     <title>Panel Organizador - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css(v='dashboard-compact-1')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -19,7 +19,7 @@
     </nav>
 </header>
 
-<main class="dashboard-page">
+<main class="dashboard-page organizer-home-page">
     <div th:if="${param.profileSaved != null}" class="alert success">Datos de organizador actualizados correctamente.</div>
 
     <section class="organizer-hero organizer-dashboard-hero">
@@ -40,7 +40,7 @@
         </aside>
     </section>
 
-    <section class="dashboard-grid">
+    <section class="dashboard-grid organizer-service-list" aria-label="Servicios del organizador">
         <a class="module-card" th:href="@{/dashboard/organizer/events}">
             <span>EV</span><h3>Mis eventos</h3><p>Ver eventos creados, estado, capacidad, ventas y seguimiento.</p>
         </a>
