@@ -480,9 +480,12 @@
 }
 
 .organizer-events-page .event-cover {
-    width: 102px;
-    min-height: 106px;
-    border-radius: 11px;
+    width: 114px;
+    height: calc(100% + 24px);
+    min-height: 130px;
+    margin: -12px 0 -12px -12px;
+    border-radius: 15px 0 0 15px;
+    object-position: center;
 }
 
 .organizer-events-page .event-topline {
@@ -537,7 +540,13 @@
 
 @media (max-width: 860px) {
     .organizer-events-page .event-row-card { grid-template-columns: 1fr; }
-    .organizer-events-page .event-cover { width: 100%; height: 165px; }
+    .organizer-events-page .event-cover {
+        width: calc(100% + 24px);
+        height: 165px;
+        min-height: 0;
+        margin: -12px -12px 0;
+        border-radius: 15px 15px 0 0;
+    }
     .organizer-events-page .event-actions { padding: 11px 0 0; }
 }
 
