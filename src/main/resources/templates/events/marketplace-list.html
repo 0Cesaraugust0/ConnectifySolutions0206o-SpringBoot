@@ -87,21 +87,22 @@
         </div>
     </section>
 
+    <div id="marketplaceResults" class="marketplace-results" aria-live="polite">
     <section class="date-filter-strip">
         <span>Fecha</span>
-        <a th:href="@{/events(q=${q},city=${city},category=${category})}" th:classappend="${dateRange == null || dateRange.isBlank()} ? ' active' : ''">Todas</a>
-        <a th:href="@{/events(q=${q},city=${city},category=${category},dateRange='today')}" th:classappend="${dateRange == 'today'} ? ' active' : ''">Hoy</a>
-        <a th:href="@{/events(q=${q},city=${city},category=${category},dateRange='week')}" th:classappend="${dateRange == 'week'} ? ' active' : ''">Esta semana</a>
-        <a th:href="@{/events(q=${q},city=${city},category=${category},dateRange='month')}" th:classappend="${dateRange == 'month'} ? ' active' : ''">Este mes</a>
-        <a th:href="@{/events(q=${q},city=${city},category=${category},dateRange='next2months')}" th:classappend="${dateRange == 'next2months'} ? ' active' : ''">Próximos 2 meses</a>
+        <a data-marketplace-filter th:href="@{/events(q=${q},city=${city},category=${category})}" th:classappend="${dateRange == null || dateRange.isBlank()} ? ' active' : ''">Todas</a>
+        <a data-marketplace-filter th:href="@{/events(q=${q},city=${city},category=${category},dateRange='today')}" th:classappend="${dateRange == 'today'} ? ' active' : ''">Hoy</a>
+        <a data-marketplace-filter th:href="@{/events(q=${q},city=${city},category=${category},dateRange='week')}" th:classappend="${dateRange == 'week'} ? ' active' : ''">Esta semana</a>
+        <a data-marketplace-filter th:href="@{/events(q=${q},city=${city},category=${category},dateRange='month')}" th:classappend="${dateRange == 'month'} ? ' active' : ''">Este mes</a>
+        <a data-marketplace-filter th:href="@{/events(q=${q},city=${city},category=${category},dateRange='next2months')}" th:classappend="${dateRange == 'next2months'} ? ' active' : ''">Próximos 2 meses</a>
     </section>
 
     <section id="categories" class="category-strip professional-categories">
-        <a th:href="@{/events(dateRange=${dateRange})}" class="category-chip">Todos</a>
-        <a th:href="@{/events(category='Música',dateRange=${dateRange})}" class="category-chip">Música</a>
-        <a th:href="@{/events(category='Tecnología',dateRange=${dateRange})}" class="category-chip">Tecnología</a>
-        <a th:href="@{/events(category='Gastronomía',dateRange=${dateRange})}" class="category-chip">Gastronomía</a>
-        <a th:href="@{/events(category='Deporte',dateRange=${dateRange})}" class="category-chip">Deporte</a>
+        <a data-marketplace-filter th:href="@{/events(dateRange=${dateRange})}" class="category-chip">Todos</a>
+        <a data-marketplace-filter th:href="@{/events(category='Música',dateRange=${dateRange})}" class="category-chip">Música</a>
+        <a data-marketplace-filter th:href="@{/events(category='Tecnología',dateRange=${dateRange})}" class="category-chip">Tecnología</a>
+        <a data-marketplace-filter th:href="@{/events(category='Gastronomía',dateRange=${dateRange})}" class="category-chip">Gastronomía</a>
+        <a data-marketplace-filter th:href="@{/events(category='Deporte',dateRange=${dateRange})}" class="category-chip">Deporte</a>
     </section>
 
     <section id="featured" class="section-heading">
@@ -110,7 +111,7 @@
             <h2>Eventos disponibles</h2>
             <p class="muted">Revisa eventos publicados, compara disponibilidad y compra tus entradas desde una cuenta Cliente.</p>
         </div>
-        <a th:if="${q != null || city != null || category != null || dateRange != null}" th:href="@{/events}" class="btn secondary">Limpiar filtros</a>
+        <a data-marketplace-filter th:if="${q != null || city != null || category != null || dateRange != null}" th:href="@{/events}" class="btn secondary">Limpiar filtros</a>
     </section>
 
     <section class="event-grid" th:if="${!events.isEmpty()}">
@@ -151,8 +152,10 @@
         <p class="muted">Prueba con otra búsqueda, ciudad o categoría.</p>
         <a th:href="@{/events}" class="btn primary">Ver todos los eventos</a>
     </section>
+    </div>
 </main>
 <div th:replace="~{fragments/site-footer :: publicFooter}"></div>
 <div th:replace="~{fragments/site-footer :: cookieNotice}"></div>
+<script th:src="@{/js/marketplace-filters.js(v='1')}" defer></script>
 </body>
 </html>
