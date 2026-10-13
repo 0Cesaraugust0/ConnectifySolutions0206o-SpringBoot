@@ -882,6 +882,137 @@
     .organizer-create-page .stepper { grid-template-columns: 1fr 1fr; }
 }
 
+/* Métricas del Organizador en escala visual cercana al 75 %. */
+.organizer-metrics-nav {
+    gap: 7px;
+}
+
+.organizer-metrics-nav .btn {
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: .72rem;
+    font-weight: 400;
+}
+
+.organizer-metrics-page {
+    width: min(900px, calc(100% - 32px));
+    padding: 25px 0 48px;
+}
+
+.organizer-metrics-page .organizer-hero {
+    padding: 22px 25px;
+    border-radius: 22px;
+}
+
+.organizer-metrics-page .organizer-hero .badge {
+    padding: 5px 9px;
+    font-size: .68rem;
+}
+
+.organizer-metrics-page .organizer-hero h1 {
+    margin: 9px 0 5px;
+    font-size: clamp(1.75rem, 3.3vw, 2.45rem);
+}
+
+.organizer-metrics-page .organizer-hero .hero-text {
+    margin: 0;
+    font-size: .76rem;
+}
+
+.organizer-metrics-page .organizer-kpi-strip {
+    gap: 11px;
+    margin: 16px 0;
+}
+
+.organizer-metrics-page .organizer-kpi {
+    padding: 15px;
+    border-radius: 17px;
+}
+
+.organizer-metrics-page .organizer-kpi span {
+    font-size: .7rem;
+    font-weight: 700;
+}
+
+.organizer-metrics-page .organizer-kpi strong {
+    margin-top: 5px;
+    font-size: 1.4rem;
+}
+
+.organizer-metrics-page .dashboard-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.organizer-metrics-page .module-card {
+    min-height: 145px;
+    gap: 7px;
+    padding: 16px;
+    border-radius: 17px;
+}
+
+.organizer-metrics-page .module-card span:first-child {
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    font-size: 1.15rem;
+}
+
+.organizer-metrics-page .module-card h3 {
+    font-size: .98rem;
+}
+
+.organizer-metrics-page .module-card p {
+    font-size: .72rem;
+    line-height: 1.42;
+}
+
+.organizer-metrics-page .table-card {
+    overflow-x: auto;
+    border-radius: 17px;
+}
+
+.organizer-metrics-page .table-modern {
+    min-width: 720px;
+}
+
+.organizer-metrics-page .table-modern th,
+.organizer-metrics-page .table-modern td {
+    padding: 10px 11px;
+    font-size: .7rem;
+}
+
+.organizer-metrics-page .table-modern th {
+    font-size: .64rem;
+}
+
+.organizer-metrics-page .status-pill {
+    padding: 5px 7px;
+    font-size: .6rem;
+}
+
+@media (max-width: 760px) {
+    .organizer-metrics-page .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .organizer-metrics-page .module-card {
+        min-height: 120px;
+    }
+}
+
+@media (max-width: 640px) {
+    .organizer-metrics-page {
+        width: calc(100% - 20px);
+        padding-top: 16px;
+    }
+
+    .organizer-metrics-page .organizer-hero {
+        padding: 19px;
+    }
+}
+
 @media (max-width: 900px) {
     .organizer-dashboard-hero {
         grid-template-columns: 1fr;

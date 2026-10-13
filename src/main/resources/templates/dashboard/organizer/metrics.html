@@ -6,7 +6,7 @@
     <title>Métricas - Organizador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css(v='metrics-compact-1')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -14,14 +14,14 @@
         <span class="logo">📊</span>
         <div><strong>Connectify</strong><small>Métricas</small></div>
     </a>
-    <nav class="top-actions">
+    <nav class="top-actions organizer-metrics-nav">
         <a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a>
         <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
         <a class="btn primary compact" th:href="@{/dashboard/organizer/events/new}">Crear evento</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
+<main class="dashboard-page organizer-metrics-page">
     <section class="organizer-hero">
         <p class="badge">Indicadores</p>
         <h1>Métricas del organizador</h1>
