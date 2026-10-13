@@ -136,6 +136,106 @@
     gap: 12px;
 }
 
+/* Perfil del Organizador en escala visual cercana al 75 %. */
+.organizer-profile-nav {
+    gap: 7px;
+}
+
+.organizer-profile-nav .btn {
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: .72rem;
+    font-weight: 400;
+}
+
+.organizer-profile-page {
+    width: min(890px, calc(100% - 32px));
+    padding: 26px 0 48px;
+}
+
+.organizer-profile-page .organizer-profile-hero {
+    margin-bottom: 16px;
+    padding: 22px 25px;
+    border-radius: 21px;
+}
+
+.organizer-profile-page .organizer-profile-hero .badge {
+    padding: 5px 9px;
+    font-size: .68rem;
+}
+
+.organizer-profile-page .organizer-profile-hero h1 {
+    margin: 9px 0 5px;
+    font-size: clamp(1.65rem, 3.2vw, 2.35rem);
+}
+
+.organizer-profile-page .organizer-profile-hero .muted {
+    margin: 0;
+    font-size: .76rem;
+    line-height: 1.48;
+}
+
+.organizer-profile-page .organizer-profile-form {
+    gap: 13px;
+}
+
+.organizer-profile-page .organizer-profile-section {
+    gap: 11px;
+    padding: 18px;
+    border-radius: 17px;
+}
+
+.organizer-profile-page .organizer-profile-section h2 {
+    margin: 0 0 3px;
+    font-size: 1.05rem;
+}
+
+.organizer-profile-page .organizer-profile-section .muted.small {
+    margin: 0;
+    font-size: .7rem;
+}
+
+.organizer-profile-page .organizer-profile-grid {
+    gap: 10px;
+}
+
+.organizer-profile-page .organizer-profile-section label {
+    gap: 5px;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+.organizer-profile-page .organizer-profile-section input {
+    min-height: 38px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    font-size: .76rem;
+}
+
+.organizer-profile-page .organizer-profile-section input:focus {
+    box-shadow: 0 0 0 3px #fff3d7;
+}
+
+.organizer-profile-page .organizer-profile-actions {
+    gap: 8px;
+}
+
+.organizer-profile-page .organizer-profile-actions .btn {
+    padding: 8px 12px;
+    font-size: .73rem;
+}
+
+@media (max-width: 640px) {
+    .organizer-profile-page {
+        width: calc(100% - 20px);
+        padding-top: 16px;
+    }
+
+    .organizer-profile-page .organizer-profile-hero {
+        padding: 19px;
+    }
+}
+
 .organizer-action-row {
     display: flex;
     flex-wrap: wrap;

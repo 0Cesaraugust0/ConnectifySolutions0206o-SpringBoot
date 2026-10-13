@@ -6,18 +6,18 @@
     <title>Datos de organizador - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css(v='profile-compact-1')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/organizer}"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Datos de organizador</small></div></a>
-    <nav class="top-actions">
+    <nav class="top-actions organizer-profile-nav">
         <a class="btn secondary" th:href="@{/dashboard/organizer}">Dashboard</a>
         <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
+<main class="dashboard-page organizer-profile-page">
     <section class="dashboard-hero organizer-profile-hero">
         <p class="badge">Identificación del publicador</p>
         <h1>Datos de organizador</h1>
