@@ -7,8 +7,8 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
     <link rel="stylesheet" th:href="@{/css/marketplace-presentation.css(v='templates-2')}">
-    <link rel="stylesheet" th:href="@{/css/marketplace-account.css(v='nav-50')}">
-    <link rel="stylesheet" th:href="@{/css/marketplace-purchase.css(v='detail-hero-safe-1')}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-account.css(v='detail-nav-1')}">
+    <link rel="stylesheet" th:href="@{/css/marketplace-purchase.css(v='detail-compact-1')}">
 </head>
 <body>
 <header class="navbar marketplace-nav">
@@ -28,7 +28,7 @@
     </nav>
 </header>
 
-<main class="dashboard-page market-stage">
+<main class="dashboard-page market-stage market-detail-page">
     <section class="market-layout" th:classappend="${backgroundImageUrl != null && !backgroundImageUrl.isBlank()} ? ' has-background' : ''" th:attr="data-template=${event.designTemplate != null ? event.designTemplate.name() : 'CLASSIC'},data-focus=${presentation != null ? presentation.contentFocus : 'BALANCED'},data-info-position=${presentation != null ? presentation.infoPosition : 'STANDARD'}" th:style="${presentationStyle}">
         <div class="market-cover">
             <img th:if="${coverImageUrl != null && !coverImageUrl.isBlank()}" th:src="${coverImageUrl}" alt="Portada del evento">

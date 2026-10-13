@@ -61,3 +61,154 @@
         font-size:clamp(1.75rem,8vw,2.55rem);
     }
 }
+
+/* Detalle público compacto: aproximadamente 80 % del diseño original. */
+.market-detail-page{
+    width:min(880px,calc(100% - 32px));
+    max-width:none;
+    padding:26px 0;
+}
+
+.market-detail-page .market-layout{
+    border-radius:22px;
+}
+
+.market-detail-page .market-cover{
+    height:240px;
+}
+
+.market-detail-page .market-cover-title{
+    right:27px;
+    bottom:21px;
+    left:27px;
+}
+
+.market-detail-page .market-cover-title h1{
+    max-width:620px;
+    margin-top:8px;
+    font-size:clamp(1.65rem,3.2vw,2.65rem);
+}
+
+.market-detail-page .market-cover-title p{
+    margin-top:6px;
+    font-size:.82rem;
+}
+
+.market-detail-page .market-cover-empty{
+    right:32px;
+    top:32px;
+    font-size:clamp(3rem,6vw,6rem);
+}
+
+.market-detail-page .badge{
+    padding:6px 11px;
+    font-size:.72rem;
+}
+
+.market-detail-page .market-content{
+    padding:23px;
+}
+
+.market-detail-page .market-intro{
+    font-size:.86rem;
+    line-height:1.55;
+}
+
+.market-detail-page .market-highlight{
+    margin:14px 0;
+    padding:11px 13px;
+    font-size:.82rem;
+}
+
+.market-detail-page .market-meta{
+    gap:9px;
+    margin:18px 0;
+}
+
+.market-detail-page .market-meta div{
+    padding:10px 11px;
+    border-radius:12px;
+}
+
+.market-detail-page .market-meta strong{
+    font-size:.66rem;
+}
+
+.market-detail-page .market-meta span{
+    margin-top:4px;
+    font-size:.82rem;
+}
+
+.market-detail-page .market-extra-blocks{
+    gap:9px;
+    margin:14px 0;
+}
+
+.market-detail-page .market-extra-block{
+    padding:11px 12px;
+    border-radius:12px;
+}
+
+.market-detail-page .market-tickets,
+.market-detail-page .ticket-empty-state{
+    margin-top:16px;
+}
+
+.market-detail-page .ticket-empty-state{
+    padding:13px 15px;
+    border-radius:13px;
+    font-size:.82rem;
+}
+
+.market-detail-page .ticket-section-heading{
+    padding:15px 16px 0;
+}
+
+.market-detail-page .ticket-section-heading h2{
+    font-size:1rem;
+}
+
+.market-detail-page .table-modern{
+    font-size:.78rem;
+}
+
+.market-detail-page .table-modern th,
+.market-detail-page .table-modern td{
+    padding:10px;
+}
+
+.market-detail-page .btn{
+    padding:10px 15px;
+    border-radius:11px;
+    font-size:.8rem;
+}
+
+.market-detail-page .btn.compact{
+    padding:7px 11px;
+    font-size:.74rem;
+}
+
+.market-detail-page .market-actions{
+    margin-top:18px;
+    padding:0 23px 23px!important;
+}
+
+.market-detail-page .market-layout[data-template='CARD_GRID'] .market-cover{height:150px}
+.market-detail-page .market-layout[data-template='PROMO_DETAIL'] .market-cover{height:310px}
+.market-detail-page .market-layout[data-template='PROMO_DETAIL'] .market-content{padding:30px}
+.market-detail-page .market-layout[data-template='PROMO_DETAIL'] .market-cover-title h1{font-size:clamp(2rem,4vw,3.35rem)}
+.market-detail-page .market-layout[data-template='IMMERSIVE'] .market-cover{height:340px}
+.market-detail-page .market-layout[data-template='POSTER_LANDING'] .market-cover{height:min(510px,62vh)}
+.market-detail-page .market-layout[data-template='TICKET_PANEL']{grid-template-columns:minmax(0,1fr) 305px}
+.market-detail-page .market-layout[data-template='TICKET_PANEL'] .market-cover{min-height:415px}
+
+@media(max-width:780px){
+    .market-detail-page{width:calc(100% - 18px);padding:12px 0}
+    .market-detail-page .market-cover{height:205px}
+    .market-detail-page .market-cover-title{right:18px;bottom:14px;left:18px}
+    .market-detail-page .market-cover-title h1{font-size:clamp(1.45rem,7vw,2rem)}
+    .market-detail-page .market-content{padding:16px}
+    .market-detail-page .market-layout[data-template='PROMO_DETAIL'] .market-cover,
+    .market-detail-page .market-layout[data-template='IMMERSIVE'] .market-cover{height:245px}
+    .market-detail-page .market-layout[data-template='TICKET_PANEL']{display:block}
+}
