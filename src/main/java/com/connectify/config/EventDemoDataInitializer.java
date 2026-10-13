@@ -6,6 +6,7 @@ import com.connectify.entity.EventStatus;
 import com.connectify.repository.CategoryRepository;
 import com.connectify.repository.EventRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
+@Profile("!prod")
 public class EventDemoDataInitializer implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
