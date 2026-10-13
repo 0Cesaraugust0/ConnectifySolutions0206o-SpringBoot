@@ -1002,7 +1002,7 @@ h3 {
 }
 
 .event-grid {
-    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
 }
 
 .date-filter-strip {
