@@ -6,13 +6,14 @@
     <title>Gestión de eventos - Administrador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-events-premium.css(v='compact-75-1')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/admin}">
         <span class="logo">🛡️</span><div><strong>Connectify</strong><small>Administrador</small></div>
     </a>
-    <nav class="top-actions">
+    <nav class="top-actions admin-events-nav">
         <a class="btn secondary" th:href="@{/dashboard/admin}">Dashboard</a>
         <a class="btn secondary" th:href="@{/communications(role='ADMIN')}">Solicitudes</a>
     </nav>
