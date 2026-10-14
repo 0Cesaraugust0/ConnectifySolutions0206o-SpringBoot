@@ -636,3 +636,127 @@
         padding: 15px;
     }
 }
+
+/* Confirmación de compra compacta. */
+.confirmation-page .confirmation-hero {
+    border-left: 3px solid #426c58;
+}
+
+.confirmation-page .confirmation-hero .badge {
+    border-color: #cfded5;
+    background: #edf4f0;
+    color: #365946;
+}
+
+.confirmation-page .confirmation-ticket-list {
+    gap: 10px;
+}
+
+.confirmation-page .ticket-card {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #dfe3e8;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.confirmation-page .ticket-qr {
+    display: grid;
+    width: 74px;
+    height: 74px;
+    place-items: center;
+    overflow: hidden;
+    padding: 5px;
+    border: 1px solid #d9dee5;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.confirmation-page .ticket-qr img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.confirmation-page .ticket-card .badge {
+    margin: 0 0 6px;
+    padding: 4px 7px;
+    border: 1px solid #d9dee5;
+    border-radius: 4px;
+    background: #f4f5f7;
+    color: #596273;
+    font-size: 0.52rem;
+    font-weight: 650;
+}
+
+.confirmation-page .ticket-card h3 {
+    margin: 0 0 7px;
+    color: #172033;
+    font-size: 0.85rem;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.confirmation-page .ticket-card .muted {
+    margin: 3px 0;
+    color: #687282;
+    font-size: 0.61rem;
+    line-height: 1.4;
+}
+
+.confirmation-page .ticket-card .muted strong {
+    color: #303b4d;
+    font-weight: 650;
+}
+
+.confirmation-page .ticket-card .muted:nth-last-of-type(2) strong {
+    overflow-wrap: anywhere;
+}
+
+.confirmation-page .summary-card .btn {
+    min-height: 34px;
+    padding: 9px 11px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 0.63rem;
+    line-height: 1;
+    font-weight: 650;
+    box-shadow: none;
+}
+
+.confirmation-page .summary-card .btn:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.confirmation-page .summary-card .btn.primary {
+    background: #172033;
+    color: #ffffff;
+}
+
+.confirmation-page .summary-card .btn.primary:hover {
+    background: #283449;
+}
+
+.confirmation-page .summary-card .btn.secondary {
+    border-color: #d9dee5;
+    background: #ffffff;
+    color: #394457;
+}
+
+.confirmation-page .summary-card .btn.secondary:hover {
+    border-color: #aeb6c1;
+    background: #f5f6f8;
+}
+
+@media (max-width: 560px) {
+    .confirmation-page .ticket-card {
+        grid-template-columns: 1fr;
+    }
+}

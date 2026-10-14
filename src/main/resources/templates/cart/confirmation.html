@@ -5,29 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compra confirmada - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css(v='confirmation-compact-1')}">
 </head>
-<body>
-<header class="navbar dashboard-nav">
+<body class="checkout-body confirmation-body">
+<header class="navbar dashboard-nav checkout-nav confirmation-nav">
     <a class="brand brand-link" th:href="@{/dashboard/client}">
-        <span class="logo">✅</span>
+        <span class="logo brand-mark">C</span>
         <div><strong>Connectify</strong><small>Compra confirmada</small></div>
     </a>
-    <nav class="top-actions">
+    <nav class="top-actions" aria-label="Acciones de la compra confirmada">
         <a class="btn secondary" th:href="@{/dashboard/client}">Panel cliente</a>
         <a class="btn primary compact" th:href="@{/dashboard/client/tickets}">Mis tickets QR</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero">
+<main class="dashboard-page checkout-page confirmation-page">
+    <section class="dashboard-hero checkout-hero confirmation-hero">
         <p class="badge">Compra completada</p>
         <h1>Tickets QR generados correctamente</h1>
         <p class="muted">Tu compra fue registrada, el carrito quedó vacío y tus entradas ya están disponibles en el repositorio “Mis tickets QR”.</p>
     </section>
 
     <section class="checkout-layout">
-        <div class="cart-items">
+        <div class="cart-items confirmation-ticket-list">
             <article class="ticket-card" th:each="ticket : ${purchase.tickets}">
                 <div class="ticket-qr">
                     <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + ${ticket.code}}" alt="QR del ticket">
