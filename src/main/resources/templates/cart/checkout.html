@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css(v='checkout-compact-1')}">
     <link rel="stylesheet"
           href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/classic.css"
           th:if="${izipayReady and izipayFormToken != null}">
@@ -17,20 +17,20 @@
             src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/classic.js"
             th:if="${izipayReady and izipayFormToken != null}"></script>
 </head>
-<body>
-<header class="navbar dashboard-nav">
+<body class="checkout-body">
+<header class="navbar dashboard-nav checkout-nav">
     <a class="brand brand-link" th:href="@{/dashboard/client}">
         <span class="logo brand-mark">C</span>
         <div><strong>Connectify</strong><small>Checkout de Cliente</small></div>
     </a>
-    <nav class="top-actions">
+    <nav class="top-actions" aria-label="Acciones del checkout">
         <a class="btn secondary" th:href="@{/cart}">Volver al carrito</a>
         <a class="btn secondary" th:href="@{/dashboard/client/tickets}">Mis tickets QR</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero">
+<main class="dashboard-page checkout-page">
+    <section class="dashboard-hero checkout-hero">
         <p class="badge">Checkout seguro</p>
         <h1>Finalizar compra</h1>
         <p class="muted">La compra queda asociada a tu cuenta Cliente. Los tickets QR se guardan automaticamente en <strong th:text="${buyerEmail}">cliente@email.com</strong>.</p>
