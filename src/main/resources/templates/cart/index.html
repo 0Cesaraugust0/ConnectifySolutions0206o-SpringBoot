@@ -6,64 +6,126 @@
     <title>Mi carrito - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/cart-executive.css(v='cart-executive-1')}">
 </head>
-<body>
-<header class="navbar dashboard-nav">
+<body class="cart-page-body">
+<header class="navbar dashboard-nav cart-page-nav">
     <a class="brand brand-link" th:href="@{/dashboard/client}">
-        <span class="logo">🛒</span>
-        <div><strong>Connectify</strong><small>Cliente / Asistente</small></div>
+        <span class="logo cart-brand-mark">C</span>
+        <div><strong>Connectify</strong><small>Área del cliente</small></div>
     </a>
-    <nav class="top-actions">
+    <nav class="top-actions" aria-label="Acciones del carrito">
         <a class="btn secondary" th:href="@{/dashboard/client}">Panel cliente</a>
         <a class="btn secondary" th:href="@{/events}">Seguir comprando</a>
-        <a class="btn primary compact" th:href="@{/cart/checkout}">Checkout</a>
+        <a class="btn primary compact" th:href="@{/cart/checkout}">Ir al checkout</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero">
-        <p class="badge">Carrito de cliente / asistente</p>
-        <h1>Mis entradas seleccionadas</h1>
-        <p class="muted">Revisa evento, tipo de entrada, cantidad y subtotal antes de continuar.</p>
+<main class="dashboard-page cart-page">
+    <section class="dashboard-hero cart-hero">
+        <div class="cart-hero-copy">
+            <p class="cart-eyebrow">Proceso de compra</p>
+            <h1>Carrito de entradas</h1>
+            <p>Comprueba los eventos y el importe de tu pedido antes de registrar los datos de compra.</p>
+        </div>
+        <ol class="cart-progress" aria-label="Progreso de compra">
+            <li class="is-active"><span>01</span><strong>Carrito</strong><small>Revisión</small></li>
+            <li><span>02</span><strong>Datos</strong><small>Checkout</small></li>
+            <li><span>03</span><strong>Confirmación</strong><small>Tickets QR</small></li>
+        </ol>
     </section>
 
-    <section class="cart-layout" th:if="${!items.isEmpty()}">
-        <div class="cart-items">
-            <article class="cart-item" th:each="item : ${items}">
-                <div class="cart-icon">🎫</div>
-                <div class="cart-info">
-                    <h3 th:text="${item.eventTitle}">Evento</h3>
-                    <p class="muted small" th:text="${item.eventDate}">Fecha</p>
-                    <p class="muted small" th:text="${item.eventLocation}">Ubicación</p>
-                    <p><span class="status-pill status-open" th:text="${item.ticketTypeName}">Entrada general</span></p>
-                    <p><strong th:text="${item.quantity + ' entrada(s)'}">1 entrada</strong> · <span th:text="${'S/ ' + item.unitPrice}">S/ 0.00</span> c/u</p>
+    <section class="cart-layout cart-workspace" th:if="${!items.isEmpty()}">
+        <section class="cart-order" aria-labelledby="cart-order-title">
+            <header class="cart-section-heading">
+                <div>
+                    <p class="cart-section-kicker">Detalle del pedido</p>
+                    <h2 id="cart-order-title">Entradas seleccionadas</h2>
                 </div>
-                <div class="cart-actions">
-                    <strong th:text="${'S/ ' + item.subtotal}">S/ 0.00</strong>
-                    <form th:action="@{/cart/remove/{id}(id=${item.eventId})}" method="post">
-                        <button class="btn secondary compact" type="submit">Quitar</button>
-                    </form>
-                </div>
-            </article>
-        </div>
+                <span class="cart-count" th:text="${cartCount + (cartCount == 1 ? ' entrada' : ' entradas')}">1 entrada</span>
+            </header>
 
-        <aside class="summary-card">
-            <h2>Resumen</h2>
-            <div class="summary-row"><span>Entradas</span><strong th:text="${cartCount}">0</strong></div>
-            <div class="summary-row"><span>Subtotal</span><strong th:text="${'S/ ' + subtotal}">S/ 0.00</strong></div>
-            <div class="summary-row"><span>Cargo servicio 5%</span><strong th:text="${'S/ ' + serviceFee}">S/ 0.00</strong></div>
-            <div class="summary-row total"><span>Total</span><strong th:text="${'S/ ' + total}">S/ 0.00</strong></div>
-            <a class="btn primary full" th:href="@{/cart/checkout}">Continuar al checkout</a>
+            <div class="cart-items">
+                <article class="cart-item" th:each="item, itemStat : ${items}">
+                    <div class="cart-ticket-index" aria-hidden="true">
+                        <span>Entrada</span>
+                        <strong th:text="${#numbers.formatInteger(itemStat.count, 2)}">01</strong>
+                    </div>
+
+                    <div class="cart-info">
+                        <div class="cart-item-heading">
+                            <div>
+                                <p class="cart-ticket-type" th:text="${item.ticketTypeName}">Entrada general</p>
+                                <h3 th:text="${item.eventTitle}">Evento</h3>
+                            </div>
+                            <span class="cart-unit-price" th:text="${'S/ ' + #numbers.formatDecimal(item.unitPrice, 1, 2) + ' c/u'}">S/ 0.00 c/u</span>
+                        </div>
+
+                        <dl class="cart-event-data">
+                            <div>
+                                <dt>Fecha y hora</dt>
+                                <dd th:text="${item.eventDate}">Fecha</dd>
+                            </div>
+                            <div>
+                                <dt>Ubicación</dt>
+                                <dd th:text="${item.eventLocation}">Ubicación</dd>
+                            </div>
+                            <div>
+                                <dt>Cantidad</dt>
+                                <dd th:text="${item.quantity + (item.quantity == 1 ? ' entrada' : ' entradas')}">1 entrada</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <div class="cart-actions">
+                        <div class="cart-item-total">
+                            <span>Subtotal</span>
+                            <strong th:text="${'S/ ' + #numbers.formatDecimal(item.subtotal, 1, 2)}">S/ 0.00</strong>
+                        </div>
+                        <form th:action="@{/cart/remove/{id}(id=${item.eventId})}" method="post">
+                            <button class="cart-remove" type="submit" th:attr="aria-label=${'Quitar ' + item.eventTitle + ' del carrito'}">Quitar</button>
+                        </form>
+                    </div>
+                </article>
+            </div>
+
+            <footer class="cart-order-footer">
+                <span>¿Quieres añadir otra entrada?</span>
+                <a th:href="@{/events}">Explorar más eventos</a>
+            </footer>
+        </section>
+
+        <aside class="summary-card cart-summary" aria-labelledby="cart-summary-title">
+            <header class="cart-summary-heading">
+                <p>Resumen de compra</p>
+                <h2 id="cart-summary-title">Tu pedido</h2>
+            </header>
+            <div class="cart-summary-lines">
+                <div class="summary-row"><span>Entradas</span><strong th:text="${cartCount}">0</strong></div>
+                <div class="summary-row"><span>Subtotal</span><strong th:text="${'S/ ' + #numbers.formatDecimal(subtotal, 1, 2)}">S/ 0.00</strong></div>
+                <div class="summary-row"><span>Cargo de servicio <small>5%</small></span><strong th:text="${'S/ ' + #numbers.formatDecimal(serviceFee, 1, 2)}">S/ 0.00</strong></div>
+            </div>
+            <div class="summary-row total"><span>Total a pagar</span><strong th:text="${'S/ ' + #numbers.formatDecimal(total, 1, 2)}">S/ 0.00</strong></div>
+            <p class="cart-summary-note">El importe final se confirma antes de procesar el pago y generar tus tickets QR.</p>
+            <a class="btn primary full cart-checkout-action" th:href="@{/cart/checkout}">Continuar al checkout <span aria-hidden="true">→</span></a>
             <form th:action="@{/cart/clear}" method="post">
-                <button class="btn secondary full" type="submit">Vaciar carrito</button>
+                <button class="btn secondary full cart-clear-action" type="submit">Vaciar carrito</button>
             </form>
+            <div class="cart-secure-note"><span aria-hidden="true">✓</span> Compra asociada a tu cuenta</div>
         </aside>
     </section>
 
-    <section class="empty-state" th:if="${items.isEmpty()}">
-        <h2>Tu carrito está vacío</h2>
-        <p class="muted">Explora eventos publicados y agrega entradas como cliente/asistente.</p>
-        <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
+    <section class="empty-state cart-empty-state" th:if="${items.isEmpty()}">
+        <div class="cart-empty-mark" aria-hidden="true">C</div>
+        <p class="cart-section-kicker">Carrito disponible</p>
+        <h2>Aún no has seleccionado entradas</h2>
+        <p>Explora la cartelera, elige un evento y vuelve aquí para revisar tu pedido antes del pago.</p>
+        <a class="btn primary" th:href="@{/events}">Explorar eventos <span aria-hidden="true">→</span></a>
+        <div class="cart-empty-steps" aria-label="Cómo comprar">
+            <div><strong>01</strong><span>Elige un evento</span></div>
+            <div><strong>02</strong><span>Selecciona entradas</span></div>
+            <div><strong>03</strong><span>Recibe tus QR</span></div>
+        </div>
     </section>
 </main>
 </body>
