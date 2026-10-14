@@ -110,6 +110,7 @@ public class CommunicationController {
 
         model.addAttribute("supportMode", supportMode);
         model.addAttribute("senderRole", supportMode ? Role.CLIENT : currentRole);
+        model.addAttribute("senderRoleLabel", actorLabel(currentRole));
         model.addAttribute("senderEmail", authentication != null ? authentication.getName() : "");
         model.addAttribute("roles", Role.values());
         model.addAttribute("types", MessageType.values());
@@ -138,7 +139,7 @@ public class CommunicationController {
             return "redirect:/communications?sent=true";
         }
 
-        Role safeSenderRole = senderRole != null ? senderRole : currentRole;
+        Role safeSenderRole = currentRole;
         Role safeTargetRole = targetRole != null ? targetRole : Role.ADMIN;
         MessageType safeType = type != null ? type : MessageType.GENERAL_COORDINATION;
         MessagePriority safePriority = priority != null ? priority : MessagePriority.NORMAL;
@@ -242,6 +243,17 @@ public class CommunicationController {
             case GATE_AGENT -> "Recibe instrucciones para validación QR y control de acceso.";
             case CLIENT -> "Consultas enviadas por el Cliente al soporte.";
             case DEVELOPER -> "Mensajes técnicos de accesos y permisos.";
+        };
+    }
+
+    private String actorLabel(Role role) {
+        return switch (role) {
+            case ADMIN -> "Administrador";
+            case ORGANIZER -> "Organizador";
+            case DESIGNER -> "Diseñador";
+            case GATE_AGENT -> "Equipo de puerta";
+            case CLIENT -> "Cliente";
+            case DEVELOPER -> "Desarrollo";
         };
     }
 

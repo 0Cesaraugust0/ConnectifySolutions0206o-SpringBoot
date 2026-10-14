@@ -3,121 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${supportMode} ? 'Escribir a soporte - Connectify' : 'Nueva comunicación - Connectify'">Nueva comunicación</title>
+    <title th:text="${supportMode} ? 'Escribir a soporte - Connectify' : 'Nuevo mensaje - Connectify'">Nuevo mensaje</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <script th:src="@{/js/app.js}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/communications-center.css(v='messages-restored-1')}">
+    <link rel="stylesheet" th:href="@{/css/communications-compose.css(v='compose-compact-1')}">
 </head>
-<body>
-<header class="navbar dashboard-nav">
+<body class="compose-body">
+<header class="navbar dashboard-nav communications-nav compose-nav">
     <a class="brand brand-link" th:href="@{/communications}">
-        <span class="logo" th:text="${supportMode} ? '🛟' : '✉️'">✉️</span>
-        <div><strong>Connectify</strong><small th:text="${supportMode} ? 'Soporte' : 'Nueva solicitud'">Nueva solicitud</small></div>
+        <span class="logo">✉</span>
+        <div><strong>Connectify</strong><small th:text="${supportMode} ? 'Soporte' : 'Nuevo mensaje'">Nuevo mensaje</small></div>
     </a>
     <nav class="top-actions">
-        <a class="btn secondary" th:href="@{/communications}" th:text="${supportMode} ? 'Mis consultas' : 'Bandeja'">Bandeja</a>
-        <a class="btn secondary" th:href="@{/dashboard}">Dashboard</a>
+        <a class="btn secondary" th:href="@{/communications}" th:text="${supportMode} ? 'Mis consultas' : 'Buzón'">Buzón</a>
+        <a class="btn secondary" th:href="@{/communications/sent}" th:unless="${supportMode}">Enviados</a>
+        <a class="btn secondary" th:href="@{/dashboard}">Panel</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero" th:if="${supportMode}">
-        <p class="badge">Soporte al cliente</p>
-        <h1>Escribir a soporte</h1>
-        <p class="muted">Envía una consulta sobre compras, tickets QR o incidencias. El Administrador la verá en su bandeja.</p>
+<main class="compose-page">
+    <section class="compose-hero" th:classappend="${supportMode} ? ' support' : ''">
+        <div class="compose-hero-copy">
+            <p class="compose-eyebrow" th:text="${supportMode} ? 'Asistencia Connectify' : 'Comunicación interna'">Comunicación interna</p>
+            <h1 th:text="${supportMode} ? 'Cuéntanos qué necesitas' : 'Redactar un nuevo mensaje'">Redactar un nuevo mensaje</h1>
+            <p th:text="${supportMode} ? 'Describe tu consulta con claridad para que el equipo pueda ayudarte.' : 'Coordina tareas, revisiones y entregas con el equipo responsable.'">Coordina con el equipo.</p>
+        </div>
+        <div class="compose-route" aria-label="Pasos para enviar el mensaje">
+            <span><b>01</b> Destino</span><i></i>
+            <span><b>02</b> Contexto</span><i></i>
+            <span><b>03</b> Enviar</span>
+        </div>
     </section>
 
-    <section class="dashboard-hero" th:unless="${supportMode}">
-        <p class="badge">Comunicación interna</p>
-        <h1>Crear solicitud operativa</h1>
-        <p class="muted">Registra una coordinación entre administrador, organizador, diseñador o agente de acceso.</p>
-    </section>
+    <div class="compose-layout">
+        <form class="compose-card" th:action="@{/communications}" method="post">
+            <header class="compose-card-head">
+                <span class="compose-card-icon">✦</span>
+                <div>
+                    <h2 th:text="${supportMode} ? 'Datos de la consulta' : 'Contenido del mensaje'">Contenido del mensaje</h2>
+                    <p>Completa los datos principales. Los campos marcados son obligatorios.</p>
+                </div>
+            </header>
 
-    <section class="checkout-layout">
-        <form class="form-card" th:action="@{/communications}" method="post">
-            <h2 th:text="${supportMode} ? 'Datos de la consulta' : 'Datos del mensaje'">Datos del mensaje</h2>
-
-            <div class="field-grid" th:if="${supportMode}">
+            <div th:if="${supportMode}">
                 <input type="hidden" name="senderEmail" th:value="${senderEmail}">
                 <input type="hidden" name="senderRole" value="CLIENT">
                 <input type="hidden" name="targetRole" value="ADMIN">
                 <input type="hidden" name="type" value="CUSTOMER_SUPPORT">
                 <input type="hidden" name="priority" value="NORMAL">
 
-                <label>Nombre
-                    <input class="search-input" name="senderName" type="text" placeholder="Tu nombre" required>
-                </label>
-                <label>Email
-                    <input class="search-input" type="email" th:value="${senderEmail}" readonly>
-                </label>
-                <label class="wide">Asunto
-                    <input class="search-input" name="subject" type="text" placeholder="Ej. No encuentro mi ticket QR" required>
-                </label>
-                <label class="wide">Mensaje
-                    <textarea class="search-input" name="body" rows="7" placeholder="Cuéntanos qué ocurrió con tu compra o ticket." required></textarea>
-                </label>
+                <section class="compose-section">
+                    <header><span>01</span><div><h3>Tus datos</h3><p>Así podremos identificar y responder tu consulta.</p></div></header>
+                    <div class="compose-fields two-columns">
+                        <label>Nombre
+                            <input class="search-input" name="senderName" type="text" placeholder="Tu nombre" required>
+                        </label>
+                        <label>Correo de la cuenta
+                            <input class="search-input" type="email" th:value="${senderEmail}" readonly>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="compose-section">
+                    <header><span>02</span><div><h3>Tu consulta</h3><p>Indica el problema y cualquier dato que nos ayude a revisarlo.</p></div></header>
+                    <div class="compose-fields">
+                        <label>Asunto
+                            <input class="search-input" name="subject" type="text" placeholder="Ej. No encuentro mi ticket QR" required>
+                        </label>
+                        <label>Mensaje
+                            <textarea class="search-input" name="body" rows="6" placeholder="Cuéntanos qué ocurrió con tu compra, ticket o acceso." required></textarea>
+                        </label>
+                    </div>
+                </section>
             </div>
 
-            <div class="field-grid" th:unless="${supportMode}">
-                <label>Remitente
-                    <input class="search-input" name="senderName" type="text" placeholder="Nombre del remitente" required>
-                </label>
-                <label>Email remitente
-                    <input class="search-input" name="senderEmail" type="email" th:value="${senderEmail}" placeholder="correo@connectify.com" required>
-                </label>
-                <label>Rol remitente
-                    <select class="search-input" name="senderRole" required>
-                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role == senderRole}">ADMIN</option>
-                    </select>
-                </label>
-                <label>Rol destinatario
-                    <select class="search-input" name="targetRole" required>
-                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}">ORGANIZER</option>
-                    </select>
-                </label>
-                <label>Tipo de solicitud
-                    <select class="search-input" name="type" required>
-                        <option th:each="type : ${types}" th:value="${type}" th:text="${type}">GENERAL_COORDINATION</option>
-                    </select>
-                </label>
-                <label>Prioridad
-                    <select class="search-input" name="priority" required>
-                        <option th:each="priority : ${priorities}" th:value="${priority}" th:text="${priority}">NORMAL</option>
-                    </select>
-                </label>
-                <label class="wide">Evento relacionado opcional
-                    <select class="search-input" name="relatedEventId">
-                        <option value="">Sin evento relacionado</option>
-                        <option th:each="event : ${events}" th:value="${event.id}" th:text="${event.title}">Evento</option>
-                    </select>
-                </label>
-                <label class="wide">Asunto
-                    <input class="search-input" name="subject" type="text" placeholder="Ej. Ajustar portada del evento" required>
-                </label>
-                <label class="wide">Mensaje
-                    <textarea class="search-input" name="body" rows="7" placeholder="Describe la solicitud, observaciones, responsables o entregables." required></textarea>
-                </label>
+            <div th:unless="${supportMode}">
+                <input type="hidden" name="senderRole" th:value="${senderRole}">
+
+                <section class="compose-section">
+                    <header><span>01</span><div><h3>Identidad del remitente</h3><p>El mensaje se enviará con el rol de tu sesión.</p></div></header>
+                    <div class="compose-fields identity-grid">
+                        <label>Nombre
+                            <input class="search-input" name="senderName" type="text" placeholder="Nombre del remitente" required>
+                        </label>
+                        <label>Correo
+                            <input class="search-input" name="senderEmail" type="email" th:value="${senderEmail}" readonly required>
+                        </label>
+                        <div class="compose-role">
+                            <small>Rol activo</small>
+                            <strong th:text="${senderRoleLabel}">Organizador</strong>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="compose-section">
+                    <header><span>02</span><div><h3>Destino y contexto</h3><p>Define quién atenderá la coordinación y su nivel de prioridad.</p></div></header>
+                    <div class="compose-fields three-columns">
+                        <label>Destinatario
+                            <select class="search-input" name="targetRole" required>
+                                <option value="ADMIN" th:if="${senderRole.name() != 'ADMIN'}">Administración</option>
+                                <option value="ORGANIZER" th:if="${senderRole.name() != 'ORGANIZER'}">Organizador</option>
+                                <option value="DESIGNER" th:if="${senderRole.name() != 'DESIGNER'}">Diseñador</option>
+                                <option value="GATE_AGENT" th:if="${senderRole.name() != 'GATE_AGENT'}">Equipo de puerta</option>
+                                <option value="CLIENT" th:if="${senderRole.name() != 'CLIENT'}">Cliente</option>
+                            </select>
+                        </label>
+                        <label>Tipo de solicitud
+                            <select class="search-input" name="type" required>
+                                <option value="GENERAL_COORDINATION">Coordinación general</option>
+                                <option value="EVENT_REVIEW">Revisión de evento</option>
+                                <option value="DESIGN_REQUEST">Solicitud de diseño</option>
+                                <option value="DESIGN_FEEDBACK">Comentarios de diseño</option>
+                                <option value="GATE_ACCESS">Control de puerta</option>
+                                <option value="PAYMENT_SUPPORT">Soporte de pago</option>
+                                <option value="TICKET_SUPPORT">Soporte de entradas</option>
+                                <option value="CUSTOMER_SUPPORT">Atención al cliente</option>
+                            </select>
+                        </label>
+                        <label>Prioridad
+                            <select class="search-input" name="priority" required>
+                                <option value="LOW">Baja</option>
+                                <option value="NORMAL" selected>Normal</option>
+                                <option value="HIGH">Alta</option>
+                                <option value="URGENT">Urgente</option>
+                            </select>
+                        </label>
+                        <label class="wide">Evento relacionado <small>Opcional</small>
+                            <select class="search-input" name="relatedEventId">
+                                <option value="">Sin evento relacionado</option>
+                                <option th:each="event : ${events}" th:value="${event.id}" th:text="${event.title}">Evento</option>
+                            </select>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="compose-section">
+                    <header><span>03</span><div><h3>Mensaje</h3><p>Resume el pedido y agrega la información necesaria para resolverlo.</p></div></header>
+                    <div class="compose-fields">
+                        <label>Asunto
+                            <input class="search-input" name="subject" type="text" placeholder="Ej. Ajustar portada del evento" required>
+                        </label>
+                        <label>Detalle
+                            <textarea class="search-input" name="body" rows="6" placeholder="Describe la solicitud, observaciones, responsables o entregables." required></textarea>
+                        </label>
+                    </div>
+                </section>
             </div>
 
-            <button class="btn primary full" type="submit" th:text="${supportMode} ? 'Enviar a soporte' : 'Enviar solicitud'">Enviar</button>
+            <footer class="compose-actions">
+                <a class="btn secondary" th:href="@{/communications}">Cancelar</a>
+                <button class="btn primary" type="submit" th:text="${supportMode} ? 'Enviar a soporte' : 'Enviar mensaje'">Enviar mensaje</button>
+            </footer>
         </form>
 
-        <aside class="summary-card" th:if="${supportMode}">
-            <h2>Atención</h2>
-            <div class="mini-item"><span>Destino</span><strong>Administrador</strong></div>
-            <div class="mini-item"><span>Tipo</span><strong>Soporte al cliente</strong></div>
-            <div class="mini-item"><span>Prioridad</span><strong>Normal</strong></div>
-            <p class="muted small">Este buzón sirve para consultas sobre compras, tickets QR o problemas de acceso.</p>
+        <aside class="compose-aside">
+            <section class="compose-guide">
+                <p class="compose-guide-kicker" th:text="${supportMode} ? 'Atención' : 'Ruta del mensaje'">Ruta del mensaje</p>
+                <h2 th:text="${supportMode} ? 'Tu consulta llega a Administración' : 'Coordina sin perder el contexto'">Coordina sin perder el contexto</h2>
+                <div class="compose-guide-list" th:unless="${supportMode}">
+                    <div><span>01</span><p><strong>Elige el equipo</strong><small>Selecciona quién debe atender el pedido.</small></p></div>
+                    <div><span>02</span><p><strong>Relaciona el evento</strong><small>Facilita la revisión cuando corresponde.</small></p></div>
+                    <div><span>03</span><p><strong>Describe el resultado</strong><small>Indica qué esperas recibir o corregir.</small></p></div>
+                </div>
+                <div class="compose-guide-list" th:if="${supportMode}">
+                    <div><span>01</span><p><strong>Identifica el caso</strong><small>Compra, entrada QR o problema de acceso.</small></p></div>
+                    <div><span>02</span><p><strong>Incluye detalles</strong><small>Evento, fecha y lo que intentaste hacer.</small></p></div>
+                    <div><span>03</span><p><strong>Consulta tu buzón</strong><small>La respuesta aparecerá en tus mensajes.</small></p></div>
+                </div>
+                <p class="compose-note">Este centro registra coordinaciones y su seguimiento; no funciona como chat en tiempo real.</p>
+            </section>
         </aside>
-
-        <aside class="summary-card" th:unless="${supportMode}">
-            <h2>Casos frecuentes</h2>
-            <div class="mini-item"><span>Admin → Organizador</span><strong>Aprobación</strong></div>
-            <div class="mini-item"><span>Organizador → Diseñador</span><strong>Portada</strong></div>
-            <div class="mini-item"><span>Admin → Auxiliar</span><strong>Puerta</strong></div>
-            <p class="muted small">Este módulo funciona como mesa de coordinación interna, no como chat en tiempo real.</p>
-        </aside>
-    </section>
+    </div>
 </main>
 </body>
 </html>
