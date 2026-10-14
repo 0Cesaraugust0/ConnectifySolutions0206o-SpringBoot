@@ -47,6 +47,7 @@ public class CommunicationController {
             model.addAttribute("messages", customerMessages);
             model.addAttribute("unread", 0);
             model.addAttribute("currentRole", currentRole);
+            model.addAttribute("selectedSource", currentRole);
             model.addAttribute("roleLabel", "Buzón de Mensajería");
             model.addAttribute("roleDescription", "Consultas del Cliente dirigidas únicamente a Administración.");
             model.addAttribute("customerInboxMode", false);

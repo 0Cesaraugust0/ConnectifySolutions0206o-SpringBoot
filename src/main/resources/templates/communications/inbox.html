@@ -6,7 +6,8 @@
     <title th:text="${supportMode} ? 'Soporte - Connectify' : 'Centro de mensajes - Connectify'">Centro de mensajes</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/communications-center.css(v='messages-restored-1')}">
+    <link rel="stylesheet" th:href="@{/css/communications-center.css(v='role-filters-2')}">
+    <script th:src="@{/js/communications-filters.js(v='role-filters-2')}" defer></script>
 </head>
 <body>
 <header class="navbar dashboard-nav communications-nav">
@@ -19,8 +20,8 @@
 </header>
 
 <main class="dashboard-page communications-page">
-    <section class="communications-hero"
-             th:classappend="${' role-' + #strings.toLowerCase(currentRole.name()) + (customerInboxMode ? ' customer' : (operationsMode ? ' operations' : ''))}">
+    <section id="communicationsHero" class="communications-hero"
+             th:classappend="${' role-' + #strings.toLowerCase(currentRole.name()) + ' source-' + #strings.toLowerCase(selectedSource.name()) + (customerInboxMode ? ' customer' : (operationsMode ? ' operations' : ''))}">
         <div>
             <p class="badge" th:text="${supportMode} ? 'Buzón del Cliente' : ${roleLabel}">Buzón del rol</p>
             <h1 th:text="${supportMode} ? 'Mis consultas a Soporte' : ${viewTitle}">Mensajería recibida</h1>
@@ -41,14 +42,18 @@
             <nav class="communications-role-tabs" aria-label="Filtrar mensajes por remitente">
                 <a th:each="option : ${sourceOptions}"
                    th:href="${option.role == currentRole} ? @{/communications} : @{/communications(from=${option.role})}"
-                   th:classappend="${option.role == selectedSource} ? ' active' : ''"
+                   th:classappend="${' source-' + #strings.toLowerCase(option.role.name()) + (option.role == selectedSource ? ' active' : '')}"
+                   th:attr="data-source=${option.role.name()},aria-current=${option.role == selectedSource ? 'page' : null}"
+                   data-communications-filter
                    th:text="${option.label}">Mensajes</a>
             </nav>
         </div>
     </section>
 
+    <div id="communicationsResults" class="communications-results" aria-live="polite">
     <section class="communications-list" th:if="${!messages.isEmpty()}">
-        <a class="communications-message" th:each="message : ${messages}" th:href="@{/communications/{id}(id=${message.id})}">
+        <a class="communications-message" th:each="message : ${messages}" th:href="@{/communications/{id}(id=${message.id})}"
+           th:classappend="${' source-' + #strings.toLowerCase(message.senderRole.name())}">
             <div class="communications-message-top">
                 <span class="communications-origin" th:switch="${message.senderRole.name()}">
                     <span th:case="'CLIENT'">Cliente</span>
@@ -74,6 +79,7 @@
         <p class="muted" th:text="${supportMode} ? 'Cuando escribas a soporte, tus consultas aparecerán aquí.' : 'Los nuevos mensajes aparecerán en esta bandeja.'">Sin mensajes.</p>
         <a class="btn primary" th:href="@{/communications/new}" th:text="${supportMode} ? 'Escribir a soporte' : 'Crear mensaje'">Crear mensaje</a>
     </section>
+    </div>
 </main>
 </body>
 </html>

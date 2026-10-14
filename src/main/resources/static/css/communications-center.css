@@ -29,6 +29,8 @@
         radial-gradient(circle at 82% 15%, rgba(129, 140, 248, 0.36), transparent 31%),
         linear-gradient(135deg, #0f172a 0%, #182235 55%, #111827 100%);
     box-shadow: 0 20px 46px rgba(15, 23, 42, 0.19);
+    view-transition-name: communications-hero;
+    transition: background-color 260ms ease, box-shadow 260ms ease, transform 260ms ease;
 }
 
 .communications-hero::after {
@@ -72,6 +74,31 @@
     background:
         radial-gradient(circle at 82% 15%, rgba(251, 146, 60, 0.28), transparent 31%),
         linear-gradient(135deg, #1c1917, #292524);
+}
+
+.communications-hero.source-admin {
+    background: radial-gradient(circle at 82% 15%, rgba(56, 189, 248, 0.42), transparent 31%), linear-gradient(135deg, #0c4a6e, #1d4ed8);
+    box-shadow: 0 20px 46px rgba(29, 78, 216, 0.22);
+}
+
+.communications-hero.source-organizer {
+    background: radial-gradient(circle at 82% 15%, rgba(196, 181, 253, 0.40), transparent 31%), linear-gradient(135deg, #312e81, #7c3aed);
+    box-shadow: 0 20px 46px rgba(109, 40, 217, 0.22);
+}
+
+.communications-hero.source-designer {
+    background: radial-gradient(circle at 82% 15%, rgba(251, 207, 232, 0.38), transparent 31%), linear-gradient(135deg, #831843, #c026d3);
+    box-shadow: 0 20px 46px rgba(192, 38, 211, 0.20);
+}
+
+.communications-hero.source-developer {
+    background: radial-gradient(circle at 82% 15%, rgba(153, 246, 228, 0.34), transparent 31%), linear-gradient(135deg, #134e4a, #0f766e);
+    box-shadow: 0 20px 46px rgba(15, 118, 110, 0.22);
+}
+
+.communications-hero.source-client {
+    background: radial-gradient(circle at 82% 15%, rgba(186, 230, 253, 0.38), transparent 31%), linear-gradient(135deg, #075985, #0891b2);
+    box-shadow: 0 20px 46px rgba(8, 145, 178, 0.20);
 }
 
 .communications-hero .badge {
@@ -139,7 +166,12 @@
 
 .communications-toolbar {
     margin: 17px 0 12px;
-    padding: 0 2px;
+    min-height: 72px;
+    padding: 11px 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
 }
 
 .communications-toolbar small {
@@ -159,26 +191,98 @@
 }
 
 .communications-role-tabs a {
+    --chip-color: #475569;
+    --chip-border: #cbd5e1;
+    --chip-surface: #f8fafc;
+    --chip-active-start: #334155;
+    --chip-active-end: #0f172a;
     padding: 7px 11px;
-    border: 1px solid #dbe2ea;
+    border: 1px solid var(--chip-border);
     border-radius: 999px;
-    background: #fff;
-    color: #475569;
+    background: var(--chip-surface);
+    color: var(--chip-color);
     font-size: 0.68rem;
     font-weight: 550;
     text-decoration: none;
-    transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.025);
+    transition: border-color 220ms ease, background 220ms ease, color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+
+.communications-role-tabs a::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    vertical-align: 1px;
+    opacity: 0.72;
+}
+
+.communications-role-tabs a.source-admin {
+    --chip-color: #1d4ed8;
+    --chip-border: #bfdbfe;
+    --chip-surface: #eff6ff;
+    --chip-active-start: #2563eb;
+    --chip-active-end: #1d4ed8;
+}
+
+.communications-role-tabs a.source-organizer {
+    --chip-color: #6d28d9;
+    --chip-border: #ddd6fe;
+    --chip-surface: #f5f3ff;
+    --chip-active-start: #8b5cf6;
+    --chip-active-end: #6d28d9;
+}
+
+.communications-role-tabs a.source-designer {
+    --chip-color: #a21caf;
+    --chip-border: #f5d0fe;
+    --chip-surface: #fdf4ff;
+    --chip-active-start: #d946ef;
+    --chip-active-end: #a21caf;
+}
+
+.communications-role-tabs a.source-developer {
+    --chip-color: #0f766e;
+    --chip-border: #99f6e4;
+    --chip-surface: #f0fdfa;
+    --chip-active-start: #14b8a6;
+    --chip-active-end: #0f766e;
+}
+
+.communications-role-tabs a.source-client {
+    --chip-color: #0369a1;
+    --chip-border: #bae6fd;
+    --chip-surface: #f0f9ff;
+    --chip-active-start: #0ea5e9;
+    --chip-active-end: #0369a1;
 }
 
 .communications-role-tabs a:hover {
-    transform: translateY(-1px);
-    border-color: #94a3b8;
+    transform: translateY(-2px);
+    border-color: var(--chip-color);
+    box-shadow: 0 7px 15px color-mix(in srgb, var(--chip-color) 16%, transparent);
 }
 
 .communications-role-tabs a.active {
-    border-color: #111827;
-    background: #111827;
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--chip-active-start), var(--chip-active-end));
     color: #fff;
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--chip-color) 27%, transparent);
+    transform: translateY(-1px);
+}
+
+.communications-results {
+    min-height: 280px;
+    view-transition-name: communications-results;
+    transition: opacity 170ms ease, transform 170ms ease;
+}
+
+.communications-page.is-filtering .communications-results {
+    opacity: 0.58;
+    transform: translateY(2px);
 }
 
 .communications-list {
@@ -197,6 +301,26 @@
     text-decoration: none;
     box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
     transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.communications-message.source-admin {
+    border-left: 3px solid #3b82f6;
+}
+
+.communications-message.source-organizer {
+    border-left: 3px solid #8b5cf6;
+}
+
+.communications-message.source-designer {
+    border-left: 3px solid #d946ef;
+}
+
+.communications-message.source-developer {
+    border-left: 3px solid #14b8a6;
+}
+
+.communications-message.source-client {
+    border-left: 3px solid #0ea5e9;
 }
 
 .communications-message:hover {
@@ -296,6 +420,22 @@
 .communications-page > .alert {
     margin: 14px 0;
     font-size: 0.72rem;
+}
+
+::view-transition-old(communications-hero),
+::view-transition-new(communications-hero),
+::view-transition-old(communications-results),
+::view-transition-new(communications-results) {
+    animation-duration: 240ms;
+    animation-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .communications-hero,
+    .communications-role-tabs a,
+    .communications-results {
+        transition: none;
+    }
 }
 
 @media (max-width: 700px) {
