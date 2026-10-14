@@ -6,14 +6,13 @@
     <title>Panel de Puerta - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/gate-dashboard.css(v='gate-messages-1')}">
+    <link rel="stylesheet" th:href="@{/css/gate-dashboard.css(v='gate-access-2')}">
 </head>
 <body class="gate-dashboard-body">
 <header class="navbar dashboard-nav gate-dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/gate-agent}"><span class="logo gate-brand-mark">C</span><div><strong>Connectify</strong><small>Equipo de puerta</small></div></a>
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/tickets/validate}">Validar entrada</a>
-        <a class="btn secondary" th:href="@{/communications}">Mensajes</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
@@ -23,12 +22,12 @@
         <div>
             <p class="gate-eyebrow">Operación presencial</p>
             <h1 th:text="${title}">Panel Auxiliar de Puerta</h1>
-            <p>Valida entradas, consulta instrucciones del evento y reporta incidencias desde una sola vista.</p>
+            <p>Valida entradas y consulta la información pública del evento desde una sola vista operativa.</p>
         </div>
         <aside class="gate-session">
             <span>Sesión activa</span>
             <strong th:text="${email}">puerta@connectify.pe</strong>
-            <small>Permisos de validación y mensajería operativa</small>
+            <small>Permisos limitados a validación de entradas</small>
         </aside>
     </section>
 
@@ -41,8 +40,8 @@
         <a class="gate-action-card gate-action-validate" th:href="@{/tickets/validate}">
             <span>✓</span><small>Ingreso</small><h2>Validar entradas</h2><p>Consulta o registra el uso de un ticket mediante su código QR.</p><strong>Abrir validación →</strong>
         </a>
-        <a class="gate-action-card gate-action-messages" th:href="@{/communications}">
-            <span>✉</span><small>Coordinación</small><h2>Centro de mensajes</h2><p>Recibe instrucciones de Administración y del Organizador, o reporta una incidencia.</p><strong>Abrir mensajes →</strong>
+        <a class="gate-action-card gate-action-event" th:href="@{/tickets/gate}">
+            <span>⌁</span><small>Operación</small><h2>Control por evento</h2><p>Selecciona el evento asignado y abre su flujo de ingreso controlado.</p><strong>Abrir control →</strong>
         </a>
         <a class="gate-action-card gate-action-market" th:href="@{/events}">
             <span>◉</span><small>Referencia</small><h2>Marketplace</h2><p>Consulta la información pública del evento antes de iniciar el control.</p><strong>Ver eventos →</strong>

@@ -112,7 +112,7 @@
 .gate-action-card h2 { margin: 5px 0 7px; font-size: 0.93rem; }
 .gate-action-card p { margin: 0; color: #64748b; font-size: 0.68rem; line-height: 1.5; }
 .gate-action-card > strong { margin-top: auto; padding-top: 14px; color: #0f766e; font-size: 0.65rem; }
-.gate-action-messages > span { background: #ede9fe; color: #6d28d9; }
+.gate-action-event > span { background: #fef3c7; color: #b45309; }
 .gate-action-market > span { background: #e0f2fe; color: #0369a1; }
 
 @media (max-width: 760px) {

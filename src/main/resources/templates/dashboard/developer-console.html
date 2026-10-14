@@ -13,7 +13,9 @@
         <span class="logo">🧰</span>
         <div><strong>Connectify</strong><small>Developer</small></div>
     </a>
-    <nav class="top-actions"><a class="btn secondary" th:href="@{/communications}">Mensajes técnicos</a><form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form></nav>
+    <form th:action="@{/logout}" method="post">
+        <button class="btn secondary" type="submit">Cerrar sesión</button>
+    </form>
 </header>
 
 <main class="dashboard-page">
@@ -29,13 +31,6 @@
             <h3>Gestión de cuentas y permisos</h3>
             <p>Crear cuentas, asignar rol, desactivar usuarios, restablecer acceso y revisar auditoría básica.</p>
             <strong>Administrar cuentas →</strong>
-        </a>
-
-        <a class="module-card" th:href="@{/communications}">
-            <span>✉</span>
-            <h3>Buzón técnico</h3>
-            <p>Recibir coordinaciones sobre accesos, permisos y soporte interno sin abrir bandejas de otros roles.</p>
-            <strong>Abrir mensajes →</strong>
         </a>
 
         <div class="module-card">

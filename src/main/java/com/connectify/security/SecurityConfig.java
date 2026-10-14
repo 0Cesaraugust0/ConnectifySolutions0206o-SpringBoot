@@ -61,7 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/dashboard/client/**", "/cart/**").hasRole("CLIENT")
                         .requestMatchers("/dashboard/designer/**").hasRole("DESIGNER")
                         .requestMatchers("/dashboard/gate-agent/**", "/tickets/validate/**", "/tickets/gate").hasRole("GATE_AGENT")
-                        .requestMatchers("/communications/**").authenticated()
+                        .requestMatchers("/communications/**").hasAnyRole("ADMIN", "ORGANIZER", "DESIGNER", "CLIENT")
                         .requestMatchers("/dashboard/**").authenticated()
                         .anyRequest().authenticated()
                 )

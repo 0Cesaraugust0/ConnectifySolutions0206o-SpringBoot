@@ -48,7 +48,6 @@
 
             <div th:if="${supportMode}">
                 <input type="hidden" name="senderEmail" th:value="${senderEmail}">
-                <input type="hidden" name="senderRole" value="CLIENT">
                 <input type="hidden" name="targetRole" value="ADMIN">
                 <input type="hidden" name="type" value="CUSTOMER_SUPPORT">
                 <input type="hidden" name="priority" value="NORMAL">
@@ -79,8 +78,6 @@
             </div>
 
             <div th:unless="${supportMode}">
-                <input type="hidden" name="senderRole" th:value="${senderRole}">
-
                 <section class="compose-section">
                     <header><span>01</span><div><h3>Identidad del remitente</h3><p>El mensaje se enviará con el rol de tu sesión.</p></div></header>
                     <div class="compose-fields identity-grid">
@@ -105,9 +102,6 @@
                                 <option value="ADMIN" th:if="${senderRole.name() != 'ADMIN'}">Administración</option>
                                 <option value="ORGANIZER" th:if="${senderRole.name() != 'ORGANIZER'}">Organizador</option>
                                 <option value="DESIGNER" th:if="${senderRole.name() != 'DESIGNER'}">Diseñador</option>
-                                <option value="GATE_AGENT" th:if="${senderRole.name() != 'GATE_AGENT'}">Equipo de puerta</option>
-                                <option value="CLIENT" th:if="${senderRole.name() != 'CLIENT'}">Cliente</option>
-                                <option value="DEVELOPER" th:if="${senderRole.name() != 'DEVELOPER'}">Soporte técnico</option>
                             </select>
                         </label>
                         <label>Tipo de solicitud

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -53,26 +52,26 @@ public class CommunicationController {
         }
 
         Role inboxRole = currentRole;
+        List<Role> sourceRoles = sourceRolesFor(currentRole);
+        Role requestedSource = currentRole == Role.ADMIN && "customers".equalsIgnoreCase(box)
+                ? Role.CLIENT : from;
+        Role selectedSource = requestedSource != null && sourceRoles.contains(requestedSource)
+                ? requestedSource : currentRole;
         List<InternalMessage> messages = messageService.inbox(inboxRole);
         boolean customerInboxMode = currentRole == Role.ADMIN
-                && (from == Role.CLIENT || "customers".equalsIgnoreCase(box));
+                && selectedSource == Role.CLIENT;
         boolean operationsMode = currentRole == Role.ADMIN
                 && !customerInboxMode
-                && ("operations".equalsIgnoreCase(box) || (from != null && from != Role.ADMIN));
-        Role selectedSource = customerInboxMode ? Role.CLIENT : from != null ? from : currentRole;
+                && ("operations".equalsIgnoreCase(box) || selectedSource != Role.ADMIN);
 
         if (customerInboxMode) {
             messages = messages.stream().filter(this::isCustomerSupport).toList();
-        } else if (from != null && from != currentRole) {
-            messages = messages.stream().filter(message -> message.getSenderRole() == from).toList();
+        } else if (selectedSource != currentRole) {
+            messages = messages.stream().filter(message -> message.getSenderRole() == selectedSource).toList();
         } else if (operationsMode) {
             messages = messages.stream().filter(message -> !isCustomerSupport(message)).toList();
         }
 
-        List<Role> sourceRoles = new ArrayList<>(List.of(
-                Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.GATE_AGENT, Role.CLIENT, Role.DEVELOPER));
-        sourceRoles.remove(currentRole);
-        sourceRoles.add(0, currentRole);
         List<MessageSourceOption> sourceOptions = sourceRoles.stream()
                 .map(source -> new MessageSourceOption(source,
                         source == currentRole ? roleLabel(source) : senderLabel(source)))
@@ -122,7 +121,6 @@ public class CommunicationController {
     @PostMapping
     public String create(@RequestParam String senderName,
                          @RequestParam(required = false) String senderEmail,
-                         @RequestParam(required = false) Role senderRole,
                          @RequestParam(required = false) Role targetRole,
                          @RequestParam(required = false) MessageType type,
                          @RequestParam(required = false) MessagePriority priority,
@@ -140,7 +138,9 @@ public class CommunicationController {
         }
 
         Role safeSenderRole = currentRole;
-        Role safeTargetRole = targetRole != null ? targetRole : Role.ADMIN;
+        List<Role> allowedTargets = targetRolesFor(currentRole);
+        Role safeTargetRole = targetRole != null && allowedTargets.contains(targetRole)
+                ? targetRole : allowedTargets.get(0);
         MessageType safeType = type != null ? type : MessageType.GENERAL_COORDINATION;
         MessagePriority safePriority = priority != null ? priority : MessagePriority.NORMAL;
         String safeSenderEmail = senderEmail == null || senderEmail.isBlank()
@@ -200,6 +200,24 @@ public class CommunicationController {
 
     private boolean isCustomerSupport(InternalMessage message) {
         return message.getSenderRole() == Role.CLIENT && message.getType() == MessageType.CUSTOMER_SUPPORT;
+    }
+
+    private List<Role> sourceRolesFor(Role role) {
+        return switch (role) {
+            case ADMIN -> List.of(Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.CLIENT);
+            case ORGANIZER -> List.of(Role.ORGANIZER, Role.ADMIN, Role.DESIGNER);
+            case DESIGNER -> List.of(Role.DESIGNER, Role.ADMIN, Role.ORGANIZER);
+            default -> List.of(role);
+        };
+    }
+
+    private List<Role> targetRolesFor(Role role) {
+        return switch (role) {
+            case ADMIN -> List.of(Role.ORGANIZER, Role.DESIGNER);
+            case ORGANIZER -> List.of(Role.ADMIN, Role.DESIGNER);
+            case DESIGNER -> List.of(Role.ADMIN, Role.ORGANIZER);
+            default -> List.of(Role.ADMIN);
+        };
     }
 
     private String roleLabel(Role role) {
