@@ -13,9 +13,6 @@
     <div class="brand"><span class="logo brand-mark">C</span><div><strong>Connectify</strong><small>Organizador</small></div></div>
     <nav class="top-actions organizer-home-nav">
         <a class="btn secondary" th:href="@{/dashboard/organizer/profile}">Datos de organizador</a>
-        <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
-        <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a>
-        <a class="btn secondary" th:href="@{/communications}">Mensajes</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
@@ -30,7 +27,6 @@
             <p class="hero-text">Sesión activa: <strong th:text="${email}">organizador</strong>. Publica eventos, define entradas y mantén identificada la cuenta que envía propuestas a revisión administrativa.</p>
             <div class="organizer-hero-actions">
                 <a class="btn primary" th:href="@{/dashboard/organizer/profile}">Datos de organizador</a>
-                <a class="btn secondary" th:href="@{/dashboard/organizer/events/new}">Crear evento</a>
             </div>
         </div>
         <aside class="organizer-identity-card" th:classappend="${organizerProfileComplete} ? ' complete' : ' pending'">
