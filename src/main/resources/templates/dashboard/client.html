@@ -6,31 +6,73 @@
     <title>Mi cuenta Cliente - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/client-dashboard.css(v='client-compact-1')}">
 </head>
-<body>
-<header class="navbar dashboard-nav">
-    <a class="brand brand-link" th:href="@{/dashboard/client}"><span class="logo">🎟️</span><div><strong>Connectify</strong><small>Cuenta Cliente</small></div></a>
-    <nav class="top-actions">
+<body class="client-dashboard-body">
+<header class="navbar dashboard-nav client-dashboard-nav">
+    <a class="brand brand-link" th:href="@{/dashboard/client}">
+        <span class="logo client-brand-mark">C</span>
+        <div><strong>Connectify</strong><small>Cuenta Cliente</small></div>
+    </a>
+    <nav class="top-actions" aria-label="Acciones de la cuenta Cliente">
         <a class="btn secondary" th:href="@{/events}">Explorar eventos</a>
         <a class="btn secondary" th:href="@{/cart}">Mi carrito</a>
-        <a class="btn primary compact" th:href="@{/dashboard/client/tickets}">Mis tickets QR</a>
+        <a class="btn primary" th:href="@{/dashboard/client/tickets}">Mis tickets QR</a>
         <a class="btn secondary" th:href="@{/communications}">Soporte</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero">
-        <p class="badge">Cuenta personal de compras</p>
-        <h1 th:text="${title}">Mi cuenta Cliente</h1>
-        <p class="muted">Sesión activa: <strong th:text="${email}">cliente</strong>. Esta cuenta puede explorar eventos, usar su carrito, completar compras y consultar únicamente sus propios tickets QR.</p>
+<main class="client-dashboard-page">
+    <section class="client-dashboard-hero">
+        <div class="client-hero-copy">
+            <p class="client-eyebrow">Cuenta personal de compras</p>
+            <h1 th:text="${title}">Mi cuenta Cliente</h1>
+            <p>Explora eventos, organiza tus compras y conserva tus entradas QR en un solo lugar.</p>
+            <div class="client-session">
+                <span>Sesión activa</span>
+                <strong th:text="${email}">cliente@email.com</strong>
+            </div>
+        </div>
+        <aside class="client-pass" aria-label="Resumen de la cuenta">
+            <small>Tu espacio Connectify</small>
+            <strong>Explora. Compra. Disfruta.</strong>
+            <div>
+                <span>QR</span>
+                <p>Tus tickets permanecen asociados únicamente a esta cuenta.</p>
+            </div>
+        </aside>
     </section>
 
-    <section class="dashboard-grid">
-        <a class="module-card" th:href="@{/events}"><span>🛍️</span><h3>Explorar eventos</h3><p>Ver eventos publicados en Marketplace y elegir entradas disponibles.</p></a>
-        <a class="module-card" th:href="@{/cart}"><span>🛒</span><h3>Mi carrito</h3><p>Revisar entradas seleccionadas antes del checkout asociado a tu cuenta.</p></a>
-        <a class="module-card" th:href="@{/dashboard/client/tickets}"><span>🎫</span><h3>Mis tickets QR</h3><p>Consulta tus entradas, códigos QR y estado de acceso sin validarlas ni consumirlas.</p></a>
-        <a class="module-card" th:href="@{/communications}"><span>💬</span><h3>Soporte</h3><p>Envía a Administración consultas sobre compras, tickets o incidencias desde tu sesión autenticada.</p></a>
+    <section class="client-section-heading">
+        <div>
+            <p>Accesos rápidos</p>
+            <h2>¿Qué deseas hacer?</h2>
+        </div>
+        <span>4 servicios disponibles</span>
+    </section>
+
+    <section class="client-service-grid" aria-label="Servicios del Cliente">
+        <a class="client-action-card card-marketplace" th:href="@{/events}">
+            <span class="client-action-icon">EV</span>
+            <div><h3>Explorar eventos</h3><p>Descubre experiencias publicadas y elige las entradas disponibles.</p></div>
+            <strong>Ir al Marketplace <span>→</span></strong>
+        </a>
+        <a class="client-action-card card-cart" th:href="@{/cart}">
+            <span class="client-action-icon">CA</span>
+            <div><h3>Mi carrito</h3><p>Revisa cantidades, precios y entradas antes de completar tu compra.</p></div>
+            <strong>Revisar carrito <span>→</span></strong>
+        </a>
+        <a class="client-action-card card-tickets" th:href="@{/dashboard/client/tickets}">
+            <span class="client-action-icon">QR</span>
+            <div><h3>Mis tickets QR</h3><p>Consulta tus entradas y su estado de acceso desde tu cuenta personal.</p></div>
+            <strong>Abrir mis tickets <span>→</span></strong>
+        </a>
+        <a class="client-action-card card-support" th:href="@{/communications}">
+            <span class="client-action-icon">SP</span>
+            <div><h3>Soporte</h3><p>Envía a Administración consultas sobre compras, tickets o incidencias.</p></div>
+            <strong>Contactar soporte <span>→</span></strong>
+        </a>
     </section>
 </main>
 </body>
