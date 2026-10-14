@@ -39,13 +39,16 @@ public class CommunicationController {
         String email = authentication != null ? authentication.getName() : "system@connectify.com";
 
         if (currentRole == Role.CLIENT) {
+            List<InternalMessage> customerMessages = messageService.sent(email).stream()
+                    .filter(this::isCustomerSupport)
+                    .toList();
             model.addAttribute("supportMode", true);
             model.addAttribute("role", Role.CLIENT);
-            model.addAttribute("messages", messageService.sent(email));
+            model.addAttribute("messages", customerMessages);
             model.addAttribute("unread", 0);
             model.addAttribute("currentRole", currentRole);
             model.addAttribute("roleLabel", "Buzón de Mensajería");
-            model.addAttribute("roleDescription", "Consultas del Cliente hacia Soporte Connectify.");
+            model.addAttribute("roleDescription", "Consultas del Cliente dirigidas únicamente a Administración.");
             model.addAttribute("customerInboxMode", false);
             model.addAttribute("operationsMode", false);
             return "communications/inbox";
@@ -98,7 +101,11 @@ public class CommunicationController {
     @GetMapping("/sent")
     public String sent(Authentication authentication, Model model) {
         String email = authentication != null ? authentication.getName() : "system@connectify.com";
-        model.addAttribute("messages", messageService.sent(email));
+        List<InternalMessage> messages = messageService.sent(email);
+        if (currentRole(authentication) == Role.CLIENT) {
+            messages = messages.stream().filter(this::isCustomerSupport).toList();
+        }
+        model.addAttribute("messages", messages);
         return "communications/sent";
     }
 
@@ -159,7 +166,9 @@ public class CommunicationController {
                 ? messageService.findById(id)
                 : messageService.markAsRead(id);
 
-        if (currentRole == Role.CLIENT && !message.getSenderEmail().equalsIgnoreCase(authentication.getName())) {
+        if (currentRole == Role.CLIENT
+                && (!message.getSenderEmail().equalsIgnoreCase(authentication.getName())
+                || !isCustomerSupport(message))) {
             return "redirect:/communications";
         }
 
@@ -199,7 +208,9 @@ public class CommunicationController {
     }
 
     private boolean isCustomerSupport(InternalMessage message) {
-        return message.getSenderRole() == Role.CLIENT && message.getType() == MessageType.CUSTOMER_SUPPORT;
+        return message.getSenderRole() == Role.CLIENT
+                && message.getTargetRole() == Role.ADMIN
+                && message.getType() == MessageType.CUSTOMER_SUPPORT;
     }
 
     private List<Role> sourceRolesFor(Role role) {
@@ -261,7 +272,7 @@ public class CommunicationController {
             case ORGANIZER -> "Recibe observaciones, aprobaciones y respuestas del Administrador o Diseñador.";
             case DESIGNER -> "Recibe solicitudes visuales y comentarios sobre eventos.";
             case GATE_AGENT -> "Recibe instrucciones para validación QR y control de acceso.";
-            case CLIENT -> "Consultas enviadas por el Cliente al soporte.";
+            case CLIENT -> "Consultas enviadas por el Cliente únicamente a Administración.";
             case DEVELOPER -> "Mensajes técnicos de accesos y permisos.";
         };
     }

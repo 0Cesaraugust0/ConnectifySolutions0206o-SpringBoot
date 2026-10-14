@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${supportMode} ? 'Escribir a soporte - Connectify' : 'Nuevo mensaje - Connectify'">Nuevo mensaje</title>
+    <title th:text="${supportMode} ? 'Escribir a Administración - Connectify' : 'Nuevo mensaje - Connectify'">Nuevo mensaje</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
     <link rel="stylesheet" th:href="@{/css/communications-center.css(v='messages-restored-1')}">
@@ -13,7 +13,7 @@
 <header class="navbar dashboard-nav communications-nav compose-nav">
     <a class="brand brand-link" th:href="@{/communications}">
         <span class="logo">✉</span>
-        <div><strong>Connectify</strong><small th:text="${supportMode} ? 'Soporte' : 'Nuevo mensaje'">Nuevo mensaje</small></div>
+        <div><strong>Connectify</strong><small th:text="${supportMode} ? 'Soporte de Administración' : 'Nuevo mensaje'">Nuevo mensaje</small></div>
     </a>
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/communications}" th:text="${supportMode} ? 'Mis consultas' : 'Buzón'">Buzón</a>
@@ -25,9 +25,9 @@
 <main class="compose-page">
     <section class="compose-hero" th:classappend="${supportMode} ? ' support' : ''">
         <div class="compose-hero-copy">
-            <p class="compose-eyebrow" th:text="${supportMode} ? 'Asistencia Connectify' : 'Comunicación interna'">Comunicación interna</p>
-            <h1 th:text="${supportMode} ? 'Cuéntanos qué necesitas' : 'Redactar un nuevo mensaje'">Redactar un nuevo mensaje</h1>
-            <p th:text="${supportMode} ? 'Describe tu consulta con claridad para que el equipo pueda ayudarte.' : 'Coordina tareas, revisiones y entregas con el equipo responsable.'">Coordina con el equipo.</p>
+            <p class="compose-eyebrow" th:text="${supportMode} ? 'Soporte de Administración' : 'Comunicación interna'">Comunicación interna</p>
+            <h1 th:text="${supportMode} ? 'Contacta a Administración' : 'Redactar un nuevo mensaje'">Redactar un nuevo mensaje</h1>
+            <p th:text="${supportMode} ? 'Describe tu consulta con claridad. Este buzón llega únicamente a Administración.' : 'Coordina tareas, revisiones y entregas con el equipo responsable.'">Coordina con el equipo.</p>
         </div>
         <div class="compose-route" aria-label="Pasos para enviar el mensaje">
             <span><b>01</b> Destino</span><i></i>
@@ -149,14 +149,14 @@
 
             <footer class="compose-actions">
                 <a class="btn secondary" th:href="@{/communications}">Cancelar</a>
-                <button class="btn primary" type="submit" th:text="${supportMode} ? 'Enviar a soporte' : 'Enviar mensaje'">Enviar mensaje</button>
+                <button class="btn primary" type="submit" th:text="${supportMode} ? 'Enviar a Administración' : 'Enviar mensaje'">Enviar mensaje</button>
             </footer>
         </form>
 
         <aside class="compose-aside">
             <section class="compose-guide">
                 <p class="compose-guide-kicker" th:text="${supportMode} ? 'Atención' : 'Ruta del mensaje'">Ruta del mensaje</p>
-                <h2 th:text="${supportMode} ? 'Tu consulta llega a Administración' : 'Coordina sin perder el contexto'">Coordina sin perder el contexto</h2>
+                <h2 th:text="${supportMode} ? 'Tu consulta llega solo a Administración' : 'Coordina sin perder el contexto'">Coordina sin perder el contexto</h2>
                 <div class="compose-guide-list" th:unless="${supportMode}">
                     <div><span>01</span><p><strong>Elige el equipo</strong><small>Selecciona quién debe atender el pedido.</small></p></div>
                     <div><span>02</span><p><strong>Relaciona el evento</strong><small>Facilita la revisión cuando corresponde.</small></p></div>
