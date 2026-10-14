@@ -204,18 +204,20 @@ public class CommunicationController {
 
     private List<Role> sourceRolesFor(Role role) {
         return switch (role) {
-            case ADMIN -> List.of(Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.CLIENT);
-            case ORGANIZER -> List.of(Role.ORGANIZER, Role.ADMIN, Role.DESIGNER);
-            case DESIGNER -> List.of(Role.DESIGNER, Role.ADMIN, Role.ORGANIZER);
+            case ADMIN -> List.of(Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.CLIENT, Role.DEVELOPER);
+            case ORGANIZER -> List.of(Role.ORGANIZER, Role.ADMIN, Role.DESIGNER, Role.DEVELOPER);
+            case DESIGNER -> List.of(Role.DESIGNER, Role.ADMIN, Role.ORGANIZER, Role.DEVELOPER);
+            case DEVELOPER -> List.of(Role.DEVELOPER, Role.ADMIN, Role.ORGANIZER, Role.DESIGNER);
             default -> List.of(role);
         };
     }
 
     private List<Role> targetRolesFor(Role role) {
         return switch (role) {
-            case ADMIN -> List.of(Role.ORGANIZER, Role.DESIGNER);
-            case ORGANIZER -> List.of(Role.ADMIN, Role.DESIGNER);
-            case DESIGNER -> List.of(Role.ADMIN, Role.ORGANIZER);
+            case ADMIN -> List.of(Role.ORGANIZER, Role.DESIGNER, Role.DEVELOPER);
+            case ORGANIZER -> List.of(Role.ADMIN, Role.DESIGNER, Role.DEVELOPER);
+            case DESIGNER -> List.of(Role.ADMIN, Role.ORGANIZER, Role.DEVELOPER);
+            case DEVELOPER -> List.of(Role.ADMIN, Role.ORGANIZER, Role.DESIGNER);
             default -> List.of(Role.ADMIN);
         };
     }

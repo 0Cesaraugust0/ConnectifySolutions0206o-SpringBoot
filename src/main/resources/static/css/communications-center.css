@@ -54,6 +54,10 @@
     background: radial-gradient(circle at 82% 15%, rgba(217, 70, 239, 0.32), transparent 31%), linear-gradient(135deg, #2e1065, #4c1d95);
 }
 
+.communications-hero.role-developer {
+    background: radial-gradient(circle at 82% 15%, rgba(148, 163, 184, 0.30), transparent 31%), linear-gradient(135deg, #111827, #334155);
+}
+
 .communications-hero.role-client {
     background: radial-gradient(circle at 82% 15%, rgba(56, 189, 248, 0.34), transparent 31%), linear-gradient(135deg, #082f49, #0f172a);
 }
