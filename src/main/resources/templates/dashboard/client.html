@@ -6,7 +6,7 @@
     <title>Mi cuenta Cliente - Connectify</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/client-dashboard.css(v='client-compact-1')}">
+    <link rel="stylesheet" th:href="@{/css/client-dashboard.css(v='client-executive-2')}">
 </head>
 <body class="client-dashboard-body">
 <header class="navbar dashboard-nav client-dashboard-nav">
@@ -26,30 +26,30 @@
 <main class="client-dashboard-page">
     <section class="client-dashboard-hero">
         <div class="client-hero-copy">
-            <p class="client-eyebrow">Cuenta personal de compras</p>
+            <p class="client-eyebrow">Panel del cliente</p>
             <h1 th:text="${title}">Mi cuenta Cliente</h1>
-            <p>Explora eventos, organiza tus compras y conserva tus entradas QR en un solo lugar.</p>
+            <p>Administra tus compras, entradas y solicitudes de soporte desde un entorno centralizado.</p>
             <div class="client-session">
-                <span>Sesión activa</span>
+                <span>Usuario autenticado</span>
                 <strong th:text="${email}">cliente@email.com</strong>
             </div>
         </div>
         <aside class="client-pass" aria-label="Resumen de la cuenta">
-            <small>Tu espacio Connectify</small>
-            <strong>Explora. Compra. Disfruta.</strong>
+            <small>Estado de la cuenta</small>
+            <strong>Acceso personal activo</strong>
             <div>
                 <span>QR</span>
-                <p>Tus tickets permanecen asociados únicamente a esta cuenta.</p>
+                <p>Las entradas y operaciones están vinculadas exclusivamente a este usuario.</p>
             </div>
         </aside>
     </section>
 
     <section class="client-section-heading">
         <div>
-            <p>Accesos rápidos</p>
-            <h2>¿Qué deseas hacer?</h2>
+            <p>Gestión personal</p>
+            <h2>Operaciones de la cuenta</h2>
         </div>
-        <span>4 servicios disponibles</span>
+        <span>Acceso a 4 servicios</span>
     </section>
 
     <section class="client-service-grid" aria-label="Servicios del Cliente">
