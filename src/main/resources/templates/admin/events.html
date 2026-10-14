@@ -6,6 +6,7 @@
     <title>Control de puerta - Administrador</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/cart.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-gate-list.css(v='compact-75-1')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -13,13 +14,13 @@
         <span class="logo">🚪</span>
         <div><strong>Connectify</strong><small>Control de puerta</small></div>
     </a>
-    <nav class="top-actions">
+    <nav class="top-actions admin-gate-nav">
         <a class="btn secondary" th:href="@{/dashboard/admin}">Panel Admin</a>
         <a class="btn secondary" th:href="@{/events}">Marketplace</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
+<main class="dashboard-page admin-gate-page">
     <section class="dashboard-hero">
         <p class="badge">Administrador</p>
         <h1>Eventos y acceso de puerta</h1>
