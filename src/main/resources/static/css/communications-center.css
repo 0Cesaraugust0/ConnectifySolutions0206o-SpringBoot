@@ -1,3 +1,11 @@
+html {
+    scrollbar-gutter: stable;
+}
+
+body {
+    overflow-y: scroll;
+}
+
 .communications-nav .top-actions {
     gap: 7px;
 }
