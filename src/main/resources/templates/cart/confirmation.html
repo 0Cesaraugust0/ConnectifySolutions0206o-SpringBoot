@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compra confirmada - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/cart.css(v='confirmation-compact-1')}">
+    <link rel="stylesheet" th:href="@{/css/cart.css(v='confirmation-executive-2')}">
 </head>
 <body class="checkout-body confirmation-body">
 <header class="navbar dashboard-nav checkout-nav confirmation-nav">
@@ -21,9 +21,17 @@
 
 <main class="dashboard-page checkout-page confirmation-page">
     <section class="dashboard-hero checkout-hero confirmation-hero">
-        <p class="badge">Compra completada</p>
-        <h1>Tickets QR generados correctamente</h1>
-        <p class="muted">Tu compra fue registrada, el carrito quedó vacío y tus entradas ya están disponibles en el repositorio “Mis tickets QR”.</p>
+        <span class="confirmation-status-mark" aria-hidden="true">✓</span>
+        <div class="confirmation-hero-copy">
+            <p class="badge">Compra completada</p>
+            <h1>Tickets QR generados correctamente</h1>
+            <p class="muted">Tu compra fue registrada y las entradas ya están disponibles en “Mis tickets QR”.</p>
+        </div>
+        <aside class="confirmation-receipt">
+            <small>Comprobante digital</small>
+            <strong th:text="${'#' + purchase.id}">#12</strong>
+            <span>Pago confirmado</span>
+        </aside>
     </section>
 
     <section class="checkout-layout">
@@ -33,18 +41,26 @@
                     <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + ${ticket.code}}" alt="QR del ticket">
                 </div>
                 <div class="cart-info">
-                    <p class="badge" th:text="${ticket.event.category != null ? ticket.event.category.name : 'Evento'}">Evento</p>
+                    <div class="ticket-card-heading">
+                        <p class="badge" th:text="${ticket.event.category != null ? ticket.event.category.name : 'Evento'}">Evento</p>
+                        <span class="ticket-state" th:text="${ticket.used ? 'Utilizado' : 'Activo'}">Activo</span>
+                    </div>
                     <h3 th:text="${ticket.event.title}">Nombre del evento</h3>
-                    <p class="muted small">Asistente: <strong th:text="${ticket.attendeeName}">Nombre</strong></p>
-                    <p class="muted small">Correo: <strong th:text="${ticket.attendeeEmail}">email</strong></p>
-                    <p class="muted small">Código: <strong th:text="${ticket.code}">CNF-0000</strong></p>
-                    <p class="muted small">Estado: <strong th:text="${ticket.used ? 'Usado en puerta' : 'Disponible para ingreso'}">Disponible</strong></p>
+                    <div class="ticket-data-grid">
+                        <p class="muted small"><span>Asistente</span><strong th:text="${ticket.attendeeName}">Nombre</strong></p>
+                        <p class="muted small"><span>Correo</span><strong th:text="${ticket.attendeeEmail}">email</strong></p>
+                        <p class="muted small"><span>Código</span><strong th:text="${ticket.code}">CNF-0000</strong></p>
+                        <p class="muted small"><span>Acceso</span><strong th:text="${ticket.used ? 'Usado en puerta' : 'Disponible para ingreso'}">Disponible</strong></p>
+                    </div>
                 </div>
             </article>
         </div>
 
         <aside class="summary-card">
-            <h2>Resumen</h2>
+            <div class="confirmation-summary-heading">
+                <small>Detalle de la operación</small>
+                <h2>Resumen de compra</h2>
+            </div>
             <div class="summary-row"><span>Compra #</span><strong th:text="${purchase.id}">0</strong></div>
             <div class="summary-row"><span>Estado</span><strong th:text="${purchase.status}">COMPLETED</strong></div>
             <div class="summary-row"><span>Comprador</span><strong th:text="${purchase.buyerFirstName + ' ' + purchase.buyerLastName}">Nombre</strong></div>

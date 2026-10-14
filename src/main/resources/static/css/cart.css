@@ -637,15 +637,91 @@
     }
 }
 
-/* Confirmación de compra compacta. */
+/* Confirmación de compra: comprobante ejecutivo compacto. */
 .confirmation-page .confirmation-hero {
-    border-left: 3px solid #426c58;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 168px;
+    gap: 16px;
+    align-items: center;
+    min-height: 150px;
+    padding: 22px 24px;
+    border: 0;
+    border-radius: 10px;
+    background: #172033;
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(23, 32, 51, 0.12);
+}
+
+.confirmation-status-mark {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid rgba(168, 211, 187, 0.5);
+    border-radius: 6px;
+    background: #2f6048;
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+.confirmation-hero-copy {
+    min-width: 0;
 }
 
 .confirmation-page .confirmation-hero .badge {
-    border-color: #cfded5;
-    background: #edf4f0;
-    color: #365946;
+    margin: 0 0 8px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #9fc5af;
+    font-size: 0.53rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.confirmation-page .confirmation-hero h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(1.45rem, 2.8vw, 1.9rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+}
+
+.confirmation-page .confirmation-hero .muted {
+    margin-top: 7px;
+    color: #b8c0cd;
+    font-size: 0.66rem;
+}
+
+.confirmation-receipt {
+    display: grid;
+    gap: 5px;
+    align-content: center;
+    min-height: 92px;
+    padding-left: 18px;
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.confirmation-receipt small {
+    color: #929dad;
+    font-size: 0.51rem;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.confirmation-receipt strong {
+    color: #ffffff;
+    font-size: 1.25rem;
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+.confirmation-receipt span {
+    color: #a8d3bb;
+    font-size: 0.58rem;
+    font-weight: 600;
 }
 
 .confirmation-page .confirmation-ticket-list {
@@ -653,70 +729,161 @@
 }
 
 .confirmation-page .ticket-card {
+    position: relative;
     display: grid;
-    grid-template-columns: 74px minmax(0, 1fr);
-    gap: 14px;
-    align-items: center;
-    padding: 16px;
-    border: 1px solid #dfe3e8;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 18px;
+    align-items: stretch;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid #d8dde5;
     border-radius: 9px;
     background: #ffffff;
     box-shadow: none;
 }
 
+.confirmation-page .ticket-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: #426c58;
+}
+
 .confirmation-page .ticket-qr {
     display: grid;
-    width: 74px;
-    height: 74px;
+    width: auto;
+    height: auto;
+    min-height: 150px;
     place-items: center;
     overflow: hidden;
-    padding: 5px;
-    border: 1px solid #d9dee5;
-    border-radius: 6px;
-    background: #ffffff;
+    padding: 14px;
+    border: 0;
+    border-right: 1px dashed #cbd1d9;
+    border-radius: 0;
+    background: #eef1f4;
     box-shadow: none;
 }
 
 .confirmation-page .ticket-qr img {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: 72px;
+    height: 72px;
+    padding: 5px;
+    border: 1px solid #cfd5dd;
+    border-radius: 4px;
+    background: #ffffff;
     object-fit: contain;
 }
 
+.confirmation-page .ticket-card .cart-info {
+    padding: 16px 17px 16px 0;
+}
+
+.ticket-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
 .confirmation-page .ticket-card .badge {
-    margin: 0 0 6px;
+    margin: 0;
     padding: 4px 7px;
     border: 1px solid #d9dee5;
     border-radius: 4px;
     background: #f4f5f7;
     color: #596273;
-    font-size: 0.52rem;
+    font-size: 0.5rem;
     font-weight: 650;
+}
+
+.ticket-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #376149;
+    font-size: 0.53rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.ticket-state::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4d8464;
 }
 
 .confirmation-page .ticket-card h3 {
-    margin: 0 0 7px;
+    margin: 0 0 10px;
     color: #172033;
-    font-size: 0.85rem;
-    line-height: 1.25;
+    font-size: 0.91rem;
+    line-height: 1.2;
     font-weight: 700;
 }
 
-.confirmation-page .ticket-card .muted {
-    margin: 3px 0;
-    color: #687282;
-    font-size: 0.61rem;
-    line-height: 1.4;
+.ticket-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 14px;
 }
 
-.confirmation-page .ticket-card .muted strong {
+.confirmation-page .ticket-card .ticket-data-grid .muted {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    margin: 0;
+    color: #7a8492;
+    font-size: 0.52rem;
+    line-height: 1.35;
+}
+
+.ticket-data-grid .muted > span {
+    color: #8a93a1;
+    font-size: 0.48rem;
+    font-weight: 650;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.confirmation-page .ticket-card .ticket-data-grid strong {
+    overflow-wrap: anywhere;
     color: #303b4d;
+    font-size: 0.59rem;
     font-weight: 650;
 }
 
-.confirmation-page .ticket-card .muted:nth-last-of-type(2) strong {
-    overflow-wrap: anywhere;
+.confirmation-page .summary-card {
+    overflow: hidden;
+    padding-top: 0;
+    border-color: #d8dde5;
+}
+
+.confirmation-summary-heading {
+    margin: 0 -18px 4px;
+    padding: 15px 18px 13px;
+    border-bottom: 1px solid #dfe3e8;
+    background: #eef1f4;
+}
+
+.confirmation-summary-heading small {
+    display: block;
+    margin-bottom: 4px;
+    color: #717b89;
+    font-size: 0.5rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.confirmation-page .confirmation-summary-heading h2 {
+    font-size: 0.88rem;
 }
 
 .confirmation-page .summary-card .btn {
@@ -755,8 +922,36 @@
     background: #f5f6f8;
 }
 
+@media (max-width: 700px) {
+    .confirmation-page .confirmation-hero {
+        grid-template-columns: 42px 1fr;
+    }
+
+    .confirmation-receipt {
+        grid-column: 1 / -1;
+        min-height: 0;
+        padding: 12px 0 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
+        border-left: 0;
+    }
+}
+
 @media (max-width: 560px) {
     .confirmation-page .ticket-card {
+        grid-template-columns: 1fr;
+    }
+
+    .confirmation-page .ticket-qr {
+        min-height: 110px;
+        border-right: 0;
+        border-bottom: 1px dashed #cbd1d9;
+    }
+
+    .confirmation-page .ticket-card .cart-info {
+        padding: 0 15px 15px;
+    }
+
+    .ticket-data-grid {
         grid-template-columns: 1fr;
     }
 }
