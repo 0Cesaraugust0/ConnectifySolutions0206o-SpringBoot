@@ -5,44 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis tickets QR - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/ui.css}">
+    <link rel="stylesheet" th:href="@{/css/client-tickets.css(v='repository-executive-1')}">
+    <script defer th:src="@{/js/client-tickets.js(v='repository-filters-1')}"></script>
 </head>
-<body>
-<header class="navbar dashboard-nav">
+<body class="client-tickets-body">
+<header class="navbar dashboard-nav client-tickets-nav">
     <a class="brand brand-link" th:href="@{/dashboard/client}">
-        <span class="logo">🎟️</span>
+        <span class="logo client-tickets-brand-mark">C</span>
         <div><strong>Connectify</strong><small>Mis tickets QR</small></div>
     </a>
-    <nav class="top-actions">
+    <nav class="top-actions" aria-label="Acciones de Mis tickets QR">
         <a class="btn secondary" th:href="@{/dashboard/client}">Panel cliente</a>
         <a class="btn secondary" th:href="@{/events}">Explorar eventos</a>
         <a class="btn secondary" th:href="@{/cart}">Carrito</a>
     </nav>
 </header>
 
-<main class="dashboard-page">
-    <section class="dashboard-hero">
-        <p class="badge">Repositorio del asistente</p>
-        <h1>Mis tickets QR</h1>
-        <p class="muted">Aquí se guardan los tickets generados después de confirmar una compra. Cuenta: <strong th:text="${email}">cliente</strong></p>
-    </section>
-
-    <section class="dashboard-grid" th:if="${tickets != null && !tickets.isEmpty()}">
-        <article class="module-card" th:each="ticket : ${tickets}">
-            <span>🎫</span>
-            <h3 th:text="${ticket.event.title}">Evento</h3>
-            <p class="muted small" th:text="${ticket.event.eventDate != null ? #temporals.format(ticket.event.eventDate, 'dd/MM/yyyy HH:mm') : 'Fecha por definir'}">Fecha</p>
-            <p><strong>Código:</strong> <span th:text="${ticket.code}">CNF-1-XXXX</span></p>
-            <div class="qr-placeholder">
-                <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + ${ticket.code}}" alt="QR del ticket">
+<main class="client-tickets-page">
+    <section class="client-tickets-hero">
+        <div class="client-tickets-hero-copy">
+            <p class="client-tickets-eyebrow">Repositorio personal</p>
+            <h1>Mis tickets QR</h1>
+            <p>Consulta todas las entradas vinculadas a tu cuenta y presenta el código correspondiente en el acceso.</p>
+            <div class="client-tickets-account">
+                <span>Cuenta titular</span>
+                <strong th:text="${email}">cliente</strong>
             </div>
-            <p class="muted small" th:text="${ticket.used ? 'Usado en puerta' : 'Disponible para ingreso'}">Disponible</p>
-        </article>
+        </div>
+        <div class="client-ticket-stats" aria-label="Resumen de tickets">
+            <div><span>Total</span><strong th:text="${ticketCount}">0</strong></div>
+            <div><span>Disponibles</span><strong th:text="${availableTicketCount}">0</strong></div>
+            <div><span>Utilizados</span><strong th:text="${usedTicketCount}">0</strong></div>
+        </div>
     </section>
 
-    <section class="empty-state" th:if="${tickets == null || tickets.isEmpty()}">
+    <section class="client-tickets-repository" th:if="${tickets != null && !tickets.isEmpty()}">
+        <header class="client-tickets-toolbar">
+            <div>
+                <p>Entradas emitidas</p>
+                <h2>Archivo de tickets</h2>
+            </div>
+            <div class="client-ticket-filters" role="group" aria-label="Filtrar tickets por estado">
+                <button class="active" type="button" data-ticket-filter="all" aria-pressed="true">Todos <span th:text="${ticketCount}">0</span></button>
+                <button type="button" data-ticket-filter="available" aria-pressed="false">Disponibles <span th:text="${availableTicketCount}">0</span></button>
+                <button type="button" data-ticket-filter="used" aria-pressed="false">Utilizados <span th:text="${usedTicketCount}">0</span></button>
+            </div>
+        </header>
+
+        <div class="client-ticket-grid">
+            <article class="client-ticket-card"
+                     th:each="ticket : ${tickets}"
+                     th:attr="data-ticket-status=${ticket.used ? 'used' : 'available'}">
+                <header class="client-ticket-card-head">
+                    <span class="client-ticket-category" th:text="${ticket.event.category != null ? ticket.event.category.name : 'Evento'}">Evento</span>
+                    <span class="client-ticket-status" th:classappend="${ticket.used} ? ' used' : ' available'"
+                          th:text="${ticket.used ? 'Utilizado' : 'Disponible'}">Disponible</span>
+                </header>
+
+                <div class="client-ticket-card-body">
+                    <div class="client-ticket-qr">
+                        <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + ${ticket.code}}" alt="QR del ticket">
+                        <small>Control de acceso</small>
+                    </div>
+                    <div class="client-ticket-info">
+                        <h3 th:text="${ticket.event.title}">Evento</h3>
+                        <dl>
+                            <div>
+                                <dt>Fecha</dt>
+                                <dd th:text="${ticket.event.eventDate != null ? #temporals.format(ticket.event.eventDate, 'dd/MM/yyyy HH:mm') : 'Por definir'}">Fecha</dd>
+                            </div>
+                            <div>
+                                <dt>Ubicación</dt>
+                                <dd th:text="${!#strings.isEmpty(ticket.event.location) ? ticket.event.location : 'Por definir'}">Ubicación</dd>
+                            </div>
+                            <div>
+                                <dt>Asistente</dt>
+                                <dd th:text="${ticket.attendeeName}">Nombre</dd>
+                            </div>
+                            <div>
+                                <dt>Código</dt>
+                                <dd th:text="${ticket.code}">CNF-1-XXXX</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <footer class="client-ticket-card-foot">
+                    <span th:text="${ticket.purchase != null ? 'Compra #' + ticket.purchase.id : 'Entrada digital'}">Compra #0</span>
+                    <strong th:text="${ticket.used ? 'Ingreso registrado' : 'Presentar en puerta'}">Presentar en puerta</strong>
+                </footer>
+            </article>
+        </div>
+
+        <div class="client-ticket-filter-empty" hidden>
+            No hay tickets en este estado.
+        </div>
+    </section>
+
+    <section class="client-tickets-empty" th:if="${tickets == null || tickets.isEmpty()}">
+        <span>QR</span>
         <h2>Aún no tienes tickets QR</h2>
-        <p class="muted">Después de confirmar una compra, tus QR aparecerán aquí y el carrito quedará vacío.</p>
+        <p>Después de confirmar una compra, tus entradas aparecerán automáticamente en este repositorio.</p>
         <a class="btn primary" th:href="@{/events}">Explorar eventos</a>
     </section>
 </main>
