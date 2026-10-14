@@ -385,7 +385,7 @@
 }
 
 .organizer-service-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
     width: 100%;
     margin: 48px auto 0;
@@ -461,6 +461,26 @@
 .organizer-service-list .module-card:nth-child(4) span:first-child {
     background: #ffedd5;
     color: #c2410c;
+}
+
+.organizer-service-list .module-card:nth-child(5) {
+    border-color: #bae6fd;
+    background: linear-gradient(145deg, #f0f9ff, #ffffff);
+}
+
+.organizer-service-list .module-card:nth-child(5) span:first-child {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.organizer-service-list .module-card:nth-child(6) {
+    border-color: #fecdd3;
+    background: linear-gradient(145deg, #fff1f2, #ffffff);
+}
+
+.organizer-service-list .module-card:nth-child(6) span:first-child {
+    background: #ffe4e6;
+    color: #be123c;
 }
 
 @media (max-width: 900px) {

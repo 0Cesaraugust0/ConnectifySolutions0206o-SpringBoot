@@ -1,0 +1,330 @@
+.communications-nav .top-actions {
+    gap: 7px;
+}
+
+.communications-nav .btn {
+    padding: 7px 10px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+
+.communications-page {
+    width: min(940px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 25px 0 48px;
+}
+
+.communications-hero {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    align-items: center;
+    gap: 22px;
+    padding: 25px 27px;
+    border-radius: 22px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 82% 15%, rgba(129, 140, 248, 0.36), transparent 31%),
+        linear-gradient(135deg, #0f172a 0%, #182235 55%, #111827 100%);
+    box-shadow: 0 20px 46px rgba(15, 23, 42, 0.19);
+}
+
+.communications-hero::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    right: -72px;
+    bottom: -98px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 50%;
+}
+
+.communications-hero.customer {
+    background:
+        radial-gradient(circle at 82% 15%, rgba(56, 189, 248, 0.34), transparent 31%),
+        linear-gradient(135deg, #082f49, #0f172a);
+}
+
+.communications-hero.operations {
+    background:
+        radial-gradient(circle at 82% 15%, rgba(251, 146, 60, 0.28), transparent 31%),
+        linear-gradient(135deg, #1c1917, #292524);
+}
+
+.communications-hero .badge {
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.10);
+    color: #e2e8f0;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.communications-hero h1 {
+    margin: 11px 0 7px;
+    color: #fff;
+    font-size: clamp(1.65rem, 3.2vw, 2.25rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+}
+
+.communications-hero p:not(.badge) {
+    max-width: 610px;
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.76rem;
+    line-height: 1.55;
+}
+
+.communications-count {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 3px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.communications-count strong {
+    color: #fff;
+    font-size: 1.7rem;
+    line-height: 1;
+}
+
+.communications-count span,
+.communications-count small {
+    color: #cbd5e1;
+    font-size: 0.67rem;
+}
+
+.communications-count small {
+    margin-top: 7px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.communications-count small b {
+    color: #fff;
+}
+
+.communications-toolbar {
+    margin: 17px 0 12px;
+    padding: 0 2px;
+}
+
+.communications-toolbar small {
+    display: block;
+    margin-bottom: 8px;
+    color: #64748b;
+    font-size: 0.61rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.communications-role-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.communications-role-tabs a {
+    padding: 7px 11px;
+    border: 1px solid #dbe2ea;
+    border-radius: 999px;
+    background: #fff;
+    color: #475569;
+    font-size: 0.68rem;
+    font-weight: 550;
+    text-decoration: none;
+    transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.communications-role-tabs a:hover {
+    transform: translateY(-1px);
+    border-color: #94a3b8;
+}
+
+.communications-role-tabs a.active {
+    border-color: #111827;
+    background: #111827;
+    color: #fff;
+}
+
+.communications-list {
+    display: grid;
+    gap: 10px;
+}
+
+.communications-message {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+    background: #fff;
+    color: #111827;
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.communications-message:hover {
+    transform: translateY(-2px);
+    border-color: #c7d2fe;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.communications-message-top,
+.communications-message-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.communications-message-top > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.communications-origin {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 0.63rem;
+    font-weight: 700;
+}
+
+.communications-message .priority-pill,
+.communications-message .status-pill {
+    padding: 5px 8px;
+    font-size: 0.58rem;
+    font-weight: 700;
+}
+
+.communications-message h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 0.91rem;
+    line-height: 1.3;
+}
+
+.communications-message .message-body {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0;
+    color: #64748b;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.communications-message-foot {
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+    color: #94a3b8;
+    font-size: 0.63rem;
+}
+
+.communications-empty {
+    display: grid;
+    justify-items: start;
+    gap: 8px;
+    padding: 25px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.communications-empty h2,
+.communications-empty p {
+    margin: 0;
+}
+
+.communications-empty h2 {
+    font-size: 1rem;
+}
+
+.communications-empty p {
+    font-size: 0.72rem;
+}
+
+.communications-empty .btn {
+    margin-top: 4px;
+    padding: 8px 12px;
+    font-size: 0.7rem;
+}
+
+.communications-page > .alert {
+    margin: 14px 0;
+    font-size: 0.72rem;
+}
+
+@media (max-width: 700px) {
+    .communications-page {
+        width: min(100% - 22px, 940px);
+        padding-top: 15px;
+    }
+
+    .communications-hero {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 21px;
+    }
+
+    .communications-count {
+        grid-template-columns: auto 1fr;
+        align-items: end;
+    }
+
+    .communications-count small {
+        grid-column: 1 / -1;
+    }
+
+    .communications-message-top,
+    .communications-message-foot {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 540px) {
+    .communications-nav {
+        align-items: flex-start;
+        padding: 10px 14px;
+    }
+
+    .communications-nav .top-actions {
+        justify-content: flex-end;
+    }
+
+    .communications-nav .brand small {
+        display: none;
+    }
+
+    .communications-message-top,
+    .communications-message-foot {
+        flex-direction: column;
+    }
+
+    .communications-message-top > div {
+        justify-content: flex-start;
+    }
+}

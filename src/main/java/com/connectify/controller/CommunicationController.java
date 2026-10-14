@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 @RequestMapping("/communications")
 public class CommunicationController {
@@ -29,7 +32,8 @@ public class CommunicationController {
     }
 
     @GetMapping
-    public String inbox(@RequestParam(required = false) Role role,
+    public String inbox(@RequestParam(required = false) String box,
+                        @RequestParam(required = false) Role from,
                         Authentication authentication,
                         Model model) {
         Role currentRole = currentRole(authentication);
@@ -40,14 +44,55 @@ public class CommunicationController {
             model.addAttribute("role", Role.CLIENT);
             model.addAttribute("messages", messageService.sent(email));
             model.addAttribute("unread", 0);
+            model.addAttribute("currentRole", currentRole);
+            model.addAttribute("roleLabel", "Buzón de Mensajería");
+            model.addAttribute("roleDescription", "Consultas del Cliente hacia Soporte Connectify.");
+            model.addAttribute("customerInboxMode", false);
+            model.addAttribute("operationsMode", false);
             return "communications/inbox";
         }
 
-        Role inboxRole = role != null ? role : currentRole;
+        Role inboxRole = currentRole;
+        List<InternalMessage> messages = messageService.inbox(inboxRole);
+        boolean customerInboxMode = currentRole == Role.ADMIN
+                && (from == Role.CLIENT || "customers".equalsIgnoreCase(box));
+        boolean operationsMode = currentRole == Role.ADMIN
+                && !customerInboxMode
+                && ("operations".equalsIgnoreCase(box) || (from != null && from != Role.ADMIN));
+        Role selectedSource = customerInboxMode ? Role.CLIENT : from != null ? from : currentRole;
+
+        if (customerInboxMode) {
+            messages = messages.stream().filter(this::isCustomerSupport).toList();
+        } else if (from != null && from != currentRole) {
+            messages = messages.stream().filter(message -> message.getSenderRole() == from).toList();
+        } else if (operationsMode) {
+            messages = messages.stream().filter(message -> !isCustomerSupport(message)).toList();
+        }
+
+        List<Role> sourceRoles = new ArrayList<>(List.of(
+                Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.GATE_AGENT, Role.CLIENT));
+        sourceRoles.remove(currentRole);
+        sourceRoles.add(0, currentRole);
+        List<MessageSourceOption> sourceOptions = sourceRoles.stream()
+                .map(source -> new MessageSourceOption(source,
+                        source == currentRole ? roleLabel(source) : senderLabel(source)))
+                .toList();
+
         model.addAttribute("supportMode", false);
         model.addAttribute("role", inboxRole);
-        model.addAttribute("messages", messageService.inbox(inboxRole));
-        model.addAttribute("unread", messageService.unread(inboxRole));
+        model.addAttribute("currentRole", currentRole);
+        model.addAttribute("customerInboxMode", customerInboxMode);
+        model.addAttribute("operationsMode", operationsMode);
+        model.addAttribute("roleLabel", roleLabel(inboxRole));
+        model.addAttribute("viewTitle", selectedSource == currentRole
+                ? roleLabel(currentRole) : senderLabel(selectedSource));
+        model.addAttribute("roleDescription", selectedSource == currentRole
+                ? roleDescription(inboxRole)
+                : "Mensajes enviados por " + senderOrigin(selectedSource) + " a este buzón.");
+        model.addAttribute("selectedSource", selectedSource);
+        model.addAttribute("sourceOptions", sourceOptions);
+        model.addAttribute("messages", messages);
+        model.addAttribute("unread", messages.stream().filter(message -> !message.isReadByTarget()).count());
         return "communications/inbox";
     }
 
@@ -103,7 +148,7 @@ public class CommunicationController {
 
         messageService.create(senderName, safeSenderEmail, safeSenderRole, safeTargetRole, safeType,
                 safePriority, subject, body, relatedEventId);
-        return "redirect:/communications?role=" + safeTargetRole.name();
+        return "redirect:/communications/sent";
     }
 
     @GetMapping("/{id}")
@@ -150,5 +195,56 @@ public class CommunicationController {
     private boolean hasRole(Authentication authentication, String role) {
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals(role));
+    }
+
+    private boolean isCustomerSupport(InternalMessage message) {
+        return message.getSenderRole() == Role.CLIENT && message.getType() == MessageType.CUSTOMER_SUPPORT;
+    }
+
+    private String roleLabel(Role role) {
+        return switch (role) {
+            case ADMIN -> "Buzón del Administrador";
+            case ORGANIZER -> "Buzón del Organizador";
+            case DESIGNER -> "Buzón del Diseñador";
+            case GATE_AGENT -> "Buzón de Puerta";
+            case CLIENT -> "Buzón del Cliente";
+            case DEVELOPER -> "Buzón técnico";
+        };
+    }
+
+    private String senderLabel(Role role) {
+        return switch (role) {
+            case ADMIN -> "Mensajes del Administrador";
+            case ORGANIZER -> "Mensajes del Organizador";
+            case DESIGNER -> "Mensajes del Diseñador";
+            case GATE_AGENT -> "Mensajes de Puerta";
+            case CLIENT -> "Mensajes de Clientes";
+            case DEVELOPER -> "Mensajes técnicos";
+        };
+    }
+
+    private String senderOrigin(Role role) {
+        return switch (role) {
+            case ADMIN -> "el Administrador";
+            case ORGANIZER -> "el Organizador";
+            case DESIGNER -> "el Diseñador";
+            case GATE_AGENT -> "el equipo de Puerta";
+            case CLIENT -> "los Clientes";
+            case DEVELOPER -> "el Developer";
+        };
+    }
+
+    private String roleDescription(Role role) {
+        return switch (role) {
+            case ADMIN -> "Recibe soporte de clientes y solicitudes internas de revisión.";
+            case ORGANIZER -> "Recibe observaciones, aprobaciones y respuestas del Administrador o Diseñador.";
+            case DESIGNER -> "Recibe solicitudes visuales y comentarios sobre eventos.";
+            case GATE_AGENT -> "Recibe instrucciones para validación QR y control de acceso.";
+            case CLIENT -> "Consultas enviadas por el Cliente al soporte.";
+            case DEVELOPER -> "Mensajes técnicos de accesos y permisos.";
+        };
+    }
+
+    private record MessageSourceOption(Role role, String label) {
     }
 }

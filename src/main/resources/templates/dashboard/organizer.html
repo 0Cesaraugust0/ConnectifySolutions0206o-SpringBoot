@@ -6,7 +6,7 @@
     <title>Panel Organizador - Connectify Solutions</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/organizer.css(v='dashboard-cards-1')}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css(v='dashboard-messages-2')}">
 </head>
 <body>
 <header class="navbar dashboard-nav">
@@ -15,6 +15,7 @@
         <a class="btn secondary" th:href="@{/dashboard/organizer/profile}">Datos de organizador</a>
         <a class="btn secondary" th:href="@{/dashboard/organizer/events}">Mis eventos</a>
         <a class="btn secondary" th:href="@{/dashboard/organizer/events/metrics}">Métricas</a>
+        <a class="btn secondary" th:href="@{/communications}">Mensajes</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
@@ -52,6 +53,12 @@
         </a>
         <a class="module-card" th:href="@{/events}">
             <span>MP</span><h3>Previsualizar marketplace</h3><p>Revisar cómo se verán los eventos publicados para compradores. No es flujo de compra del organizador.</p>
+        </a>
+        <a class="module-card" th:href="@{/communications}">
+            <span>CM</span><h3>Centro de mensajes</h3><p>Leer observaciones, aprobaciones y respuestas enviadas por Administración, Diseño o Puerta.</p>
+        </a>
+        <a class="module-card" th:href="@{/communications/new}">
+            <span>AP</span><h3>Solicitar apoyo</h3><p>Enviar una nueva coordinación al administrador, diseñador o equipo de acceso.</p>
         </a>
     </section>
 </main>
