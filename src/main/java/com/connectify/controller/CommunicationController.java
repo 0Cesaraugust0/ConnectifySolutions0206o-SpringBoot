@@ -52,23 +52,29 @@ public class CommunicationController {
             model.addAttribute("roleDescription", "Consultas del Cliente dirigidas únicamente a Administración.");
             model.addAttribute("customerInboxMode", false);
             model.addAttribute("operationsMode", false);
+            model.addAttribute("sentMode", false);
             return "communications/inbox";
         }
 
         Role inboxRole = currentRole;
+        boolean sentMode = "sent".equalsIgnoreCase(box);
         List<Role> sourceRoles = sourceRolesFor(currentRole);
-        Role requestedSource = currentRole == Role.ADMIN && "customers".equalsIgnoreCase(box)
+        Role requestedSource = !sentMode && currentRole == Role.ADMIN && "customers".equalsIgnoreCase(box)
                 ? Role.CLIENT : from;
         Role selectedSource = requestedSource != null && sourceRoles.contains(requestedSource)
                 ? requestedSource : currentRole;
-        List<InternalMessage> messages = messageService.inbox(inboxRole);
-        boolean customerInboxMode = currentRole == Role.ADMIN
+        List<InternalMessage> messages = sentMode
+                ? messageService.sent(email)
+                : messageService.inbox(inboxRole);
+        boolean customerInboxMode = !sentMode && currentRole == Role.ADMIN
                 && selectedSource == Role.CLIENT;
-        boolean operationsMode = currentRole == Role.ADMIN
+        boolean operationsMode = !sentMode && currentRole == Role.ADMIN
                 && !customerInboxMode
                 && ("operations".equalsIgnoreCase(box) || selectedSource != Role.ADMIN);
 
-        if (customerInboxMode) {
+        if (sentMode) {
+            // La consulta ya está limitada al remitente autenticado.
+        } else if (customerInboxMode) {
             messages = messages.stream().filter(this::isCustomerSupport).toList();
         } else if (selectedSource != currentRole) {
             messages = messages.stream().filter(message -> message.getSenderRole() == selectedSource).toList();
@@ -78,7 +84,7 @@ public class CommunicationController {
 
         List<MessageSourceOption> sourceOptions = sourceRoles.stream()
                 .map(source -> new MessageSourceOption(source,
-                        source == currentRole ? roleLabel(source) : senderLabel(source)))
+                        source == currentRole ? "Todos" : senderLabel(source)))
                 .toList();
 
         model.addAttribute("supportMode", false);
@@ -86,28 +92,28 @@ public class CommunicationController {
         model.addAttribute("currentRole", currentRole);
         model.addAttribute("customerInboxMode", customerInboxMode);
         model.addAttribute("operationsMode", operationsMode);
+        model.addAttribute("sentMode", sentMode);
         model.addAttribute("roleLabel", roleLabel(inboxRole));
-        model.addAttribute("viewTitle", selectedSource == currentRole
-                ? roleLabel(currentRole) : senderLabel(selectedSource));
-        model.addAttribute("roleDescription", selectedSource == currentRole
+        model.addAttribute("viewTitle", sentMode
+                ? "Mensajes enviados"
+                : selectedSource == currentRole ? roleLabel(currentRole) : senderLabel(selectedSource));
+        model.addAttribute("roleDescription", sentMode
+                ? "Coordinaciones que enviaste desde tu cuenta."
+                : selectedSource == currentRole
                 ? roleDescription(inboxRole)
                 : "Mensajes enviados por " + senderOrigin(selectedSource) + " a este buzón.");
         model.addAttribute("selectedSource", selectedSource);
         model.addAttribute("sourceOptions", sourceOptions);
         model.addAttribute("messages", messages);
-        model.addAttribute("unread", messages.stream().filter(message -> !message.isReadByTarget()).count());
+        model.addAttribute("unread", sentMode
+                ? 0
+                : messages.stream().filter(message -> !message.isReadByTarget()).count());
         return "communications/inbox";
     }
 
     @GetMapping("/sent")
     public String sent(Authentication authentication, Model model) {
-        String email = authentication != null ? authentication.getName() : "system@connectify.com";
-        List<InternalMessage> messages = messageService.sent(email);
-        if (currentRole(authentication) == Role.CLIENT) {
-            messages = messages.stream().filter(this::isCustomerSupport).toList();
-        }
-        model.addAttribute("messages", messages);
-        return "communications/sent";
+        return "redirect:/communications?box=sent";
     }
 
     @GetMapping("/new")
@@ -157,7 +163,7 @@ public class CommunicationController {
 
         messageService.create(senderName, safeSenderEmail, safeSenderRole, safeTargetRole, safeType,
                 safePriority, subject, body, relatedEventId);
-        return "redirect:/communications/sent";
+        return "redirect:/communications?box=sent";
     }
 
     @GetMapping("/{id}")

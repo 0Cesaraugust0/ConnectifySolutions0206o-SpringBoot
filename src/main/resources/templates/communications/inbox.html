@@ -6,22 +6,21 @@
     <title th:text="${supportMode} ? 'Soporte - Connectify' : 'Centro de mensajes - Connectify'">Centro de mensajes</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/ui.css}">
-    <link rel="stylesheet" th:href="@{/css/communications-center.css(v='role-filters-3')}">
-    <script th:src="@{/js/communications-filters.js(v='role-filters-3')}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/communications-center.css(v='sent-chip-1')}">
+    <script th:src="@{/js/communications-filters.js(v='sent-chip-1')}" defer></script>
 </head>
 <body>
 <header class="navbar dashboard-nav communications-nav">
     <a class="brand brand-link" th:href="@{/dashboard}"><span class="logo">💬</span><div><strong>Connectify</strong><small>Mensajería</small></div></a>
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/communications/new}" th:text="${supportMode} ? 'Escribir a soporte' : 'Nuevo mensaje'">Nuevo mensaje</a>
-        <a class="btn secondary" th:href="@{/communications/sent}" th:if="${!supportMode}">Enviados</a>
         <a class="btn primary compact" th:href="@{/dashboard}">Dashboard</a>
     </nav>
 </header>
 
 <main class="dashboard-page communications-page">
     <section id="communicationsHero" class="communications-hero"
-             th:classappend="${' role-' + #strings.toLowerCase(currentRole.name()) + ' source-' + #strings.toLowerCase(selectedSource.name()) + (customerInboxMode ? ' customer' : (operationsMode ? ' operations' : ''))}">
+             th:classappend="${' role-' + #strings.toLowerCase(currentRole.name()) + (sentMode ? ' source-sent sent' : ' source-' + #strings.toLowerCase(selectedSource.name())) + (customerInboxMode ? ' customer' : (operationsMode ? ' operations' : ''))}">
         <div>
             <p class="badge" th:text="${supportMode} ? 'Buzón del Cliente' : ${roleLabel}">Buzón del rol</p>
             <h1 th:text="${supportMode} ? 'Mis consultas a Soporte' : ${viewTitle}">Mensajería recibida</h1>
@@ -29,8 +28,8 @@
         </div>
         <aside class="communications-count">
             <strong th:text="${messages.size()}">0</strong>
-            <span th:text="${supportMode} ? 'consultas enviadas' : 'mensajes registrados'">mensajes</span>
-            <small th:unless="${supportMode}"><b th:text="${unread}">0</b> sin leer</small>
+            <span th:text="${supportMode or sentMode} ? 'mensajes enviados' : 'mensajes registrados'">mensajes</span>
+            <small th:if="${!supportMode and !sentMode}"><b th:text="${unread}">0</b> sin leer</small>
         </aside>
     </section>
 
@@ -38,14 +37,20 @@
 
     <section class="communications-toolbar" th:unless="${supportMode}">
         <div>
-            <small>Filtrar por remitente</small>
-            <nav class="communications-role-tabs" aria-label="Filtrar mensajes por remitente">
+            <small>Vista del buzón</small>
+            <nav class="communications-role-tabs" aria-label="Cambiar vista del buzón">
                 <a th:each="option : ${sourceOptions}"
                    th:href="${option.role == currentRole} ? @{/communications} : @{/communications(from=${option.role})}"
-                   th:classappend="${' source-' + #strings.toLowerCase(option.role.name()) + (option.role == selectedSource ? ' active' : '')}"
-                   th:attr="data-source=${option.role.name()},aria-current=${option.role == selectedSource ? 'page' : null}"
+                   th:classappend="${' source-' + #strings.toLowerCase(option.role.name()) + (!sentMode and option.role == selectedSource ? ' active' : '')}"
+                   th:attr="data-source=${option.role.name()},aria-current=${!sentMode and option.role == selectedSource ? 'page' : null}"
                    data-communications-filter
                    th:text="${option.label}">Mensajes</a>
+                <a class="source-sent"
+                   th:classappend="${sentMode} ? ' active' : ''"
+                   th:href="@{/communications(box='sent')}"
+                   th:attr="aria-current=${sentMode ? 'page' : null}"
+                   data-source="SENT"
+                   data-communications-filter>Enviados</a>
             </nav>
         </div>
     </section>
@@ -53,9 +58,9 @@
     <div id="communicationsResults" class="communications-results" aria-live="polite">
     <section class="communications-list" th:if="${!messages.isEmpty()}">
         <a class="communications-message" th:each="message : ${messages}" th:href="@{/communications/{id}(id=${message.id})}"
-           th:classappend="${' source-' + #strings.toLowerCase(message.senderRole.name())}">
+           th:classappend="${sentMode ? ' source-sent' : ' source-' + #strings.toLowerCase(message.senderRole.name())}">
             <div class="communications-message-top">
-                <span class="communications-origin" th:switch="${message.senderRole.name()}">
+                <span class="communications-origin" th:switch="${sentMode ? message.targetRole.name() : message.senderRole.name()}">
                     <span th:case="'CLIENT'">Cliente</span>
                     <span th:case="'ADMIN'">Administrador</span>
                     <span th:case="'ORGANIZER'">Organizador</span>
@@ -70,7 +75,7 @@
             </div>
             <h2 th:text="${message.subject}">Asunto</h2>
             <p class="message-body" th:text="${message.body}">Contenido</p>
-            <div class="communications-message-foot"><span th:text="${'Remitente: ' + message.senderName}">Remitente</span><span th:text="${message.type}">Tipo</span></div>
+            <div class="communications-message-foot"><span th:text="${sentMode ? 'Destino: ' + message.targetRole : 'Remitente: ' + message.senderName}">Remitente</span><span th:text="${message.type}">Tipo</span></div>
         </a>
     </section>
 

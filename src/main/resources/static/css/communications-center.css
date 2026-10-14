@@ -109,6 +109,11 @@ body {
     box-shadow: 0 20px 46px rgba(8, 145, 178, 0.20);
 }
 
+.communications-hero.source-sent {
+    background: radial-gradient(circle at 82% 15%, rgba(253, 230, 138, 0.38), transparent 31%), linear-gradient(135deg, #92400e, #d97706);
+    box-shadow: 0 20px 46px rgba(217, 119, 6, 0.22);
+}
+
 .communications-hero .badge {
     margin: 0;
     padding: 6px 10px;
@@ -268,6 +273,14 @@ body {
     --chip-active-end: #0369a1;
 }
 
+.communications-role-tabs a.source-sent {
+    --chip-color: #b45309;
+    --chip-border: #fde68a;
+    --chip-surface: #fffbeb;
+    --chip-active-start: #f59e0b;
+    --chip-active-end: #b45309;
+}
+
 .communications-role-tabs a:hover {
     transform: translateY(-2px);
     border-color: var(--chip-color);
@@ -329,6 +342,10 @@ body {
 
 .communications-message.source-client {
     border-left: 3px solid #0ea5e9;
+}
+
+.communications-message.source-sent {
+    border-left: 3px solid #f59e0b;
 }
 
 .communications-message:hover {

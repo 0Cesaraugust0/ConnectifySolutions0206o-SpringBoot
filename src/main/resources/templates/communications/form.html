@@ -17,7 +17,7 @@
     </a>
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/communications}" th:text="${supportMode} ? 'Mis consultas' : 'Buzón'">Buzón</a>
-        <a class="btn secondary" th:href="@{/communications/sent}" th:unless="${supportMode}">Enviados</a>
+        <a class="btn secondary" th:href="@{/communications(box='sent')}" th:unless="${supportMode}">Enviados</a>
         <a class="btn secondary" th:href="@{/dashboard}">Panel</a>
     </nav>
 </header>
