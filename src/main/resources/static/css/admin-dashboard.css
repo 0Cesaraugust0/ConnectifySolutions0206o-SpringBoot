@@ -187,7 +187,7 @@
     font-weight: 750;
 }
 
-.admin-action-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.admin-action-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
 
 .admin-action-card {
     position: relative;
@@ -303,7 +303,7 @@
     .admin-process-panel { grid-template-columns: 1fr; }
     .admin-session-card { min-height: 0; }
     .admin-action-grid { grid-template-columns: 1fr 1fr; }
-    .admin-action-card:last-child { grid-column: 1 / -1; min-height: 190px; }
+    .admin-action-card:last-child { grid-column: auto; }
 }
 
 @media (max-width: 620px) {

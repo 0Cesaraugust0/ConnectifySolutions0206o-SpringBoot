@@ -13,11 +13,11 @@
 <body>
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/designer}"><span class="logo">🎨</span><div><strong>Connectify</strong><small>Diseñador</small></div></a>
-    <nav class="top-actions"><a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Solicitudes</a><a class="btn secondary" th:href="@{/events}">Marketplace</a><form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form></nav>
+    <nav class="top-actions"><a class="btn secondary" th:href="@{/communications}">Mensajes</a><a class="btn secondary" th:href="@{/events}">Marketplace</a><form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form></nav>
 </header>
 
 <main class="dashboard-page">
-    <section class="studio-hero"><div><p class="badge">Estudio visual</p><h1 th:text="${title}">Estudio de presentación</h1><p class="muted">Diseña cómo se presentará un evento antes de que Administración lo publique. Sesión: <strong th:text="${email}">diseñador</strong>.</p></div><a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Abrir solicitudes</a></section>
+    <section class="studio-hero"><div><p class="badge">Estudio visual</p><h1 th:text="${title}">Estudio de presentación</h1><p class="muted">Diseña cómo se presentará un evento antes de que Administración lo publique. Sesión: <strong th:text="${email}">diseñador</strong>.</p></div><a class="btn secondary" th:href="@{/communications}">Abrir mensajes</a></section>
     <div th:if="${param.saved != null}" class="alert success">Propuesta visual guardada. La plantilla elegida ya queda asociada al evento y registrada en su trazabilidad.</div>
     <div th:if="${param.locked != null}" class="alert error">No se puede editar la propuesta: el evento fue aprobado o publicado y está bloqueado.</div>
 

@@ -17,6 +17,7 @@
     <nav class="top-actions">
         <a class="btn secondary" th:href="@{/dashboard/admin/events(view='list')}">Revisar eventos</a>
         <a class="btn secondary" th:href="@{/admin/events}">Control de puerta</a>
+        <a class="btn secondary" th:href="@{/communications}">Mensajes</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
 </header>
@@ -47,7 +48,7 @@
             <p>Herramientas principales</p>
             <h2>Centro de operaciones</h2>
         </div>
-        <span>3 áreas disponibles</span>
+        <span>4 áreas disponibles</span>
     </div>
 
     <section class="admin-action-grid" aria-label="Áreas administrativas">
@@ -69,6 +70,16 @@
                 <p>Configura el código del evento y la contraseña diaria que utilizará el agente encargado del acceso.</p>
             </div>
             <strong>Configurar acceso <span>→</span></strong>
+        </a>
+
+        <a class="admin-action-card admin-action-messages" th:href="@{/communications}">
+            <span class="admin-action-icon">✉</span>
+            <div>
+                <small>Coordinación interna</small>
+                <h2>Centro de mensajes</h2>
+                <p>Recibe consultas, solicitudes y respuestas del Organizador, Diseño, Puerta y Clientes.</p>
+            </div>
+            <strong>Abrir mensajes <span>→</span></strong>
         </a>
 
         <a class="admin-action-card admin-action-market" th:href="@{/events}">

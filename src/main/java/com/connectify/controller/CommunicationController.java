@@ -70,7 +70,7 @@ public class CommunicationController {
         }
 
         List<Role> sourceRoles = new ArrayList<>(List.of(
-                Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.GATE_AGENT, Role.CLIENT));
+                Role.ADMIN, Role.ORGANIZER, Role.DESIGNER, Role.GATE_AGENT, Role.CLIENT, Role.DEVELOPER));
         sourceRoles.remove(currentRole);
         sourceRoles.add(0, currentRole);
         List<MessageSourceOption> sourceOptions = sourceRoles.stream()

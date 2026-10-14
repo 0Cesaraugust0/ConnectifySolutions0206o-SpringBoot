@@ -19,7 +19,8 @@
 </header>
 
 <main class="dashboard-page communications-page">
-    <section class="communications-hero" th:classappend="${customerInboxMode} ? ' customer' : (${operationsMode} ? ' operations' : '')">
+    <section class="communications-hero"
+             th:classappend="${' role-' + #strings.toLowerCase(currentRole.name()) + (customerInboxMode ? ' customer' : (operationsMode ? ' operations' : ''))}">
         <div>
             <p class="badge" th:text="${supportMode} ? 'Buzón del Cliente' : ${roleLabel}">Buzón del rol</p>
             <h1 th:text="${supportMode} ? 'Mis consultas a Soporte' : ${viewTitle}">Mensajería recibida</h1>

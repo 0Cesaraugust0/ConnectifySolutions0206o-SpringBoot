@@ -12,7 +12,7 @@
 <header class="navbar dashboard-nav">
     <a class="brand brand-link" th:href="@{/dashboard/designer}"><span class="logo">🎨</span><div><strong>Connectify</strong><small>Diseñador</small></div></a>
     <nav class="top-actions designer-studio-nav">
-        <a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Solicitudes</a>
+        <a class="btn secondary" th:href="@{/communications}">Mensajes</a>
         <a class="btn secondary" th:href="@{/events}">Marketplace</a>
         <form th:action="@{/logout}" method="post"><button class="btn secondary" type="submit">Cerrar sesión</button></form>
     </nav>
@@ -25,7 +25,7 @@
             <h1>Diseño de Marketplace</h1>
             <p class="muted">Trabaja sobre la plantilla elegida por el Organizador y conviértela en una presentación lista para revisión.</p>
         </div>
-        <a class="btn secondary" th:href="@{/communications(role='DESIGNER')}">Abrir solicitudes</a>
+        <a class="btn secondary" th:href="@{/communications}">Abrir mensajes</a>
     </section>
 
     <div th:if="${param.saved != null}" class="alert success">Propuesta visual guardada. Los ajustes ya forman parte de la presentación del evento.</div>
